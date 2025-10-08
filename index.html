@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <meta name="color-scheme" content="light">
   <style>
-    .sidebar { min-width: 240px; }
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
   </style>
@@ -16,56 +15,57 @@
 
   <!-- Header -->
   <header class="bg-white border-b">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">B11</div>
+        <div class="w-9 h-9 md:w-10 md:h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">B11</div>
         <div>
-          <div class="text-lg font-semibold">Tra cứu CIC - B11</div>
+          <div class="text-base md:text-lg font-semibold">Tra cứu CIC - B11</div>
           <div class="text-xs text-gray-500">TEAM HÀ LAM</div>
         </div>
       </div>
-      <div id="headerRight" class="text-sm text-gray-600">
+      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
         <!-- user info -->
       </div>
     </div>
   </header>
 
-  <div class="min-h-[calc(100vh-72px)] flex max-w-6xl mx-auto px-6 py-8 gap-8">
+  <!-- layout: column on small, row on md+ -->
+  <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar bg-white border rounded-lg p-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-12 h-12 rounded-md avatar-green flex items-center justify-center text-white font-bold">P</div>
-        <div>
-          <div id="sidebarName" class="font-semibold">---</div>
-          <div id="sidebarEmail" class="text-xs text-gray-500">---</div>
+    <!-- SIDEBAR (full width on mobile, fixed width on desktop) -->
+    <aside class="w-full md:w-64 bg-white border rounded-lg p-4 md:p-6 flex-shrink-0">
+      <div class="flex items-center gap-3 mb-4 md:mb-6">
+        <div class="w-10 h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">P</div>
+        <div class="min-w-0">
+          <div id="sidebarName" class="font-semibold truncate">---</div>
+          <div id="sidebarEmail" class="text-xs text-gray-500 truncate">---</div>
         </div>
       </div>
 
       <nav class="space-y-2">
-        <button id="navLookup" class="w-full text-left px-4 py-3 rounded-md bg-green-50 text-green-700 flex items-center gap-3">
+        <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700 flex items-center gap-3">
           🔍 Tra cứu CIC
         </button>
-        <button id="navHistory" class="w-full text-left px-4 py-3 rounded-md hover:bg-gray-100 flex items-center gap-3">
+        <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">
           📜 Lịch sử tra cứu
         </button>
       </nav>
 
-      <div class="mt-6 border-t pt-4">
-        <button id="btnEditName" class="w-full text-left text-sm mb-2 px-3 py-2 rounded-md hover:bg-gray-100">✏️ Cập nhật họ tên</button>
-        <button id="btnLogout" class="w-full text-left text-sm text-red-600 px-3 py-2 rounded-md hover:bg-red-50">🚪 Đăng xuất</button>
+      <div class="mt-4 border-t pt-3">
+        <button id="btnEditName" class="w-full text-left text-sm mb-2 px-2 py-2 rounded-md hover:bg-gray-100">✏️ Cập nhật họ tên</button>
+        <button id="btnLogout" class="w-full text-left text-sm text-red-600 px-2 py-2 rounded-md hover:bg-red-50">🚪 Đăng xuất</button>
       </div>
     </aside>
 
-    <!-- MAIN -->
+    <!-- MAIN (flexible) -->
     <main class="flex-1">
 
       <!-- LOGIN / SIGNUP BOX -->
-      <section id="authBox" class="max-w-md mx-auto card rounded-lg shadow p-6">
+      <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
         <div id="authForms">
           <!-- Signup -->
           <div id="signupArea" class="">
-            <h3 class="text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
+            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
             <form id="signupForm" class="space-y-2">
               <input id="signupName" class="w-full border rounded-md px-3 py-2" placeholder="Họ tên nhân viên" required />
               <input id="signupEmail" type="email" class="w-full border rounded-md px-3 py-2" placeholder="Email" required />
@@ -80,7 +80,7 @@
 
           <!-- Login (hidden by default) -->
           <div id="loginArea" class="hidden">
-            <h3 class="text-xl font-semibold mb-3">Đăng nhập</h3>
+            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng nhập</h3>
             <form id="loginForm" class="space-y-2">
               <input id="loginEmail" type="email" class="w-full border rounded-md px-3 py-2" placeholder="Email" required />
               <input id="loginPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
@@ -96,26 +96,26 @@
       <!-- CONTROLLED PAGES (hidden until logged in) -->
       <section id="appArea" class="hidden space-y-6">
         <!-- Lookup page -->
-        <div id="lookupPage" class="card rounded-lg p-6">
+        <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
-          <form id="lookupForm" class="grid grid-cols-12 gap-4">
-            <div class="col-span-7">
+          <form id="lookupForm" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="md:col-span-7">
               <label class="text-sm text-gray-600">Họ và tên</label>
               <input id="fullname" class="w-full border rounded-md px-3 py-2" placeholder="Nguyễn Văn A" required />
             </div>
-            <div class="col-span-5">
+            <div class="md:col-span-5">
               <label class="text-sm text-gray-600">Số CCCD (12 số)</label>
               <input id="cccd" maxlength="12" class="w-full border rounded-md px-3 py-2" placeholder="123456789012" required />
             </div>
-            <div class="col-span-12">
-              <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md">Tra cứu</button>
+            <div class="md:col-span-12">
+              <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
             </div>
           </form>
           <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
         </div>
 
         <!-- History page -->
-        <div id="historyPage" class="card rounded-lg p-6 hidden">
+        <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
           <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
           <div id="historyList" class="space-y-2 text-sm text-gray-700">
             Chưa có lịch sử.
@@ -127,10 +127,10 @@
   </div>
 
   <!-- Update name modal (simple inline form) -->
-  <div id="updateNameBox" class="fixed right-6 bottom-6 hidden">
-    <div class="bg-white p-4 rounded-lg shadow">
+  <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
+    <div class="bg-white p-3 rounded-lg shadow w-64">
       <div class="mb-2 text-sm font-medium">Cập nhật họ tên</div>
-      <input id="updateNameInput" class="w-64 border rounded-md px-3 py-2 mb-2" placeholder="Họ và tên mới" />
+      <input id="updateNameInput" class="w-full border rounded-md px-3 py-2 mb-2" placeholder="Họ và tên mới" />
       <div class="flex gap-2">
         <button id="saveNameBtn" class="bg-green-600 text-white px-3 py-1 rounded-md">Lưu</button>
         <button id="cancelNameBtn" class="border px-3 py-1 rounded-md">Hủy</button>
@@ -139,8 +139,8 @@
   </div>
 
   <!-- FOOTER -->
-  <footer class="mt-8">
-    <div class="max-w-6xl mx-auto px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
+  <footer class="mt-6 md:mt-8">
+    <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
       © Copyright 2025 Võ Quốc Thiên. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
     </div>
   </footer>
@@ -150,7 +150,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } 
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, limit } 
       from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     // ---- Firebase config ----
@@ -294,26 +294,34 @@
       }
     });
 
-    // Load history for current user
+    // Load history for current user (client-side filter to avoid composite index)
     async function loadHistory() {
       historyList.innerHTML = '⏳ Đang tải lịch sử...';
       const user = auth.currentUser;
       if (!user) { historyList.innerHTML = 'Vui lòng đăng nhập để xem lịch sử.'; return; }
 
       try {
-        const q = query(
-          collection(db, 'tra_cuu_b11'),
-          where('uid', '==', user.uid),
-          orderBy('createdAt', 'desc')
-        );
+        // Lấy 100 bản ghi mới nhất (tùy chỉnh số lượng nếu muốn)
+        const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt', 'desc'), limit(100));
         const snap = await getDocs(q);
         if (snap.empty) {
           historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>';
           return;
         }
-        historyList.innerHTML = '';
+        // Lọc theo uid ở client
+        const items = [];
         snap.forEach(doc => {
           const d = doc.data();
+          if (d.uid === user.uid) items.push(d);
+        });
+
+        if (!items.length) {
+          historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>';
+          return;
+        }
+
+        historyList.innerHTML = '';
+        items.forEach(d => {
           const t = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toLocaleString() : '';
           const item = document.createElement('div');
           item.className = 'p-3 border rounded-md';
