@@ -20,7 +20,7 @@
         <div class="w-9 h-9 md:w-10 md:h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">B11</div>
         <div>
           <div class="text-base md:text-lg font-semibold">Tra cứu CIC - B11</div>
-          <div class="text-xs text-gray-500">THIÊN MIRAE</div>
+          <div class="text-xs text-gray-500">TEAM HÀ LAM</div>
         </div>
       </div>
       <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
@@ -29,10 +29,8 @@
     </div>
   </header>
 
-  <!-- layout: column on small, row on md+ -->
   <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
-
-    <!-- SIDEBAR (full width on mobile, fixed width on desktop) -->
+    <!-- SIDEBAR -->
     <aside class="w-full md:w-64 bg-white border rounded-lg p-4 md:p-6 flex-shrink-0">
       <div class="flex items-center gap-3 mb-4 md:mb-6">
         <div class="w-10 h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">P</div>
@@ -41,25 +39,18 @@
           <div id="sidebarEmail" class="text-xs text-gray-500 truncate">---</div>
         </div>
       </div>
-
       <nav class="space-y-2">
-        <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700 flex items-center gap-3">
-          🔍 Tra cứu CIC
-        </button>
-        <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">
-          📜 Lịch sử tra cứu
-        </button>
+        <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700 flex items-center gap-3">🔍 Tra cứu CIC</button>
+        <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">📜 Lịch sử tra cứu</button>
       </nav>
-
       <div class="mt-4 border-t pt-3">
         <button id="btnEditName" class="w-full text-left text-sm mb-2 px-2 py-2 rounded-md hover:bg-gray-100">✏️ Cập nhật họ tên</button>
         <button id="btnLogout" class="w-full text-left text-sm text-red-600 px-2 py-2 rounded-md hover:bg-red-50">🚪 Đăng xuất</button>
       </div>
     </aside>
 
-    <!-- MAIN (flexible) -->
+    <!-- MAIN -->
     <main class="flex-1">
-
       <!-- LOGIN / SIGNUP BOX -->
       <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
         <div id="authForms">
@@ -77,8 +68,7 @@
               </div>
             </form>
           </div>
-
-          <!-- Login (hidden by default) -->
+          <!-- Login -->
           <div id="loginArea" class="hidden">
             <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng nhập</h3>
             <form id="loginForm" class="space-y-2">
@@ -93,7 +83,7 @@
         </div>
       </section>
 
-      <!-- CONTROLLED PAGES (hidden until logged in) -->
+      <!-- CONTROLLED PAGES -->
       <section id="appArea" class="hidden space-y-6">
         <!-- Lookup page -->
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
@@ -117,16 +107,13 @@
         <!-- History page -->
         <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
           <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
-          <div id="historyList" class="space-y-2 text-sm text-gray-700">
-            Chưa có lịch sử.
-          </div>
+          <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
         </div>
       </section>
-
     </main>
   </div>
 
-  <!-- Update name modal (simple inline form) -->
+  <!-- Update name modal -->
   <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
     <div class="bg-white p-3 rounded-lg shadow w-64">
       <div class="mb-2 text-sm font-medium">Cập nhật họ tên</div>
@@ -138,20 +125,16 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
   <footer class="mt-6 md:mt-8">
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
       © Copyright 2025 Võ Quốc Thiên. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
     </div>
   </footer>
 
-  <!-- Firebase + App logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } 
-      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, limit, onSnapshot } 
-      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
@@ -162,64 +145,138 @@
       appId: "1:648747772689:web:69da6e1534ed63efddbab0",
       measurementId: "G-ELVGHX2GL4"
     };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    document.getElementById('lookupForm').addEventListener('submit', async (e) => {
+    const authBox = document.getElementById('authBox');
+    const signupArea = document.getElementById('signupArea');
+    const loginArea = document.getElementById('loginArea');
+    const appArea = document.getElementById('appArea');
+    const lookupPage = document.getElementById('lookupPage');
+    const historyPage = document.getElementById('historyPage');
+    const historyList = document.getElementById('historyList');
+    const lookupResult = document.getElementById('lookupResult');
+    const headerRight = document.getElementById('headerRight');
+    const sidebarName = document.getElementById('sidebarName');
+    const sidebarEmail = document.getElementById('sidebarEmail');
+
+    const btnNavLookup = document.getElementById('navLookup');
+    const btnNavHistory = document.getElementById('navHistory');
+    const btnEditName = document.getElementById('btnEditName');
+    const updateNameBox = document.getElementById('updateNameBox');
+    const updateNameInput = document.getElementById('updateNameInput');
+    const saveNameBtn = document.getElementById('saveNameBtn');
+    const cancelNameBtn = document.getElementById('cancelNameBtn');
+
+    document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
+    document.getElementById('showSignupBtn').addEventListener('click', e => { e.preventDefault(); loginArea.classList.add('hidden'); signupArea.classList.remove('hidden'); });
+
+    document.getElementById('signupForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const pass = document.getElementById('signupPass').value;
+      const repass = document.getElementById('signupRepass').value;
+      if (!name || !email || !pass) { alert('Vui lòng nhập đủ thông tin'); return; }
+      if (pass !== repass) { alert('Mật khẩu nhập lại không khớp'); return; }
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(userCred.user, { displayName: name });
+        alert('Đăng ký thành công — vui lòng đăng nhập');
+        document.getElementById('signupForm').reset();
+        loginArea.classList.remove('hidden');
+        signupArea.classList.add('hidden');
+      } catch (err) { alert('Lỗi đăng ký: ' + err.message); }
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      try { await signInWithEmailAndPassword(auth, email, pass); document.getElementById('loginForm').reset(); }
+      catch (err) { alert('Lỗi đăng nhập: ' + err.message); }
+    });
+
+    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); });
+
+    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
+    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); loadHistory(); });
+
+    btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent === '---' ? '' : sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
+    cancelNameBtn.addEventListener('click', () => updateNameBox.classList.add('hidden'));
+    saveNameBtn.addEventListener('click', async () => {
+      const newName = updateNameInput.value.trim();
+      if (!newName) return alert('Nhập họ tên mới');
+      try {
+        await updateProfile(auth.currentUser, { displayName: newName });
+        sidebarName.textContent = newName;
+        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
+        updateNameBox.classList.add('hidden');
+        alert('Cập nhật thành công');
+      } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
+    });
+
+    document.getElementById('lookupForm').addEventListener('submit', async e => {
       e.preventDefault();
       const name = document.getElementById('fullname').value.trim();
       const cccd = document.getElementById('cccd').value.trim();
       if (!name || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
-
       const user = auth.currentUser;
       if (!user) { alert('Vui lòng đăng nhập'); return; }
 
+      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
       try {
-        await addDoc(collection(db, 'tra_cuu_b11'), {
-          fullname: name,
-          cccd,
-          uid: user.uid,
-          createdAt: serverTimestamp()
-        });
+        await addDoc(collection(db, 'tra_cuu_b11'), { uid: user.uid, name, cccd, email: user.email || null, createdAt: serverTimestamp() });
         alert('Yêu cầu đã gửi lên hệ thống, vui lòng chờ kết quả.');
         document.getElementById('lookupForm').reset();
-      } catch (err) {
-        alert('Lỗi gửi dữ liệu: ' + err.message);
-      }
+        if (!historyPage.classList.contains('hidden')) await loadHistory();
+      } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`; }
     });
 
     async function loadHistory() {
-      const historyList = document.getElementById('historyList');
+      historyList.innerHTML = '⏳ Đang tải lịch sử...';
       const user = auth.currentUser;
       if (!user) { historyList.innerHTML = 'Vui lòng đăng nhập để xem lịch sử.'; return; }
-
-      const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt', 'desc'), limit(100));
-      onSnapshot(q, (snap) => {
+      try {
+        const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt', 'desc'), limit(100));
+        const snap = await getDocs(q);
+        if (snap.empty) { historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>'; return; }
         const items = [];
-        snap.forEach(doc => {
-          const d = doc.data();
-          if (d.uid === user.uid) items.push(d);
-        });
-
-        if (!items.length) { historyList.innerHTML = 'Chưa có lịch sử tra cứu.'; return; }
-
+        snap.forEach(doc => { const d = doc.data(); if (d.uid === user.uid) items.push(d); });
+        if (!items.length) { historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>'; return; }
         historyList.innerHTML = '';
         items.forEach(d => {
           const t = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toLocaleString() : '';
-          const ketQua = d.ketQua ? `<div class="text-green-600 font-medium mt-1">Kết quả: ${d.ketQua}</div>` : '<div class="text-gray-500 mt-1 italic">Đang chờ kết quả phản hồi...</div>';
           const item = document.createElement('div');
           item.className = 'p-3 border rounded-md';
-          item.innerHTML = `<div class="font-medium">${d.fullname}</div>
-                            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
-                            ${ketQua}`;
+          item.innerHTML = `<div class="font-medium">${d.name}</div><div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>`;
           historyList.appendChild(item);
         });
-      });
+      } catch (err) { historyList.innerHTML = `<div class="text-red-600">Lỗi tải lịch sử: ${err.message}</div>`; }
     }
 
-    document.getElementById('navHistory').addEventListener('click', loadHistory);
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        authBox.classList.add('hidden');
+        appArea.classList.remove('hidden');
+        const name = user.displayName || '(Chưa cập nhật)';
+        sidebarName.textContent = name;
+        sidebarEmail.textContent = user.email || '';
+        headerRight.textContent = `${name} • ${user.email || ''}`;
+        lookupPage.classList.remove('hidden');
+        historyPage.classList.add('hidden');
+        loadHistory();
+      } else {
+        authBox.classList.remove('hidden');
+        appArea.classList.add('hidden');
+        headerRight.textContent = '';
+        sidebarName.textContent = '---';
+        sidebarEmail.textContent = '---';
+      }
+    });
+
+    appArea.classList.add('hidden');
   </script>
 </body>
 </html>
