@@ -9,22 +9,22 @@
   <style>
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
-    .notif-bell { position: relative; cursor: pointer; }
     .notif-badge {
       position: absolute;
-      top: -6px;
-      right: -6px;
+      top: -4px;
+      right: -4px;
       background: red;
       color: white;
-      font-size: 0.7rem;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-size: 0.65rem;
       font-weight: bold;
+      border-radius: 9999px;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+    .notif-btn { position: relative; cursor: pointer; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -39,10 +39,11 @@
           <div class="text-xs text-gray-500">Giải Pháp Tạm Thời</div>
         </div>
       </div>
-      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right flex items-center justify-end gap-3">
-        <div class="notif-bell" id="notifBell">
+      <div class="flex items-center gap-3">
+        <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right"></div>
+        <div id="notifBell" class="notif-btn w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-gray-600 hover:text-gray-900">
           🔔
-          <div class="notif-badge" id="notifCount" style="display:none">0</div>
+          <div id="notifBadge" class="notif-badge hidden">0</div>
         </div>
       </div>
     </div>
@@ -106,10 +107,14 @@
 
       <!-- CONTROLLED PAGES -->
       <section id="appArea" class="hidden space-y-6">
-        <!-- Lookup page -->
+
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
           <div class="mb-4 text-red-600 font-bold text-xs">
-            Thông báo: Tra cứu trong giờ hành chính: 30 phút - 1 tiếng. Sau giờ: 2-4 tiếng hoặc sáng hôm sau. Vui lòng ghi chính xác tên khách hàng.
+            Thông báo thời gian tra cứu B11- <br>
+            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1tiếng- <br>
+            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
+            Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
+            *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu"
           </div>
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
           <form id="lookupForm" class="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -128,20 +133,18 @@
           <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
         </div>
 
-        <!-- History page -->
         <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
           <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
           <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
         </div>
-      </section>
 
+      </section>
     </main>
   </div>
 
-  <!-- Audio notification (beep ngắn, to) -->
-  <audio id="notifSound" preload="auto" volume="1">
+  <!-- Audio beep -->
+  <audio id="notifSound" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
-    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Update name modal -->
@@ -156,7 +159,6 @@
     </div>
   </div>
 
-  <!-- Footer -->
   <footer class="mt-6 md:mt-8">
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
       © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
@@ -204,11 +206,11 @@
     const cancelNameBtn = document.getElementById('cancelNameBtn');
     const notifSound = document.getElementById('notifSound');
     const notifBell = document.getElementById('notifBell');
-    const notifCount = document.getElementById('notifCount');
+    const notifBadge = document.getElementById('notifBadge');
 
     let unsubscribeHistory = null;
     let lastSeenKetQuaIds = new Set();
-    let notifNumber = 0;
+    let notifCount = 0;
 
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
@@ -257,7 +259,7 @@
       try {
         await updateProfile(auth.currentUser, { displayName: newName });
         sidebarName.textContent = newName;
-        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
+        headerRight.innerHTML = `${newName} • ${auth.currentUser.email||''}`;
         updateNameBox.classList.add('hidden');
         alert('Cập nhật thành công');
       } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
@@ -289,14 +291,6 @@
       } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`; }
     });
 
-    // Notification bell click
-    notifBell.addEventListener('click', () => {
-      notifNumber = 0;
-      notifCount.style.display = 'none';
-      lookupPage.classList.add('hidden');
-      historyPage.classList.remove('hidden');
-    });
-
     // Realtime listener for history + notification
     function startHistoryListener() {
       const user = auth.currentUser;
@@ -306,7 +300,7 @@
 
       unsubscribeHistory = onSnapshot(q, snapshot => {
         const items = [];
-        snapshot.forEach(doc => { const d=doc.data(); if(d.uid===user.uid) items.push({...d,id:doc.id}); });
+        snapshot.forEach(doc => { const d=doc.data(); d.id = doc.id; if(d.uid===user.uid) items.push(d); });
         if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
 
         historyList.innerHTML='';
@@ -320,20 +314,28 @@
             <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
           historyList.appendChild(item);
 
-          // Notification beep
+          // Notification
           if(d.ketQua && !lastSeenKetQuaIds.has(d.id)) {
             notifSound.currentTime = 0;
             notifSound.volume = 1.0;
             notifSound.play().catch(()=>{});
             lastSeenKetQuaIds.add(d.id);
-
-            notifNumber++;
-            notifCount.style.display = 'flex';
-            notifCount.textContent = notifNumber;
+            notifCount++;
+            notifBadge.textContent = notifCount;
+            notifBadge.classList.remove('hidden');
           }
         });
       });
     }
+
+    // Click on bell
+    notifBell.addEventListener('click', () => {
+      notifCount = 0;
+      notifBadge.textContent = '0';
+      notifBadge.classList.add('hidden');
+      lookupPage.classList.add('hidden');
+      historyPage.classList.remove('hidden');
+    });
 
     // Auth state
     onAuthStateChanged(auth,user=>{
@@ -341,10 +343,11 @@
         authBox.classList.add('hidden'); appArea.classList.remove('hidden');
         const name=user.displayName||'(Chưa cập nhật)';
         sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
-        headerRight.textContent=`${name} • ${user.email||''}`;
+        headerRight.innerHTML = `${name} • ${user.email||''}`;
         lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden');
         lastSeenKetQuaIds.clear();
-        notifNumber = 0; notifCount.style.display='none';
+        notifCount = 0;
+        notifBadge.classList.add('hidden');
         startHistoryListener();
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
@@ -352,6 +355,7 @@
         if(unsubscribeHistory) unsubscribeHistory();
       }
     });
+
   </script>
 </body>
 </html>
