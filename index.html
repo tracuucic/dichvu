@@ -9,17 +9,29 @@
   <style>
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
-    #notifBell { position: fixed; top: 20px; right: 20px; font-size: 24px; cursor: pointer; z-index: 9999; }
-    #notifBadge { background: red; color: white; border-radius: 9999px; font-size: 12px; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; position: absolute; top: -5px; right: -5px; }
+    #notifBell {
+      position: fixed;
+      right: 1rem; bottom: 1rem;
+      font-size: 2rem;
+      cursor: pointer;
+      z-index: 100;
+      background: #f87171; color: white;
+      width: 3rem; height: 3rem; line-height: 3rem; text-align: center;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    #notifCount {
+      position: absolute;
+      top: -0.5rem; right: -0.5rem;
+      background: yellow; color: black;
+      width: 1.25rem; height: 1.25rem;
+      border-radius: 50%;
+      text-align: center; font-size: 0.75rem; font-weight: bold;
+      line-height: 1.25rem;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
-
-  <!-- Notification Bell -->
-  <div id="notifBell">
-    🔔
-    <div id="notifBadge" style="display:none;">0</div>
-  </div>
 
   <!-- Header -->
   <header class="bg-white border-b">
@@ -100,10 +112,8 @@
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
           <div class="mb-4 text-red-600 font-bold text-xs">
             Thông báo thời gian tra cứu B11- <br>
-            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1 tiếng.<br>
-            Tra cứu sau giờ hành chính: Có thể chậm 2-4 tiếng. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
-            Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
-            *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu"
+            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1 tiếng <br>
+            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng. Vui lòng ghi chính xác tên khách hàng, không check số CMND cũ.
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
@@ -133,10 +143,8 @@
     </main>
   </div>
 
-  <!-- Audio notification -->
-  <audio id="notifSound" preload="auto">
-    <source src="https://www.soundjay.com/button/sounds/beep-07.mp3" type="audio/mpeg">
-  </audio>
+  <!-- Notification bell -->
+  <div id="notifBell">🔔<div id="notifCount">0</div></div>
 
   <!-- Update name modal -->
   <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
@@ -196,13 +204,12 @@
     const updateNameInput = document.getElementById('updateNameInput');
     const saveNameBtn = document.getElementById('saveNameBtn');
     const cancelNameBtn = document.getElementById('cancelNameBtn');
-    const notifSound = document.getElementById('notifSound');
     const notifBell = document.getElementById('notifBell');
-    const notifBadge = document.getElementById('notifBadge');
+    const notifCount = document.getElementById('notifCount');
 
     let unsubscribeHistory = null;
     let lastSeenKetQuaIds = new Set();
-    let notifCount = 0;
+    let notifNum = 0;
 
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
@@ -283,6 +290,20 @@
       } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`; }
     });
 
+    // Bíp 1 tiếng ngắn
+    function beep() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'square';
+      o.frequency.value = 1000; // 1kHz
+      g.gain.value = 1; // âm lượng to
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      o.stop(ctx.currentTime + 0.1); // 0.1 giây
+    }
+
     // Realtime listener for history + notification
     function startHistoryListener() {
       const user = auth.currentUser;
@@ -292,7 +313,7 @@
 
       unsubscribeHistory = onSnapshot(q, snapshot => {
         const items = [];
-        snapshot.forEach(doc => { const d=doc.data(); d.id=doc.id; if(d.uid===user.uid) items.push(d); });
+        snapshot.forEach(doc => { const d=doc.data(); d.id = doc.id; if(d.uid===user.uid) items.push(d); });
         if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
 
         historyList.innerHTML='';
@@ -308,25 +329,20 @@
 
           // Notification
           if(d.ketQua && !lastSeenKetQuaIds.has(d.id)) {
-            notifSound.currentTime = 0;
-            notifSound.volume = 1.0;
-            notifSound.play().catch(()=>{});
+            beep(); // bíp 1 tiếng
             lastSeenKetQuaIds.add(d.id);
-            notifCount++;
-            notifBadge.style.display='flex';
-            notifBadge.textContent = notifCount;
+            notifNum++;
+            notifCount.textContent = notifNum;
           }
         });
       });
     }
 
-    // Bell click
+    // Click bell
     notifBell.addEventListener('click', () => {
-      notifCount = 0;
-      notifBadge.style.display = 'none';
-      lookupPage.classList.add('hidden');
-      historyPage.classList.remove('hidden');
-      startHistoryListener();
+      notifNum = 0;
+      notifCount.textContent = notifNum;
+      btnNavHistory.click();
     });
 
     // Auth state
@@ -338,7 +354,7 @@
         headerRight.textContent=`${name} • ${user.email||''}`;
         lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden');
         lastSeenKetQuaIds.clear();
-        notifCount=0; notifBadge.style.display='none';
+        notifNum = 0; notifCount.textContent = '0';
         startHistoryListener();
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
