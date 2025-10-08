@@ -10,9 +10,9 @@
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
     /* hiệu ứng rung chuông */
-    .shake { animation: shake 0.7s; }
+    .shake { animation: shake 0.5s; }
     @keyframes shake {
-      0%, 100% { transform: rotate(0deg); }
+      0%,100% { transform: rotate(0deg); }
       25% { transform: rotate(15deg); }
       50% { transform: rotate(-15deg); }
       75% { transform: rotate(10deg); }
@@ -135,8 +135,8 @@
     </main>
   </div>
 
-  <!-- Audio notification ngắn, bíp 1 tiếng -->
-  <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+  <!-- Audio notification cực ngắn, 1 tiếng bíp to -->
+  <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto" volume="1.0"></audio>
 
   <!-- Update name modal -->
   <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
@@ -153,7 +153,7 @@
   <!-- Footer -->
   <footer class="mt-6 md:mt-8">
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
-      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
+      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín & Linh Hoạt
     </div>
   </footer>
 
@@ -177,6 +177,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Elements
     const authBox = document.getElementById('authBox');
     const signupArea = document.getElementById('signupArea');
     const loginArea = document.getElementById('loginArea');
@@ -317,11 +318,20 @@
             notifCountEl.textContent = newNotifCount;
             notifCountEl.style.display = 'inline-block';
             notifBell.classList.add('shake');
-            setTimeout(()=>notifBell.classList.remove('shake'),700);
+            setTimeout(()=>notifBell.classList.remove('shake'),500);
           }
         });
       });
     }
+
+    // Click vào chuông
+    notifBell.addEventListener('click', () => {
+      newNotifCount = 0;
+      notifCountEl.style.display = 'none';
+      lookupPage.classList.add('hidden');
+      historyPage.classList.remove('hidden');
+      startHistoryListener();
+    });
 
     // Auth state
     onAuthStateChanged(auth,user=>{
