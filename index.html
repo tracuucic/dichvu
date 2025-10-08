@@ -9,6 +9,36 @@
   <style>
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
+
+    /* Chuông thông báo */
+    .notif-bell {
+      position: relative;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: transform 0.2s ease-in-out;
+    }
+    .notif-count {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ff3b30; 
+      color: white;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 0 5px;
+      border-radius: 999px;
+      display: none;
+    }
+    @keyframes bell-shake {
+      0% { transform: rotate(0deg); }
+      15% { transform: rotate(15deg); }
+      30% { transform: rotate(-10deg); }
+      45% { transform: rotate(10deg); }
+      60% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .shake { animation: bell-shake 0.7s ease-in-out; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -23,7 +53,13 @@
           <div class="text-xs text-gray-500">Giải Pháp Tạm Thời</div>
         </div>
       </div>
-      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right"></div>
+      <div class="flex items-center gap-4">
+        <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right"></div>
+        <div class="notif-bell relative" id="notifBell">
+          🔔
+          <span class="notif-count" id="notifCount">0</span>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -56,7 +92,6 @@
       <!-- LOGIN / SIGNUP BOX -->
       <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
         <div id="authForms">
-          <!-- Signup -->
           <div id="signupArea">
             <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
             <form id="signupForm" class="space-y-2">
@@ -70,8 +105,6 @@
               </div>
             </form>
           </div>
-
-          <!-- Login -->
           <div id="loginArea" class="hidden">
             <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng nhập</h3>
             <form id="loginForm" class="space-y-2">
@@ -141,7 +174,7 @@
   <!-- Footer -->
   <footer class="mt-6 md:mt-8">
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
-      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
+      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín & Linh Hoạt
     </div>
   </footer>
 
@@ -165,7 +198,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Elements
     const authBox = document.getElementById('authBox');
     const signupArea = document.getElementById('signupArea');
     const loginArea = document.getElementById('loginArea');
@@ -185,15 +217,16 @@
     const saveNameBtn = document.getElementById('saveNameBtn');
     const cancelNameBtn = document.getElementById('cancelNameBtn');
     const notifSound = document.getElementById('notifSound');
+    const notifBell = document.getElementById('notifBell');
+    const notifCountEl = document.getElementById('notifCount');
 
     let unsubscribeHistory = null;
     let lastSeenKetQuaIds = new Set();
+    let newNotifCount = 0;
 
-    // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
     document.getElementById('showSignupBtn').addEventListener('click', e => { e.preventDefault(); loginArea.classList.add('hidden'); signupArea.classList.remove('hidden'); });
 
-    // Signup
     document.getElementById('signupForm').addEventListener('submit', async e => {
       e.preventDefault();
       const name = document.getElementById('signupName').value.trim();
@@ -211,7 +244,6 @@
       } catch (err) { alert('Lỗi đăng ký: ' + err.message); }
     });
 
-    // Login
     document.getElementById('loginForm').addEventListener('submit', async e => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
@@ -220,14 +252,11 @@
       catch (err) { alert('Lỗi đăng nhập: ' + err.message); }
     });
 
-    // Logout
     document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
 
-    // Navigation
     btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
     btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); });
 
-    // Edit name
     btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
     cancelNameBtn.addEventListener('click', () => updateNameBox.classList.add('hidden'));
     saveNameBtn.addEventListener('click', async () => {
@@ -242,7 +271,6 @@
       } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
     });
 
-    // Lookup submit
     document.getElementById('lookupForm').addEventListener('submit', async e => {
       e.preventDefault();
       const customerName = document.getElementById('fullname').value.trim();
@@ -268,7 +296,6 @@
       } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`; }
     });
 
-    // Realtime listener for history + notification
     function startHistoryListener() {
       const user = auth.currentUser;
       if (!user) return;
@@ -277,7 +304,7 @@
 
       unsubscribeHistory = onSnapshot(q, snapshot => {
         const items = [];
-        snapshot.forEach(doc => { const d=doc.data(); if(d.uid===user.uid) items.push(d); });
+        snapshot.forEach(doc => { const d=doc.data(); d.id=doc.id; if(d.uid===user.uid) items.push(d); });
         if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
 
         historyList.innerHTML='';
@@ -292,15 +319,21 @@
           historyList.appendChild(item);
 
           // Notification
-          if(d.ketQua && !lastSeenKetQuaIds.has(doc.id)) {
-            notifSound.play().catch(()=>{}); // phát chuông
-            lastSeenKetQuaIds.add(doc.id);
+          if(d.ketQua && !lastSeenKetQuaIds.has(d.id)) {
+            notifSound.play().catch(()=>{});
+            lastSeenKetQuaIds.add(d.id);
+            newNotifCount++;
+            notifCountEl.textContent = newNotifCount;
+            notifCountEl.style.display = 'inline-block';
+            notifBell.classList.add('shake');
+            setTimeout(()=>notifBell.classList.remove('shake'),700);
           }
         });
       });
     }
 
-    // Auth state
+    notifBell.addEventListener('click', () => { newNotifCount=0; notifCountEl.style.display='none'; });
+
     onAuthStateChanged(auth,user=>{
       if(user){
         authBox.classList.add('hidden'); appArea.classList.remove('hidden');
@@ -309,6 +342,7 @@
         headerRight.textContent=`${name} • ${user.email||''}`;
         lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden');
         lastSeenKetQuaIds.clear();
+        newNotifCount=0; notifCountEl.style.display='none';
         startHistoryListener();
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
