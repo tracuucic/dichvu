@@ -3,157 +3,111 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tra cứu CIC - B11</title>
+  <title>Tra B11T - THIÊN MIRAE</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <meta name="color-scheme" content="light">
   <style>
+    .sidebar { min-width: 220px; }
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
-    .card { background: #ffffff; }
   </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800">
 
-  <!-- Header -->
-  <header class="bg-white border-b">
-    <div class="max-w-6xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 md:w-10 md:h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">B11</div>
-        <div>
-          <div class="text-base md:text-lg font-semibold">Tra cứu CIC - B11</div>
-          <div class="text-xs text-gray-500">TEAM HÀ LAM</div>
-        </div>
-      </div>
-      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
-        <!-- user info -->
-      </div>
+  <!-- Trang Đăng nhập / Đăng ký -->
+  <section id="loginPage" class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+      <h2 class="text-2xl font-bold text-center mb-6">🔐 Đăng nhập Tra cứu CIC</h2>
+
+      <!-- Form Đăng nhập -->
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" class="w-full mb-3 border rounded-md px-4 py-3" />
+        <input type="password" id="loginPassword" placeholder="Mật khẩu" class="w-full mb-3 border rounded-md px-4 py-3" />
+        <button id="loginBtn" class="w-full bg-green-600 text-white py-3 rounded-md">Đăng nhập</button>
+        <p class="text-center text-sm mt-3">Chưa có tài khoản? 
+          <a href="#" id="showSignup" class="text-green-600 font-medium">Đăng ký</a>
+        </p>
+      </form>
+
+      <!-- Form Đăng ký -->
+      <form id="signupForm" class="hidden">
+        <input type="email" id="signupEmail" placeholder="Email đăng nhập" class="w-full mb-3 border rounded-md px-4 py-3" />
+        <input type="text" id="signupName" placeholder="Họ tên nhân viên" class="w-full mb-3 border rounded-md px-4 py-3" />
+        <input type="password" id="signupPassword" placeholder="Mật khẩu" class="w-full mb-3 border rounded-md px-4 py-3" />
+        <input type="password" id="signupConfirm" placeholder="Nhập lại mật khẩu" class="w-full mb-3 border rounded-md px-4 py-3" />
+        <button id="signupBtn" class="w-full bg-blue-600 text-white py-3 rounded-md">Đăng ký</button>
+        <p class="text-center text-sm mt-3">Đã có tài khoản? 
+          <a href="#" id="showLogin" class="text-blue-600 font-medium">Đăng nhập</a>
+        </p>
+      </form>
     </div>
-  </header>
+  </section>
 
-  <!-- layout: column on small, row on md+ -->
-  <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
-
-    <!-- SIDEBAR (full width on mobile, fixed width on desktop) -->
-    <aside class="w-full md:w-64 bg-white border rounded-lg p-4 md:p-6 flex-shrink-0">
-      <div class="flex items-center gap-3 mb-4 md:mb-6">
+  <!-- Trang chính sau khi đăng nhập -->
+  <div id="mainPage" class="hidden min-h-screen flex">
+    <aside class="sidebar bg-white border-r p-6">
+      <div class="flex items-center gap-3 mb-8">
         <div class="w-10 h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">P</div>
-        <div class="min-w-0">
-          <div id="sidebarName" class="font-semibold truncate">---</div>
-          <div id="sidebarEmail" class="text-xs text-gray-500 truncate">---</div>
-        </div>
+        <div><div class="font-semibold">CIC B11T - THIÊN MIRAE</div></div>
       </div>
 
-      <nav class="space-y-2">
-        <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700 flex items-center gap-3">
-          🔍 Tra cứu CIC
-        </button>
-        <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">
-          📜 Lịch sử tra cứu
-        </button>
+      <nav class="space-y-2 text-sm">
+        <button id="tabDashboard" class="flex items-center gap-3 w-full p-3 rounded-md bg-green-50 text-green-700">Thông tin cá nhân</button>
+        <button id="tabLookup" class="flex items-center gap-3 w-full p-3 rounded-md hover:bg-gray-100">Tra B11</button>
       </nav>
 
-      <div class="mt-4 border-t pt-3">
-        <button id="btnEditName" class="w-full text-left text-sm mb-2 px-2 py-2 rounded-md hover:bg-gray-100">✏️ Cập nhật họ tên</button>
-        <button id="btnLogout" class="w-full text-left text-sm text-red-600 px-2 py-2 rounded-md hover:bg-red-50">🚪 Đăng xuất</button>
+      <div class="mt-8 text-sm text-gray-500">
+        <button id="logoutBtn" class="text-red-500 hover:underline">Đăng xuất</button>
       </div>
     </aside>
 
-    <!-- MAIN (flexible) -->
-    <main class="flex-1">
+    <main class="flex-1 p-8 space-y-8">
+      <!-- Thông tin cá nhân -->
+      <section id="dashboardSection">
+        <h2 class="text-xl font-semibold mb-4">👤 Thông tin cá nhân</h2>
+        <div class="p-4 bg-white rounded-md shadow text-sm space-y-2">
+          <div><strong>Họ tên:</strong> <span id="userName">---</span></div>
+          <div><strong>Email:</strong> <span id="userEmail">---</span></div>
+          <button id="editProfileBtn" class="mt-3 bg-blue-600 text-white px-4 py-2 rounded-md">Cập nhật thông tin</button>
+        </div>
 
-      <!-- LOGIN / SIGNUP BOX -->
-      <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
-        <div id="authForms">
-          <!-- Signup -->
-          <div id="signupArea" class="">
-            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
-            <form id="signupForm" class="space-y-2">
-              <input id="signupName" class="w-full border rounded-md px-3 py-2" placeholder="Họ tên nhân viên" required />
-              <input id="signupEmail" type="email" class="w-full border rounded-md px-3 py-2" placeholder="Email" required />
-              <input id="signupPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
-              <input id="signupRepass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Nhập lại mật khẩu" required />
-              <div class="flex gap-2">
-                <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md">Đăng ký</button>
-                <button id="showLoginBtn" class="flex-1 border rounded-md px-4 py-2">Đã có tài khoản</button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Login (hidden by default) -->
-          <div id="loginArea" class="hidden">
-            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng nhập</h3>
-            <form id="loginForm" class="space-y-2">
-              <input id="loginEmail" type="email" class="w-full border rounded-md px-3 py-2" placeholder="Email" required />
-              <input id="loginPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
-              <div class="flex gap-2">
-                <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md">Đăng nhập</button>
-                <button id="showSignupBtn" class="flex-1 border rounded-md px-4 py-2">Đăng ký</button>
-              </div>
-            </form>
-          </div>
+        <!-- Form cập nhật -->
+        <div id="editProfileForm" class="hidden mt-4 bg-gray-50 border rounded-md p-4">
+          <label class="block text-sm mb-2">Họ tên mới:</label>
+          <input type="text" id="newName" class="border px-4 py-2 rounded-md w-full mb-3" placeholder="Nhập họ tên mới" />
+          <button id="saveProfileBtn" class="bg-green-600 text-white px-4 py-2 rounded-md">Lưu thay đổi</button>
+          <button id="cancelEditBtn" class="ml-2 text-gray-500">Hủy</button>
         </div>
       </section>
 
-      <!-- CONTROLLED PAGES (hidden until logged in) -->
-      <section id="appArea" class="hidden space-y-6">
-        <!-- Lookup page -->
-        <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
-          <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
-          <form id="lookupForm" class="grid grid-cols-1 md:grid-cols-12 gap-4">
-            <div class="md:col-span-7">
-              <label class="text-sm text-gray-600">Họ và tên</label>
-              <input id="fullname" class="w-full border rounded-md px-3 py-2" placeholder="Nguyễn Văn A" required />
-            </div>
-            <div class="md:col-span-5">
-              <label class="text-sm text-gray-600">Số CCCD (12 số)</label>
-              <input id="cccd" maxlength="12" class="w-full border rounded-md px-3 py-2" placeholder="123456789012" required />
-            </div>
-            <div class="md:col-span-12">
-              <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
-            </div>
-          </form>
-          <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
-        </div>
-
-        <!-- History page -->
-        <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
-          <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
-          <div id="historyList" class="space-y-2 text-sm text-gray-700">
-            Chưa có lịch sử.
+      <!-- Tra cứu B11 -->
+      <section id="lookupSection" class="hidden">
+        <h2 class="text-xl font-semibold mb-4">🔍 Tra cứu B11</h2>
+        <form id="lookupForm" class="grid grid-cols-12 gap-4 mb-6">
+          <div class="col-span-7">
+            <label class="text-sm text-gray-600">Họ và tên</label>
+            <input id="fullname" type="text" placeholder="Nguyễn Văn A" class="w-full border rounded-md px-4 py-3 mt-1" />
           </div>
-        </div>
+          <div class="col-span-5">
+            <label class="text-sm text-gray-600">Số CCCD</label>
+            <input id="cccd" type="text" maxlength="12" placeholder="123456789012" class="w-full border rounded-md px-4 py-3 mt-1" />
+          </div>
+          <div class="col-span-12">
+            <button type="submit" class="bg-green-600 text-white px-5 py-3 rounded-md mt-3">Tra cứu</button>
+          </div>
+        </form>
+        <div id="history" class="text-sm text-gray-600">Chưa có lịch sử tra cứu.</div>
       </section>
-
     </main>
   </div>
 
-  <!-- Update name modal (simple inline form) -->
-  <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
-    <div class="bg-white p-3 rounded-lg shadow w-64">
-      <div class="mb-2 text-sm font-medium">Cập nhật họ tên</div>
-      <input id="updateNameInput" class="w-full border rounded-md px-3 py-2 mb-2" placeholder="Họ và tên mới" />
-      <div class="flex gap-2">
-        <button id="saveNameBtn" class="bg-green-600 text-white px-3 py-1 rounded-md">Lưu</button>
-        <button id="cancelNameBtn" class="border px-3 py-1 rounded-md">Hủy</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <footer class="mt-6 md:mt-8">
-    <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
-      © Copyright 2025 Võ Quốc Thiên. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
-    </div>
-  </footer>
-
-  <!-- Firebase + App logic -->
+  <!-- Firebase logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } 
+    import { getAuth, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword, signOut, onAuthStateChanged }
       from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, limit } 
+    import { getFirestore, collection, addDoc, query, where, onSnapshot } 
       from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // ---- Firebase config ----
     const firebaseConfig = {
       apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
       authDomain: "tracuucic-login.firebaseapp.com",
@@ -168,200 +122,106 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ----- Elements -----
-    const authBox = document.getElementById('authBox');
-    const signupArea = document.getElementById('signupArea');
-    const loginArea = document.getElementById('loginArea');
-    const appArea = document.getElementById('appArea');
-    const lookupPage = document.getElementById('lookupPage');
-    const historyPage = document.getElementById('historyPage');
-    const historyList = document.getElementById('historyList');
-    const lookupResult = document.getElementById('lookupResult');
-    const headerRight = document.getElementById('headerRight');
-    const sidebarName = document.getElementById('sidebarName');
-    const sidebarEmail = document.getElementById('sidebarEmail');
+    // DOM
+    const loginPage = document.getElementById('loginPage');
+    const mainPage = document.getElementById('mainPage');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const dashboard = document.getElementById('dashboardSection');
+    const lookup = document.getElementById('lookupSection');
+    const historyDiv = document.getElementById('history');
 
-    const btnNavLookup = document.getElementById('navLookup');
-    const btnNavHistory = document.getElementById('navHistory');
-    const btnEditName = document.getElementById('btnEditName');
-    const updateNameBox = document.getElementById('updateNameBox');
-    const updateNameInput = document.getElementById('updateNameInput');
-    const saveNameBtn = document.getElementById('saveNameBtn');
-    const cancelNameBtn = document.getElementById('cancelNameBtn');
-
-    // show/hide auth forms
-    document.getElementById('showLoginBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      signupArea.classList.add('hidden');
-      loginArea.classList.remove('hidden');
+    // Điều hướng tab
+    document.getElementById('tabDashboard').addEventListener('click', () => {
+      dashboard.classList.remove('hidden');
+      lookup.classList.add('hidden');
     });
-    document.getElementById('showSignupBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      loginArea.classList.add('hidden');
-      signupArea.classList.remove('hidden');
+    document.getElementById('tabLookup').addEventListener('click', () => {
+      dashboard.classList.add('hidden');
+      lookup.classList.remove('hidden');
     });
 
-    // Signup
-    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    // Chuyển form đăng nhập/đăng ký
+    showSignup.onclick = e => { e.preventDefault(); loginForm.classList.add('hidden'); signupForm.classList.remove('hidden'); };
+    showLogin.onclick = e => { e.preventDefault(); signupForm.classList.add('hidden'); loginForm.classList.remove('hidden'); };
+
+    // Đăng ký
+    signupBtn.onclick = async e => {
       e.preventDefault();
-      const name = document.getElementById('signupName').value.trim();
-      const email = document.getElementById('signupEmail').value.trim();
-      const pass = document.getElementById('signupPass').value;
-      const repass = document.getElementById('signupRepass').value;
-      if (!name || !email || !pass) { alert('Vui lòng nhập đủ thông tin'); return; }
-      if (pass !== repass) { alert('Mật khẩu nhập lại không khớp'); return; }
+      const email = signupEmail.value.trim();
+      const name = signupName.value.trim();
+      const pw = signupPassword.value;
+      const cf = signupConfirm.value;
+      if (!email || !name || !pw) return alert('Vui lòng nhập đủ thông tin!');
+      if (pw !== cf) return alert('Mật khẩu nhập lại không khớp!');
       try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-        // update displayName
+        const userCred = await createUserWithEmailAndPassword(auth, email, pw);
         await updateProfile(userCred.user, { displayName: name });
-        alert('Đăng ký thành công — vui lòng đăng nhập');
-        document.getElementById('signupForm').reset();
-        loginArea.classList.remove('hidden');
-        signupArea.classList.add('hidden');
+        alert('Đăng ký thành công!');
+        signupForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
       } catch (err) {
         alert('Lỗi đăng ký: ' + err.message);
       }
-    });
+    };
 
-    // Login
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    // Đăng nhập
+    loginBtn.onclick = async e => {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
-      const pass = document.getElementById('loginPass').value;
       try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        document.getElementById('loginForm').reset();
+        await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
       } catch (err) {
-        alert('Lỗi đăng nhập: ' + err.message);
+        alert('Sai thông tin đăng nhập!');
       }
-    });
+    };
 
-    // Logout button
-    document.getElementById('btnLogout').addEventListener('click', async () => {
-      await signOut(auth);
-    });
+    // Đăng xuất
+    logoutBtn.onclick = async () => await signOut(auth);
 
-    // Navigation
-    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
-    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); loadHistory(); });
-
-    // Edit name
-    btnEditName.addEventListener('click', () => {
-      updateNameInput.value = sidebarName.textContent === '---' ? '' : sidebarName.textContent;
-      updateNameBox.classList.remove('hidden');
-    });
-    cancelNameBtn.addEventListener('click', () => updateNameBox.classList.add('hidden'));
-
-    saveNameBtn.addEventListener('click', async () => {
-      const newName = updateNameInput.value.trim();
-      if (!newName) return alert('Nhập họ tên mới');
-      try {
-        await updateProfile(auth.currentUser, { displayName: newName });
-        sidebarName.textContent = newName;
-        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
-        updateNameBox.classList.add('hidden');
-        alert('Cập nhật thành công');
-      } catch (err) {
-        alert('Lỗi cập nhật: ' + err.message);
-      }
-    });
-
-    // Lookup submit -> save to Firestore
-    document.getElementById('lookupForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('fullname').value.trim();
-      const cccd = document.getElementById('cccd').value.trim();
-      if (!name || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
-
-      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
-      const user = auth.currentUser;
-      if (!user) { alert('Vui lòng đăng nhập'); return; }
-
-      try {
-        await addDoc(collection(db, 'tra_cuu_b11'), {
-          uid: user.uid,
-          name,
-          cccd,
-          email: user.email || null,
-          createdAt: serverTimestamp()
-        });
-        lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
-        document.getElementById('lookupForm').reset();
-        // refresh history view if visible
-        if (!historyPage.classList.contains('hidden')) await loadHistory();
-      } catch (err) {
-        lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`;
-      }
-    });
-
-    // Load history for current user (client-side filter to avoid composite index)
-    async function loadHistory() {
-      historyList.innerHTML = '⏳ Đang tải lịch sử...';
-      const user = auth.currentUser;
-      if (!user) { historyList.innerHTML = 'Vui lòng đăng nhập để xem lịch sử.'; return; }
-
-      try {
-        // Lấy 100 bản ghi mới nhất (tùy chỉnh số lượng nếu muốn)
-        const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt', 'desc'), limit(100));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-          historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>';
-          return;
-        }
-        // Lọc theo uid ở client
-        const items = [];
-        snap.forEach(doc => {
-          const d = doc.data();
-          if (d.uid === user.uid) items.push(d);
-        });
-
-        if (!items.length) {
-          historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>';
-          return;
-        }
-
-        historyList.innerHTML = '';
-        items.forEach(d => {
-          const t = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toLocaleString() : '';
-          const item = document.createElement('div');
-          item.className = 'p-3 border rounded-md';
-          item.innerHTML = `<div class="font-medium">${d.name}</div>
-                            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>`;
-          historyList.appendChild(item);
-        });
-      } catch (err) {
-        historyList.innerHTML = `<div class="text-red-600">Lỗi tải lịch sử: ${err.message}</div>`;
-      }
-    }
-
-    // Auth state change -> show/hide sections
+    // Theo dõi trạng thái đăng nhập
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // hide auth box, show app
-        authBox.classList.add('hidden');
-        appArea.classList.remove('hidden');
-        // set user info in UI
-        const name = user.displayName || '(Chưa cập nhật)';
-        sidebarName.textContent = name;
-        sidebarEmail.textContent = user.email || '';
-        headerRight.textContent = `${name} • ${user.email || ''}`;
-        // default to lookup page
-        lookupPage.classList.remove('hidden');
-        historyPage.classList.add('hidden');
-        // load history
-        loadHistory();
+        document.getElementById('userName').textContent = user.displayName || '(Chưa cập nhật)';
+        document.getElementById('userEmail').textContent = user.email;
+        loginPage.classList.add('hidden');
+        mainPage.classList.remove('hidden');
       } else {
-        // show auth, hide app
-        authBox.classList.remove('hidden');
-        appArea.classList.add('hidden');
-        headerRight.textContent = '';
-        sidebarName.textContent = '---';
-        sidebarEmail.textContent = '---';
+        mainPage.classList.add('hidden');
+        loginPage.classList.remove('hidden');
       }
     });
 
-    // initial UI state
-    appArea.classList.add('hidden');
+    // Gửi yêu cầu tra cứu lên Firestore
+    document.getElementById("lookupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fullname = document.getElementById("fullname").value.trim();
+      const cccd = document.getElementById("cccd").value.trim();
+      if (!fullname || !cccd) return alert("Vui lòng nhập đủ họ tên và CCCD!");
+
+      try {
+        await addDoc(collection(db, "tra_cuu_b11"), {
+          fullname: fullname,
+          cccd: cccd,
+          createdAt: new Date()
+        });
+
+        alert("Yêu cầu đã gửi lên hệ thống, vui lòng chờ kết quả.");
+        historyDiv.textContent = "Đang chờ kết quả phản hồi từ Mirae Asset...";
+
+        const q = query(collection(db, "tra_cuu_b11"), where("fullname", "==", fullname), where("cccd", "==", cccd));
+        onSnapshot(q, (snapshot) => {
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.ketQua) {
+              historyDiv.innerHTML = "<strong>Kết quả tra cứu:</strong> " + data.ketQua;
+            }
+          });
+        });
+      } catch (err) {
+        alert("Lỗi khi gửi yêu cầu: " + err.message);
+      }
+    });
   </script>
 </body>
 </html>
