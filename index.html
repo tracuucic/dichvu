@@ -9,13 +9,20 @@
   <style>
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
-    /* hiệu ứng rung chuông */
-    .shake { animation: shake 0.5s; }
-    @keyframes shake {
-      0%,100% { transform: rotate(0deg); }
-      25% { transform: rotate(15deg); }
-      50% { transform: rotate(-15deg); }
-      75% { transform: rotate(10deg); }
+    .notif-bell {
+      position: relative;
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+    .notif-bell span {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: red;
+      color: white;
+      font-size: 0.65rem;
+      padding: 2px 5px;
+      border-radius: 9999px;
     }
   </style>
 </head>
@@ -31,11 +38,8 @@
           <div class="text-xs text-gray-500">Giải Pháp Tạm Thời</div>
         </div>
       </div>
-      <div class="flex items-center gap-3">
-        <div id="notifBell" class="relative cursor-pointer text-2xl">🔔
-          <span id="notifCount" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1 py-0.5 hidden">0</span>
-        </div>
-        <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right"></div>
+      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
+        <div id="notifBell" class="notif-bell">🔔<span id="notifCount" class="hidden">0</span></div>
       </div>
     </div>
   </header>
@@ -105,8 +109,8 @@
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
           <div class="mb-4 text-red-600 font-bold text-xs">
             Thông báo thời gian tra cứu B11- <br>
-            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1 tiếng. <br>
-            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ.
+            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1tiếng- <br>
+            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
@@ -132,11 +136,9 @@
           <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
         </div>
       </section>
+
     </main>
   </div>
-
-  <!-- Audio notification cực ngắn, 1 tiếng bíp to -->
-  <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto" volume="1.0"></audio>
 
   <!-- Update name modal -->
   <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
@@ -153,7 +155,7 @@
   <!-- Footer -->
   <footer class="mt-6 md:mt-8">
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
-      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín & Linh Hoạt
+      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
     </div>
   </footer>
 
@@ -196,13 +198,28 @@
     const updateNameInput = document.getElementById('updateNameInput');
     const saveNameBtn = document.getElementById('saveNameBtn');
     const cancelNameBtn = document.getElementById('cancelNameBtn');
-    const notifSound = document.getElementById('notifSound');
     const notifBell = document.getElementById('notifBell');
-    const notifCountEl = document.getElementById('notifCount');
+    const notifCount = document.getElementById('notifCount');
 
     let unsubscribeHistory = null;
     let lastSeenKetQuaIds = new Set();
     let newNotifCount = 0;
+
+    // Web Audio beep
+    function playBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'square';
+        o.frequency.setValueAtTime(1200, ctx.currentTime);
+        g.gain.setValueAtTime(1, ctx.currentTime);
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start();
+        o.stop(ctx.currentTime + 0.08); // 80ms
+      } catch(e){ console.warn(e); }
+    }
 
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
@@ -236,11 +253,17 @@
     });
 
     // Logout
-    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); lastSeenKetQuaIds.clear(); newNotifCount=0; notifCountEl.style.display='none'; });
+    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
 
     // Navigation
     btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
-    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); });
+    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); newNotifCount=0; notifCount.classList.add('hidden'); });
+
+    // Click bell
+    notifBell.addEventListener('click', () => { 
+      lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); 
+      newNotifCount=0; notifCount.classList.add('hidden'); 
+    });
 
     // Edit name
     btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
@@ -280,6 +303,7 @@
         });
         lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
         document.getElementById('lookupForm').reset();
+        playBeep(); // phát bíp khi gửi
       } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`; }
     });
 
@@ -292,11 +316,7 @@
 
       unsubscribeHistory = onSnapshot(q, snapshot => {
         const items = [];
-        snapshot.forEach(doc => {
-          const d=doc.data();
-          d.id = doc.id;
-          if(d.uid===user.uid) items.push(d);
-        });
+        snapshot.forEach(doc => { const d=doc.data(); d.id=doc.id; if(d.uid===user.uid) items.push(d); });
         if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
 
         historyList.innerHTML='';
@@ -312,26 +332,15 @@
 
           // Notification
           if(d.ketQua && !lastSeenKetQuaIds.has(d.id)) {
-            notifSound.play().catch(()=>{}); // phát bíp
+            playBeep(); // bíp cực ngắn, to
             lastSeenKetQuaIds.add(d.id);
             newNotifCount++;
-            notifCountEl.textContent = newNotifCount;
-            notifCountEl.style.display = 'inline-block';
-            notifBell.classList.add('shake');
-            setTimeout(()=>notifBell.classList.remove('shake'),500);
+            notifCount.textContent = newNotifCount;
+            notifCount.classList.remove('hidden');
           }
         });
       });
     }
-
-    // Click vào chuông
-    notifBell.addEventListener('click', () => {
-      newNotifCount = 0;
-      notifCountEl.style.display = 'none';
-      lookupPage.classList.add('hidden');
-      historyPage.classList.remove('hidden');
-      startHistoryListener();
-    });
 
     // Auth state
     onAuthStateChanged(auth,user=>{
@@ -342,7 +351,8 @@
         headerRight.textContent=`${name} • ${user.email||''}`;
         lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden');
         lastSeenKetQuaIds.clear();
-        newNotifCount=0; notifCountEl.style.display='none';
+        newNotifCount=0;
+        notifCount.classList.add('hidden');
         startHistoryListener();
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
