@@ -23,9 +23,7 @@
           <div class="text-xs text-gray-500">Giải Pháp Tạm Thời</div>
         </div>
       </div>
-      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
-        <!-- user info -->
-      </div>
+      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right"></div>
     </div>
   </header>
 
@@ -42,12 +40,8 @@
       </div>
 
       <nav class="space-y-2">
-        <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700 flex items-center gap-3">
-          🔍 Tra cứu CIC
-        </button>
-        <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">
-          📜 Lịch sử tra cứu
-        </button>
+        <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700 flex items-center gap-3">🔍 Tra cứu CIC</button>
+        <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">📜 Lịch sử tra cứu</button>
       </nav>
 
       <div class="mt-4 border-t pt-3">
@@ -63,7 +57,7 @@
       <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
         <div id="authForms">
           <!-- Signup -->
-          <div id="signupArea" class="">
+          <div id="signupArea">
             <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
             <form id="signupForm" class="space-y-2">
               <input id="signupName" class="w-full border rounded-md px-3 py-2" placeholder="Họ tên nhân viên" required />
@@ -96,13 +90,10 @@
       <section id="appArea" class="hidden space-y-6">
         <!-- Lookup page -->
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
-
           <div class="mb-4 text-red-600 font-bold text-xs">
             Thông báo thời gian tra cứu B11- <br>
             Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1tiếng- <br>
-            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
-            Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi GỬI để check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế <br>
-            ***KẾT QUẢ CIC NẰM Ở MỤC "Lịch Sử Tra Cứu" 
+            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
@@ -125,14 +116,15 @@
         <!-- History page -->
         <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
           <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
-          <div id="historyList" class="space-y-2 text-sm text-gray-700">
-            Chưa có lịch sử.
-          </div>
+          <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
         </div>
       </section>
 
     </main>
   </div>
+
+  <!-- Audio notification -->
+  <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" preload="auto"></audio>
 
   <!-- Update name modal -->
   <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
@@ -156,10 +148,8 @@
   <!-- Firebase + App logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } 
-      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, limit } 
-      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
@@ -175,6 +165,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Elements
     const authBox = document.getElementById('authBox');
     const signupArea = document.getElementById('signupArea');
     const loginArea = document.getElementById('loginArea');
@@ -186,7 +177,6 @@
     const headerRight = document.getElementById('headerRight');
     const sidebarName = document.getElementById('sidebarName');
     const sidebarEmail = document.getElementById('sidebarEmail');
-
     const btnNavLookup = document.getElementById('navLookup');
     const btnNavHistory = document.getElementById('navHistory');
     const btnEditName = document.getElementById('btnEditName');
@@ -194,21 +184,17 @@
     const updateNameInput = document.getElementById('updateNameInput');
     const saveNameBtn = document.getElementById('saveNameBtn');
     const cancelNameBtn = document.getElementById('cancelNameBtn');
+    const notifSound = document.getElementById('notifSound');
+
+    let unsubscribeHistory = null;
+    let lastSeenKetQuaIds = new Set();
 
     // Show/hide auth forms
-    document.getElementById('showLoginBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      signupArea.classList.add('hidden');
-      loginArea.classList.remove('hidden');
-    });
-    document.getElementById('showSignupBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      loginArea.classList.add('hidden');
-      signupArea.classList.remove('hidden');
-    });
+    document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
+    document.getElementById('showSignupBtn').addEventListener('click', e => { e.preventDefault(); loginArea.classList.add('hidden'); signupArea.classList.remove('hidden'); });
 
     // Signup
-    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    document.getElementById('signupForm').addEventListener('submit', async e => {
       e.preventDefault();
       const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
@@ -221,40 +207,28 @@
         await updateProfile(userCred.user, { displayName: name });
         alert('Đăng ký thành công — vui lòng đăng nhập');
         document.getElementById('signupForm').reset();
-        loginArea.classList.remove('hidden');
-        signupArea.classList.add('hidden');
-      } catch (err) {
-        alert('Lỗi đăng ký: ' + err.message);
-      }
+        loginArea.classList.remove('hidden'); signupArea.classList.add('hidden');
+      } catch (err) { alert('Lỗi đăng ký: ' + err.message); }
     });
 
     // Login
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    document.getElementById('loginForm').addEventListener('submit', async e => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
       const pass = document.getElementById('loginPass').value;
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        document.getElementById('loginForm').reset();
-      } catch (err) {
-        alert('Lỗi đăng nhập: ' + err.message);
-      }
+      try { await signInWithEmailAndPassword(auth, email, pass); document.getElementById('loginForm').reset(); }
+      catch (err) { alert('Lỗi đăng nhập: ' + err.message); }
     });
 
     // Logout
-    document.getElementById('btnLogout').addEventListener('click', async () => {
-      await signOut(auth);
-    });
+    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
 
     // Navigation
     btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
-    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); loadHistory(); });
+    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); });
 
     // Edit name
-    btnEditName.addEventListener('click', () => {
-      updateNameInput.value = sidebarName.textContent === '---' ? '' : sidebarName.textContent;
-      updateNameBox.classList.remove('hidden');
-    });
+    btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
     cancelNameBtn.addEventListener('click', () => updateNameBox.classList.add('hidden'));
     saveNameBtn.addEventListener('click', async () => {
       const newName = updateNameInput.value.trim();
@@ -265,13 +239,11 @@
         headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
         updateNameBox.classList.add('hidden');
         alert('Cập nhật thành công');
-      } catch (err) {
-        alert('Lỗi cập nhật: ' + err.message);
-      }
+      } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
     });
 
-    // Lookup submit -> save to Firestore (có lưu tên nhân viên)
-    document.getElementById('lookupForm').addEventListener('submit', async (e) => {
+    // Lookup submit
+    document.getElementById('lookupForm').addEventListener('submit', async e => {
       e.preventDefault();
       const customerName = document.getElementById('fullname').value.trim();
       const cccd = document.getElementById('cccd').value.trim();
@@ -284,78 +256,66 @@
       try {
         await addDoc(collection(db, 'tra_cuu_b11'), {
           uid: user.uid,
-          employeeName: user.displayName || '(Chưa cập nhật)',
-          employeeEmail: user.email || null,
           customerName,
           cccd,
           ketQua: "",
+          employeeName: user.displayName || '(Chưa cập nhật)',
+          employeeEmail: user.email || null,
           createdAt: serverTimestamp()
         });
         lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
         document.getElementById('lookupForm').reset();
-        if (!historyPage.classList.contains('hidden')) await loadHistory();
-      } catch (err) {
-        lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`;
-      }
+      } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`; }
     });
 
-    // Load history
-    async function loadHistory() {
-      historyList.innerHTML = '⏳ Đang tải lịch sử...';
+    // Realtime listener for history + notification
+    function startHistoryListener() {
       const user = auth.currentUser;
-      if (!user) { historyList.innerHTML = 'Vui lòng đăng nhập để xem lịch sử.'; return; }
+      if (!user) return;
+      const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt','desc'), limit(100));
+      if (unsubscribeHistory) unsubscribeHistory();
 
-      try {
-        const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt', 'desc'), limit(100));
-        const snap = await getDocs(q);
-        if (snap.empty) { historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>'; return; }
-
+      unsubscribeHistory = onSnapshot(q, snapshot => {
         const items = [];
-        snap.forEach(doc => {
-          const d = doc.data();
-          if (d.uid === user.uid) items.push(d);
-        });
+        snapshot.forEach(doc => { const d=doc.data(); if(d.uid===user.uid) items.push(d); });
+        if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
 
-        if (!items.length) { historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>'; return; }
-
-        historyList.innerHTML = '';
-        items.forEach(d => {
-          const t = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toLocaleString() : '';
-          const item = document.createElement('div');
-          item.className = 'p-3 border rounded-md';
-          item.innerHTML = `<div class="font-medium">${d.customerName}</div>
-                            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
-                            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
-                            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
+        historyList.innerHTML='';
+        items.forEach(d=>{
+          const t=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleString():'';
+          const item=document.createElement('div');
+          item.className='p-3 border rounded-md';
+          item.innerHTML=`<div class="font-medium">${d.customerName}</div>
+            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
+            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
+            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
           historyList.appendChild(item);
+
+          // Notification
+          if(d.ketQua && !lastSeenKetQuaIds.has(doc.id)) {
+            notifSound.play().catch(()=>{}); // phát chuông
+            lastSeenKetQuaIds.add(doc.id);
+          }
         });
-      } catch (err) {
-        historyList.innerHTML = `<div class="text-red-600">Lỗi tải lịch sử: ${err.message}</div>`;
-      }
+      });
     }
 
-    // Auth state change
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        authBox.classList.add('hidden');
-        appArea.classList.remove('hidden');
-        const name = user.displayName || '(Chưa cập nhật)';
-        sidebarName.textContent = name;
-        sidebarEmail.textContent = user.email || '';
-        headerRight.textContent = `${name} • ${user.email || ''}`;
-        lookupPage.classList.remove('hidden');
-        historyPage.classList.add('hidden');
-        loadHistory();
-      } else {
-        authBox.classList.remove('hidden');
-        appArea.classList.add('hidden');
-        headerRight.textContent = '';
-        sidebarName.textContent = '---';
-        sidebarEmail.textContent = '---';
+    // Auth state
+    onAuthStateChanged(auth,user=>{
+      if(user){
+        authBox.classList.add('hidden'); appArea.classList.remove('hidden');
+        const name=user.displayName||'(Chưa cập nhật)';
+        sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
+        headerRight.textContent=`${name} • ${user.email||''}`;
+        lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden');
+        lastSeenKetQuaIds.clear();
+        startHistoryListener();
+      }else{
+        authBox.classList.remove('hidden'); appArea.classList.add('hidden');
+        headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
+        if(unsubscribeHistory) unsubscribeHistory();
       }
     });
-
-    appArea.classList.add('hidden');
   </script>
 </body>
 </html>
