@@ -150,10 +150,9 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, limit } 
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, limit, onSnapshot } 
       from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // ---- Firebase config ----
     const firebaseConfig = {
       apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
       authDomain: "tracuucic-login.firebaseapp.com",
@@ -168,200 +167,59 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ----- Elements -----
-    const authBox = document.getElementById('authBox');
-    const signupArea = document.getElementById('signupArea');
-    const loginArea = document.getElementById('loginArea');
-    const appArea = document.getElementById('appArea');
-    const lookupPage = document.getElementById('lookupPage');
-    const historyPage = document.getElementById('historyPage');
-    const historyList = document.getElementById('historyList');
-    const lookupResult = document.getElementById('lookupResult');
-    const headerRight = document.getElementById('headerRight');
-    const sidebarName = document.getElementById('sidebarName');
-    const sidebarEmail = document.getElementById('sidebarEmail');
-
-    const btnNavLookup = document.getElementById('navLookup');
-    const btnNavHistory = document.getElementById('navHistory');
-    const btnEditName = document.getElementById('btnEditName');
-    const updateNameBox = document.getElementById('updateNameBox');
-    const updateNameInput = document.getElementById('updateNameInput');
-    const saveNameBtn = document.getElementById('saveNameBtn');
-    const cancelNameBtn = document.getElementById('cancelNameBtn');
-
-    // show/hide auth forms
-    document.getElementById('showLoginBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      signupArea.classList.add('hidden');
-      loginArea.classList.remove('hidden');
-    });
-    document.getElementById('showSignupBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      loginArea.classList.add('hidden');
-      signupArea.classList.remove('hidden');
-    });
-
-    // Signup
-    document.getElementById('signupForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('signupName').value.trim();
-      const email = document.getElementById('signupEmail').value.trim();
-      const pass = document.getElementById('signupPass').value;
-      const repass = document.getElementById('signupRepass').value;
-      if (!name || !email || !pass) { alert('Vui lòng nhập đủ thông tin'); return; }
-      if (pass !== repass) { alert('Mật khẩu nhập lại không khớp'); return; }
-      try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-        // update displayName
-        await updateProfile(userCred.user, { displayName: name });
-        alert('Đăng ký thành công — vui lòng đăng nhập');
-        document.getElementById('signupForm').reset();
-        loginArea.classList.remove('hidden');
-        signupArea.classList.add('hidden');
-      } catch (err) {
-        alert('Lỗi đăng ký: ' + err.message);
-      }
-    });
-
-    // Login
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
-      const pass = document.getElementById('loginPass').value;
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        document.getElementById('loginForm').reset();
-      } catch (err) {
-        alert('Lỗi đăng nhập: ' + err.message);
-      }
-    });
-
-    // Logout button
-    document.getElementById('btnLogout').addEventListener('click', async () => {
-      await signOut(auth);
-    });
-
-    // Navigation
-    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
-    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); loadHistory(); });
-
-    // Edit name
-    btnEditName.addEventListener('click', () => {
-      updateNameInput.value = sidebarName.textContent === '---' ? '' : sidebarName.textContent;
-      updateNameBox.classList.remove('hidden');
-    });
-    cancelNameBtn.addEventListener('click', () => updateNameBox.classList.add('hidden'));
-
-    saveNameBtn.addEventListener('click', async () => {
-      const newName = updateNameInput.value.trim();
-      if (!newName) return alert('Nhập họ tên mới');
-      try {
-        await updateProfile(auth.currentUser, { displayName: newName });
-        sidebarName.textContent = newName;
-        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
-        updateNameBox.classList.add('hidden');
-        alert('Cập nhật thành công');
-      } catch (err) {
-        alert('Lỗi cập nhật: ' + err.message);
-      }
-    });
-
-    // Lookup submit -> save to Firestore
     document.getElementById('lookupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('fullname').value.trim();
       const cccd = document.getElementById('cccd').value.trim();
       if (!name || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
 
-      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
       const user = auth.currentUser;
       if (!user) { alert('Vui lòng đăng nhập'); return; }
 
       try {
         await addDoc(collection(db, 'tra_cuu_b11'), {
-          uid: user.uid,
-          name,
+          fullname: name,
           cccd,
-          email: user.email || null,
+          uid: user.uid,
           createdAt: serverTimestamp()
         });
-        lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
+        alert('Yêu cầu đã gửi lên hệ thống, vui lòng chờ kết quả.');
         document.getElementById('lookupForm').reset();
-        // refresh history view if visible
-        if (!historyPage.classList.contains('hidden')) await loadHistory();
       } catch (err) {
-        lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`;
+        alert('Lỗi gửi dữ liệu: ' + err.message);
       }
     });
 
-    // Load history for current user (client-side filter to avoid composite index)
     async function loadHistory() {
-      historyList.innerHTML = '⏳ Đang tải lịch sử...';
+      const historyList = document.getElementById('historyList');
       const user = auth.currentUser;
       if (!user) { historyList.innerHTML = 'Vui lòng đăng nhập để xem lịch sử.'; return; }
 
-      try {
-        // Lấy 100 bản ghi mới nhất (tùy chỉnh số lượng nếu muốn)
-        const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt', 'desc'), limit(100));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-          historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>';
-          return;
-        }
-        // Lọc theo uid ở client
+      const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt', 'desc'), limit(100));
+      onSnapshot(q, (snap) => {
         const items = [];
         snap.forEach(doc => {
           const d = doc.data();
           if (d.uid === user.uid) items.push(d);
         });
 
-        if (!items.length) {
-          historyList.innerHTML = '<div>Chưa có lịch sử tra cứu.</div>';
-          return;
-        }
+        if (!items.length) { historyList.innerHTML = 'Chưa có lịch sử tra cứu.'; return; }
 
         historyList.innerHTML = '';
         items.forEach(d => {
           const t = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toLocaleString() : '';
+          const ketQua = d.ketQua ? `<div class="text-green-600 font-medium mt-1">Kết quả: ${d.ketQua}</div>` : '<div class="text-gray-500 mt-1 italic">Đang chờ kết quả phản hồi...</div>';
           const item = document.createElement('div');
           item.className = 'p-3 border rounded-md';
-          item.innerHTML = `<div class="font-medium">${d.name}</div>
-                            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>`;
+          item.innerHTML = `<div class="font-medium">${d.fullname}</div>
+                            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
+                            ${ketQua}`;
           historyList.appendChild(item);
         });
-      } catch (err) {
-        historyList.innerHTML = `<div class="text-red-600">Lỗi tải lịch sử: ${err.message}</div>`;
-      }
+      });
     }
 
-    // Auth state change -> show/hide sections
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // hide auth box, show app
-        authBox.classList.add('hidden');
-        appArea.classList.remove('hidden');
-        // set user info in UI
-        const name = user.displayName || '(Chưa cập nhật)';
-        sidebarName.textContent = name;
-        sidebarEmail.textContent = user.email || '';
-        headerRight.textContent = `${name} • ${user.email || ''}`;
-        // default to lookup page
-        lookupPage.classList.remove('hidden');
-        historyPage.classList.add('hidden');
-        // load history
-        loadHistory();
-      } else {
-        // show auth, hide app
-        authBox.classList.remove('hidden');
-        appArea.classList.add('hidden');
-        headerRight.textContent = '';
-        sidebarName.textContent = '---';
-        sidebarEmail.textContent = '---';
-      }
-    });
-
-    // initial UI state
-    appArea.classList.add('hidden');
+    document.getElementById('navHistory').addEventListener('click', loadHistory);
   </script>
 </body>
 </html>
