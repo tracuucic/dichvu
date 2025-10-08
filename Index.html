@@ -1,146 +1,146 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tra B11 - PIC (Mẫu)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* small extra styles to better match the screenshot */
+    .sidebar { min-width: 220px; }
+    .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
+    .card { background: #f8fff8; }
+    .alert-yellow { background: #fff7ed; border-color: #f5d0a9; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="min-h-screen flex">
+    <!-- sidebar -->
+    <aside class="sidebar bg-white border-r p-6">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-10 h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">P</div>
+        <div>
+          <div class="font-semibold">PIC</div>
+        </div>
+      </div>
 
-<!DOCTYPE html>
-    <html lang="vi">
-      <head>
-        <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Tra cứu CIC Team Ngọc Trân</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <script type="module" crossorigin src="/assets/index-dae02c31.js"></script>
-        <link rel="stylesheet" href="/assets/index-cccc7809.css">
-        <script type="module">
-window.onerror = (message, source, lineno, colno, errorObj) => {
-	const errorDetails = errorObj ? JSON.stringify({
-		name: errorObj.name,
-		message: errorObj.message,
-		stack: errorObj.stack,
-		source,
-		lineno,
-		colno,
-	}) : null;
+      <nav class="space-y-2 text-sm">
+        <button class="flex items-center gap-3 w-full p-3 rounded-md bg-green-50 text-green-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"/></svg>
+          <span>Bảng điều khiển</span>
+        </button>
 
-	window.parent.postMessage({
-		type: 'horizons-runtime-error',
-		message,
-		error: errorDetails
-	}, '*');
-};
-</script>
-        <script type="module">
-const observer = new MutationObserver((mutations) => {
-	for (const mutation of mutations) {
-		for (const addedNode of mutation.addedNodes) {
-			if (
-				addedNode.nodeType === Node.ELEMENT_NODE &&
-				(
-					addedNode.tagName?.toLowerCase() === 'vite-error-overlay' ||
-					addedNode.classList?.contains('backdrop')
-				)
-			) {
-				handleViteOverlay(addedNode);
-			}
-		}
-	}
-});
+        <button class="flex items-center gap-3 w-full p-3 rounded-md hover:bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12H3"/></svg>
+          <span>Tra B11</span>
+        </button>
 
-observer.observe(document.documentElement, {
-	childList: true,
-	subtree: true
-});
+        <button class="flex items-center gap-3 w-full p-3 rounded-md hover:bg-gray-100">Check CIC</button>
+        <button class="flex items-center gap-3 w-full p-3 rounded-md hover:bg-gray-100">Tra cứu HĐTD</button>
+        <button class="flex items-center gap-3 w-full p-3 rounded-md hover:bg-gray-100">Gói dịch vụ</button>
+      </nav>
 
-function handleViteOverlay(node) {
-	if (!node.shadowRoot) {
-		return;
-	}
+      <div class="mt-8 text-sm text-gray-500">
+        <div class="font-medium">Võ Quốc Thiên</div>
+        <div class="text-xs">#21942</div>
+      </div>
+    </aside>
 
-	const backdrop = node.shadowRoot.querySelector('.backdrop');
+    <!-- main -->
+    <main class="flex-1 p-8">
+      <!-- top bar with stat -->
+      <div class="grid grid-cols-3 gap-6 mb-6">
+        <div class="col-span-2">
+          <div class="p-6 rounded-lg card border">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs text-gray-500">Số lượt tra cứu B11</div>
+                <div class="text-3xl font-bold">5</div>
+              </div>
+              <div class="text-sm text-green-600">Gói dịch vụ<br><span class="font-semibold">Chưa có</span></div>
+            </div>
+          </div>
+        </div>
 
-	if (backdrop) {
-		const overlayHtml = backdrop.outerHTML;
-		const parser = new DOMParser();
-		const doc = parser.parseFromString(overlayHtml, 'text/html');
-		const messageBodyElement = doc.querySelector('.message-body');
-		const fileElement = doc.querySelector('.file');
-		const messageText = messageBodyElement ? messageBodyElement.textContent.trim() : '';
-		const fileText = fileElement ? fileElement.textContent.trim() : '';
-		const error = messageText + (fileText ? ' File:' + fileText : '');
+        <div>
+          <!-- empty aside card if needed -->
+          <div class="p-6 rounded-lg bg-white border text-sm text-gray-600">&nbsp;</div>
+        </div>
+      </div>
 
-		window.parent.postMessage({
-			type: 'horizons-vite-error',
-			error,
-		}, '*');
-	}
-}
-</script>
-        <script type="module">
-const originalConsoleError = console.error;
-console.error = function(...args) {
-	originalConsoleError.apply(console, args);
+      <!-- alert -->
+      <div class="mb-6 p-4 rounded-md border alert-yellow">
+        <div class="font-medium text-orange-700">Thông báo thời gian tra cứu B11</div>
+        <div class="text-sm text-gray-700 mt-2">Tra cứu trong giờ hành chính: Kết quả từ 5 đến 10 phút<br>
+        Tra cứu sau giờ hành chính: Có thể nhanh hoặc chậm 1 - 2 tiếng, hoặc sáng hôm sau<br>
+        * Đối với khách hàng sử dụng gói 24/7 sẽ có kết quả xuyên suốt 24h</div>
+      </div>
 
-	let errorString = '';
+      <!-- form card -->
+      <section class="mb-6">
+        <div class="p-6 bg-white rounded-lg border">
+          <h3 class="text-xl font-semibold mb-4 flex items-center gap-3">🔍 Thông tin tra cứu</h3>
+          <p class="text-sm text-gray-500 mb-6">Nhập thông tin khách hàng để tra cứu B11</p>
 
-	for (let i = 0; i < args.length; i++) {
-		const arg = args[i];
-		if (arg instanceof Error) {
-			errorString = arg.stack || `${arg.name}: ${arg.message}`;
-			break;
-		}
-	}
+          <form id="lookupForm" class="grid grid-cols-12 gap-4">
+            <div class="col-span-7">
+              <label class="text-sm text-gray-600">Họ và tên khách hàng</label>
+              <div class="mt-1">
+                <input id="fullname" type="text" placeholder="Nguyễn Văn A" class="w-full border rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-200" />
+              </div>
+            </div>
 
-	if (!errorString) {
-		errorString = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
-	}
+            <div class="col-span-5">
+              <label class="text-sm text-gray-600">Số CCCD (12 số)</label>
+              <div class="mt-1">
+                <input id="cccd" type="text" maxlength="12" placeholder="123456789012" class="w-full border rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-200" />
+              </div>
+            </div>
 
-	window.parent.postMessage({
-		type: 'horizons-console-error',
-		error: errorString
-	}, '*');
-};
-</script>
-        <script type="module">
-const originalFetch = window.fetch;
+            <div class="col-span-12">
+              <button type="submit" class="mt-3 bg-green-600 text-white px-5 py-3 rounded-md shadow hover:shadow-md">🔎 Tra cứu B11</button>
+            </div>
+          </form>
+        </div>
+      </section>
 
-window.fetch = function(...args) {
-	const url = args[0] instanceof Request ? args[0].url : args[0];
+      <!-- history placeholder -->
+      <section>
+        <div class="p-6 bg-white rounded-lg border">
+          <h4 class="text-lg font-semibold mb-4">Lịch sử tra cứu</h4>
+          <div id="history" class="text-sm text-gray-600">Chưa có lịch sử tra cứu.</div>
+        </div>
+      </section>
 
-	// Skip WebSocket URLs
-	if (url.startsWith('ws:') || url.startsWith('wss:')) {
-		return originalFetch.apply(this, args);
-	}
+    </main>
+  </div>
 
-	return originalFetch.apply(this, args)
-		.then(async response => {
-			const contentType = response.headers.get('Content-Type') || '';
+  <script>
+    const form = document.getElementById('lookupForm');
+    const historyEl = document.getElementById('history');
 
-			// Exclude HTML document responses
-			const isDocumentResponse =
-				contentType.includes('text/html') ||
-				contentType.includes('application/xhtml+xml');
+    function addHistory(name, cccd) {
+      const row = document.createElement('div');
+      row.className = 'border-b py-3 flex justify-between items-center';
+      row.innerHTML = `<div><div class="font-medium">${name || '-'} </div><div class="text-xs text-gray-500">${cccd || '-'}</div></div><div class="text-xs text-gray-400">Vừa xong</div>`;
+      historyEl.prepend(row);
+    }
 
-			if (!response.ok && !isDocumentResponse) {
-					const responseClone = response.clone();
-					const errorFromRes = await responseClone.text();
-					const requestUrl = response.url;
-					console.error(`Fetch error from ${requestUrl}: ${errorFromRes}`);
-			}
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('fullname').value.trim();
+      const cccd = document.getElementById('cccd').value.trim();
+      if (!name || cccd.length !== 12) {
+        alert('Vui lòng nhập họ tên và số CCCD 12 chữ số.');
+        return;
+      }
 
-			return response;
-		})
-		.catch(error => {
-			if (!url.match(/.html?$/i)) {
-				console.error(error);
-			}
+      // giả lập gọi API => thêm vào lịch sử
+      addHistory(name, cccd);
 
-			throw error;
-		});
-};
-</script>
-      </head>
-      <body>
-        <div id="root"></div>
-        
-      </body>
-    </html>
+      // reset form or keep values as you prefer
+      // form.reset();
+    });
+  </script>
+</body>
+</html>
