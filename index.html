@@ -9,21 +9,8 @@
   <style>
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
-    .notif-bell {
-      position: relative;
-      cursor: pointer;
-      font-size: 1.5rem;
-    }
-    .notif-bell span {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      background: red;
-      color: white;
-      font-size: 0.65rem;
-      padding: 2px 5px;
-      border-radius: 9999px;
-    }
+    #notifBell { cursor: pointer; position: relative; font-size: 1.2rem; }
+    #notifCount { position: absolute; top: -6px; right: -10px; background:red; color:white; font-size:0.7rem; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -38,8 +25,9 @@
           <div class="text-xs text-gray-500">Giải Pháp Tạm Thời</div>
         </div>
       </div>
-      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
-        <div id="notifBell" class="notif-bell">🔔<span id="notifCount" class="hidden">0</span></div>
+      <div id="headerRight" class="flex items-center gap-3 text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
+        <span id="userInfo"></span>
+        <div id="notifBell">🔔<span id="notifCount">0</span></div>
       </div>
     </div>
   </header>
@@ -140,6 +128,9 @@
     </main>
   </div>
 
+  <!-- Audio notification -->
+  <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
   <!-- Update name modal -->
   <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
     <div class="bg-white p-3 rounded-lg shadow w-64">
@@ -179,7 +170,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Elements
     const authBox = document.getElementById('authBox');
     const signupArea = document.getElementById('signupArea');
     const loginArea = document.getElementById('loginArea');
@@ -188,7 +178,6 @@
     const historyPage = document.getElementById('historyPage');
     const historyList = document.getElementById('historyList');
     const lookupResult = document.getElementById('lookupResult');
-    const headerRight = document.getElementById('headerRight');
     const sidebarName = document.getElementById('sidebarName');
     const sidebarEmail = document.getElementById('sidebarEmail');
     const btnNavLookup = document.getElementById('navLookup');
@@ -198,28 +187,14 @@
     const updateNameInput = document.getElementById('updateNameInput');
     const saveNameBtn = document.getElementById('saveNameBtn');
     const cancelNameBtn = document.getElementById('cancelNameBtn');
+    const notifSound = document.getElementById('notifSound');
     const notifBell = document.getElementById('notifBell');
     const notifCount = document.getElementById('notifCount');
+    const userInfo = document.getElementById('userInfo');
 
     let unsubscribeHistory = null;
     let lastSeenKetQuaIds = new Set();
-    let newNotifCount = 0;
-
-    // Web Audio beep
-    function playBeep() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = 'square';
-        o.frequency.setValueAtTime(1200, ctx.currentTime);
-        g.gain.setValueAtTime(1, ctx.currentTime);
-        o.connect(g);
-        g.connect(ctx.destination);
-        o.start();
-        o.stop(ctx.currentTime + 0.08); // 80ms
-      } catch(e){ console.warn(e); }
-    }
+    let newCount = 0;
 
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
@@ -257,13 +232,7 @@
 
     // Navigation
     btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
-    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); newNotifCount=0; notifCount.classList.add('hidden'); });
-
-    // Click bell
-    notifBell.addEventListener('click', () => { 
-      lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); 
-      newNotifCount=0; notifCount.classList.add('hidden'); 
-    });
+    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); resetNotif(); });
 
     // Edit name
     btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
@@ -274,7 +243,7 @@
       try {
         await updateProfile(auth.currentUser, { displayName: newName });
         sidebarName.textContent = newName;
-        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
+        userInfo.textContent = `${newName} • ${auth.currentUser.email||''}`;
         updateNameBox.classList.add('hidden');
         alert('Cập nhật thành công');
       } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
@@ -303,7 +272,6 @@
         });
         lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
         document.getElementById('lookupForm').reset();
-        playBeep(); // phát bíp khi gửi
       } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi lưu: ${err.message}</span>`; }
     });
 
@@ -316,7 +284,7 @@
 
       unsubscribeHistory = onSnapshot(q, snapshot => {
         const items = [];
-        snapshot.forEach(doc => { const d=doc.data(); d.id=doc.id; if(d.uid===user.uid) items.push(d); });
+        snapshot.forEach(doc => { const d=doc.data(); if(d.uid===user.uid) items.push({...d,id:doc.id}); });
         if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
 
         historyList.innerHTML='';
@@ -332,15 +300,35 @@
 
           // Notification
           if(d.ketQua && !lastSeenKetQuaIds.has(d.id)) {
-            playBeep(); // bíp cực ngắn, to
+            playNotif();
             lastSeenKetQuaIds.add(d.id);
-            newNotifCount++;
-            notifCount.textContent = newNotifCount;
-            notifCount.classList.remove('hidden');
           }
         });
       });
     }
+
+    function playNotif() {
+      try {
+        notifSound.volume=1.0;
+        notifSound.currentTime=0;
+        notifSound.play();
+        newCount++;
+        notifCount.textContent=newCount;
+      } catch(e){}
+    }
+
+    function resetNotif() {
+      newCount=0;
+      notifCount.textContent='0';
+    }
+
+    // Click chuông
+    notifBell.addEventListener('click', ()=>{
+      resetNotif();
+      lookupPage.classList.add('hidden');
+      historyPage.classList.remove('hidden');
+      startHistoryListener();
+    });
 
     // Auth state
     onAuthStateChanged(auth,user=>{
@@ -348,15 +336,15 @@
         authBox.classList.add('hidden'); appArea.classList.remove('hidden');
         const name=user.displayName||'(Chưa cập nhật)';
         sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
-        headerRight.textContent=`${name} • ${user.email||''}`;
+        userInfo.textContent = `${name} • ${user.email||''}`;
         lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden');
         lastSeenKetQuaIds.clear();
-        newNotifCount=0;
-        notifCount.classList.add('hidden');
+        newCount=0;
+        notifCount.textContent='0';
         startHistoryListener();
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
-        headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
+        userInfo.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
         if(unsubscribeHistory) unsubscribeHistory();
       }
     });
