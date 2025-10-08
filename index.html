@@ -117,7 +117,7 @@
             Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1tiếng- <br>
             Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
             Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
-            *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu"
+            *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu" ***
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
@@ -208,27 +208,9 @@
 
     const notifBell = document.getElementById('notifBell');
     const notifCount = document.getElementById('notifCount');
-
-    let unsubscribeHistory = null;
-    let lastSeenKetQuaIds = new Set();
     let newNotifCount = 0;
-
-    // Web Audio API for short beep
-    function playBeep() {
-      const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-
-      oscillator.type = 'square';
-      oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime); // 1000Hz
-      gainNode.gain.setValueAtTime(1, audioCtx.currentTime); // volume max
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + 0.05); // chỉ 0.05s
-    }
+    let lastSeenKetQuaIds = new Set();
+    let unsubscribeHistory = null;
 
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
@@ -266,7 +248,7 @@
 
     // Navigation
     btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
-    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); resetNotif(); });
+    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); });
 
     // Edit name
     btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
@@ -309,26 +291,38 @@
       } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi: ${err.message}</span>`; }
     });
 
-    // Notification logic
-    function resetNotif() { newNotifCount = 0; notifCount.textContent = '0'; }
+    // Realtime listener for history without sound
     function startHistoryListener() {
       if (unsubscribeHistory) unsubscribeHistory();
       const user = auth.currentUser;
       if (!user) return;
-      const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt', 'desc'), limit(50));
-      unsubscribeHistory = onSnapshot(q, snapshot => {
-        historyList.innerHTML = '';
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const div = document.createElement('div');
-          div.textContent = `${data.customerName} - ${data.cccd} (${data.employeeName})`;
-          historyList.appendChild(div);
+      const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt','desc'), limit(100));
 
-          if (!lastSeenKetQuaIds.has(doc.id)) {
-            lastSeenKetQuaIds.add(doc.id);
+      unsubscribeHistory = onSnapshot(q, snapshot => {
+        const items = [];
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          if(d.uid === user.uid) items.push(d);
+        });
+
+        if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
+
+        historyList.innerHTML='';
+        items.forEach(d=>{
+          const t=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleString():'';
+          const item=document.createElement('div');
+          item.className='p-3 border rounded-md';
+          item.innerHTML=`<div class="font-medium">${d.customerName}</div>
+            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
+            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
+            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
+          historyList.appendChild(item);
+
+          // Only update count, no sound
+          if(!lastSeenKetQuaIds.has(d.createdAt)){
+            lastSeenKetQuaIds.add(d.createdAt);
             newNotifCount++;
             notifCount.textContent = newNotifCount;
-            playBeep(); // Chỉ bíp 1 lần
           }
         });
       });
@@ -336,28 +330,28 @@
 
     // Bell click: reset & open history
     notifBell.addEventListener('click', () => {
-      resetNotif();
+      newNotifCount = 0;
+      notifCount.textContent = '0';
       lookupPage.classList.add('hidden');
       historyPage.classList.remove('hidden');
       startHistoryListener();
     });
 
     // Auth state
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        authBox.classList.add('hidden');
-        appArea.classList.remove('hidden');
-        sidebarName.textContent = user.displayName || '(Chưa cập nhật)';
-        sidebarEmail.textContent = user.email || '';
-        headerRight.textContent = user.displayName || '' + ' • ' + (user.email || '');
+    onAuthStateChanged(auth,user=>{
+      if(user){
+        authBox.classList.add('hidden'); appArea.classList.remove('hidden');
+        const name=user.displayName||'(Chưa cập nhật)';
+        sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
+        headerRight.textContent=name + ' • ' + (user.email||'');
+        lastSeenKetQuaIds.clear();
         startHistoryListener();
-      } else {
-        authBox.classList.remove('hidden');
-        appArea.classList.add('hidden');
+      }else{
+        authBox.classList.remove('hidden'); appArea.classList.add('hidden');
+        headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
+        if(unsubscribeHistory) unsubscribeHistory();
       }
     });
-
   </script>
-
 </body>
 </html>
