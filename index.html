@@ -9,25 +9,17 @@
   <style>
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
-    .notif-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: red;
-      color: white;
-      font-size: 0.65rem;
-      font-weight: bold;
-      border-radius: 9999px;
-      width: 16px;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .notif-btn { position: relative; cursor: pointer; }
+    #notifBell { position: fixed; top: 20px; right: 20px; font-size: 24px; cursor: pointer; z-index: 9999; }
+    #notifBadge { background: red; color: white; border-radius: 9999px; font-size: 12px; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; position: absolute; top: -5px; right: -5px; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
+
+  <!-- Notification Bell -->
+  <div id="notifBell">
+    🔔
+    <div id="notifBadge" style="display:none;">0</div>
+  </div>
 
   <!-- Header -->
   <header class="bg-white border-b">
@@ -39,13 +31,7 @@
           <div class="text-xs text-gray-500">Giải Pháp Tạm Thời</div>
         </div>
       </div>
-      <div class="flex items-center gap-3">
-        <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right"></div>
-        <div id="notifBell" class="notif-btn w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-gray-600 hover:text-gray-900">
-          🔔
-          <div id="notifBadge" class="notif-badge hidden">0</div>
-        </div>
-      </div>
+      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right"></div>
     </div>
   </header>
 
@@ -78,6 +64,7 @@
       <!-- LOGIN / SIGNUP BOX -->
       <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
         <div id="authForms">
+          <!-- Signup -->
           <div id="signupArea">
             <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
             <form id="signupForm" class="space-y-2">
@@ -91,6 +78,8 @@
               </div>
             </form>
           </div>
+
+          <!-- Login -->
           <div id="loginArea" class="hidden">
             <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng nhập</h3>
             <form id="loginForm" class="space-y-2">
@@ -107,15 +96,16 @@
 
       <!-- CONTROLLED PAGES -->
       <section id="appArea" class="hidden space-y-6">
-
+        <!-- Lookup page -->
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
           <div class="mb-4 text-red-600 font-bold text-xs">
             Thông báo thời gian tra cứu B11- <br>
-            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1tiếng- <br>
-            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
-            Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
+            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1 tiếng.<br>
+            Tra cứu sau giờ hành chính: Có thể chậm 2-4 tiếng. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
+            iện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
             *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu"
           </div>
+
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
           <form id="lookupForm" class="grid grid-cols-1 md:grid-cols-12 gap-4">
             <div class="md:col-span-7">
@@ -133,18 +123,19 @@
           <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
         </div>
 
+        <!-- History page -->
         <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
           <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
           <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
         </div>
-
       </section>
+
     </main>
   </div>
 
-  <!-- Audio beep -->
+  <!-- Audio notification -->
   <audio id="notifSound" preload="auto">
-    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+    <source src="https://www.soundjay.com/button/sounds/beep-07.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Update name modal -->
@@ -159,9 +150,10 @@
     </div>
   </div>
 
+  <!-- Footer -->
   <footer class="mt-6 md:mt-8">
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
-      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
+      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín & Linh Hoạt
     </div>
   </footer>
 
@@ -259,7 +251,7 @@
       try {
         await updateProfile(auth.currentUser, { displayName: newName });
         sidebarName.textContent = newName;
-        headerRight.innerHTML = `${newName} • ${auth.currentUser.email||''}`;
+        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
         updateNameBox.classList.add('hidden');
         alert('Cập nhật thành công');
       } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
@@ -300,7 +292,7 @@
 
       unsubscribeHistory = onSnapshot(q, snapshot => {
         const items = [];
-        snapshot.forEach(doc => { const d=doc.data(); d.id = doc.id; if(d.uid===user.uid) items.push(d); });
+        snapshot.forEach(doc => { const d=doc.data(); d.id=doc.id; if(d.uid===user.uid) items.push(d); });
         if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
 
         historyList.innerHTML='';
@@ -321,20 +313,20 @@
             notifSound.play().catch(()=>{});
             lastSeenKetQuaIds.add(d.id);
             notifCount++;
+            notifBadge.style.display='flex';
             notifBadge.textContent = notifCount;
-            notifBadge.classList.remove('hidden');
           }
         });
       });
     }
 
-    // Click on bell
+    // Bell click
     notifBell.addEventListener('click', () => {
       notifCount = 0;
-      notifBadge.textContent = '0';
-      notifBadge.classList.add('hidden');
+      notifBadge.style.display = 'none';
       lookupPage.classList.add('hidden');
       historyPage.classList.remove('hidden');
+      startHistoryListener();
     });
 
     // Auth state
@@ -343,11 +335,10 @@
         authBox.classList.add('hidden'); appArea.classList.remove('hidden');
         const name=user.displayName||'(Chưa cập nhật)';
         sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
-        headerRight.innerHTML = `${name} • ${user.email||''}`;
+        headerRight.textContent=`${name} • ${user.email||''}`;
         lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden');
         lastSeenKetQuaIds.clear();
-        notifCount = 0;
-        notifBadge.classList.add('hidden');
+        notifCount=0; notifBadge.style.display='none';
         startHistoryListener();
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
@@ -355,7 +346,6 @@
         if(unsubscribeHistory) unsubscribeHistory();
       }
     });
-
   </script>
 </body>
 </html>
