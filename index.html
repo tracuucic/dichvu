@@ -29,7 +29,6 @@
     </div>
   </header>
 
-  <!-- layout: column on small, row on md+ -->
   <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
 
     <!-- SIDEBAR -->
@@ -98,18 +97,16 @@
         <!-- Lookup page -->
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
 
-          <!-- Thông báo đỏ thêm mới -->
           <div class="mb-4 text-red-600 font-bold text-xs">
             Thông báo thời gian tra cứu B11- <br>
             Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1tiếng- <br>
-            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ. Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi GỬI để check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế <br>
-            Kết quả tra cứu xem ở mục LỊCH SỬ TRA CỨU
+            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
           <form id="lookupForm" class="grid grid-cols-1 md:grid-cols-12 gap-4">
             <div class="md:col-span-7">
-              <label class="text-sm text-gray-600">Họ và tên</label>
+              <label class="text-sm text-gray-600">Họ và tên khách hàng</label>
               <input id="fullname" class="w-full border rounded-md px-3 py-2" placeholder="Nguyễn Văn A" required />
             </div>
             <div class="md:col-span-5">
@@ -162,7 +159,6 @@
     import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, limit } 
       from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
       authDomain: "tracuucic-login.firebaseapp.com",
@@ -177,7 +173,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Elements
     const authBox = document.getElementById('authBox');
     const signupArea = document.getElementById('signupArea');
     const loginArea = document.getElementById('loginArea');
@@ -273,12 +268,12 @@
       }
     });
 
-    // Lookup submit -> save to Firestore (thêm ketQua)
+    // Lookup submit -> save to Firestore (có lưu tên nhân viên)
     document.getElementById('lookupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('fullname').value.trim();
+      const customerName = document.getElementById('fullname').value.trim();
       const cccd = document.getElementById('cccd').value.trim();
-      if (!name || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
+      if (!customerName || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
 
       lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
       const user = auth.currentUser;
@@ -287,10 +282,11 @@
       try {
         await addDoc(collection(db, 'tra_cuu_b11'), {
           uid: user.uid,
-          name,
+          employeeName: user.displayName || '(Chưa cập nhật)',
+          employeeEmail: user.email || null,
+          customerName,
           cccd,
-          email: user.email || null,
-          ketQua: "", // <-- thêm trường kết quả mặc định rỗng
+          ketQua: "",
           createdAt: serverTimestamp()
         });
         lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
@@ -325,9 +321,10 @@
           const t = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toLocaleString() : '';
           const item = document.createElement('div');
           item.className = 'p-3 border rounded-md';
-          item.innerHTML = `<div class="font-medium">${d.name}</div>
+          item.innerHTML = `<div class="font-medium">${d.customerName}</div>
                             <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
-                            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>`;
+                            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
+                            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
           historyList.appendChild(item);
         });
       } catch (err) {
