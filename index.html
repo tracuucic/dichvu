@@ -13,21 +13,21 @@
       position: relative;
       cursor: pointer;
       display: inline-block;
-      font-size: 24px;
+      font-size: 32px; /* loa to hơn */
     }
     .notif-count {
       position: absolute;
-      top: -6px;
-      right: -6px;
+      top: -8px;
+      right: -8px;
       background: red;
       color: white;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: bold;
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       text-align: center;
       border-radius: 50%;
-      line-height: 18px;
+      line-height: 20px;
     }
     /* Centered notification box */
     #loginNotifBox {
@@ -35,8 +35,10 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: white;
-      border: 2px solid #34d399;
+      background: #fff59d; /* nền vàng */
+      color: black;       /* chữ đen */
+      font-weight: bold;
+      border: 2px solid #f59e0b;
       border-radius: 8px;
       padding: 16px 24px;
       z-index: 1000;
@@ -45,12 +47,20 @@
     }
     #loginNotifBox button {
       margin-top: 10px;
-      background: #34d399;
-      color: white;
+      background: #f59e0b;
+      color: black;
       padding: 4px 12px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+    }
+    .yellow-notif {
+      background: #fff59d;
+      color: black;
+      font-weight: bold;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
     }
   </style>
 </head>
@@ -67,7 +77,7 @@
         </div>
       </div>
       <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
-        <span id="notifBell" class="notif-bell">🔔<span id="notifCount" class="notif-count">0</span></span>
+        <span id="notifBell" class="notif-bell">📢<span id="notifCount" class="notif-count">0</span></span>
       </div>
     </div>
   </header>
@@ -135,12 +145,12 @@
       <section id="appArea" class="hidden space-y-6">
         <!-- Lookup page -->
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
-          <div class="mb-4 text-red-600 font-bold text-xs">
-            Thông báo thời gian tra cứu B11- <br>
-            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1tiếng- <br>
-            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
-            Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
-            *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu" ***
+          <div class="yellow-notif">
+📢 Thông báo thời gian tra cứu B11- <br>
+Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1tiếng- <br>
+Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
+Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
+*** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu" ***
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
@@ -184,7 +194,8 @@
 
   <!-- Centered login notification -->
   <div id="loginNotifBox">
-    <div>🎉 Đăng nhập thành công!</div>
+    <div>📢 Chào mừng bạn đến với hệ thống Tra cứu B11T!<br>
+      Hiện tại tra B11T chậm nên bạn vui lòng kiên nhẫn. Kết quả xem ở phần Lịch Sử Tra Cứu, Chúc bạn 1 ngày làm việc thành công! VQT</div>
     <button id="closeLoginNotifBtn">Đóng</button>
   </div>
 
