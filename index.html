@@ -29,37 +29,34 @@
       border-radius: 50%;
       line-height: 18px;
     }
-    /* Popup thông báo đăng nhập */
+
+    /* Centered login notification with fade */
     #loginNotifBox {
+      display: none;
       position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #facc15; /* nền vàng */
-      color: #b91c1c; /* chữ đỏ đậm */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #facc15;   /* nền vàng */
+      color: #b91c1c;        /* chữ đỏ */
       border: 2px solid #b91c1c;
       border-radius: 8px;
-      padding: 16px 24px;
-      z-index: 1000;
+      padding: 20px 30px;
+      font-weight: bold;
+      text-align: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: none;
-      font-weight: bold;
+      z-index: 10000;
+
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
-    #loginNotifBox button {
-      margin-top: 10px;
-      background: #b91c1c;
-      color: white;
-      padding: 4px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+    #loginNotifBox.show {
+      display: block;
+      opacity: 1;
     }
-    /* Thông báo trong mục Tra cứu B11 */
-    .lookup-notif {
-      color: red;
-      font-weight: bold;
-      font-size: 0.75rem;
-      margin-bottom: 1rem;
-    }
+
+    /* Other styles remain as original */
+    #updateNameBox { position: fixed; right: 1rem; bottom: 1rem; z-index: 50; display: none; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -132,7 +129,7 @@
               <input id="loginPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
               <div class="flex gap-2">
                 <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md">Đăng nhập</button>
-                <button id="showSignupBtn" class="flex-1 border rounded-md px-4 py-2">Đăng ký</button>
+                <button id="showSignupBtn" class="flex-1 border px-4 py-2 rounded-md">Đăng ký</button>
               </div>
             </form>
           </div>
@@ -143,13 +140,8 @@
       <section id="appArea" class="hidden space-y-6">
         <!-- Lookup page -->
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
-          <div class="lookup-notif">
-            📢 Thông báo thời gian tra cứu B11: <br>
-            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1 tiếng.<br>
-            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau.<br>
-            Vui lòng ghi chính xác tên khách hàng, không check được số CMND cũ.<br>
-            Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ.<br>
-            *** Kết quả tra cứu CIC nằm ở mục "Lịch Sử Tra Cứu" ***
+          <div class="mb-4 bg-yellow-300 text-black font-bold p-3 rounded">
+            📢 Chào mừng bạn đến với hệ thống Tra cứu B11T! Hiện tại tra B11T chậm nên bạn vui lòng kiên nhẫn. Kết quả xem ở phần Lịch Sử Tra Cứu. Chúc bạn 1 ngày làm việc thành công! — VQT
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
@@ -180,7 +172,7 @@
   </div>
 
   <!-- Update name modal -->
-  <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
+  <div id="updateNameBox" class="hidden z-50">
     <div class="bg-white p-3 rounded-lg shadow w-64">
       <div class="mb-2 text-sm font-medium">Cập nhật họ tên</div>
       <input id="updateNameInput" class="w-full border rounded-md px-3 py-2 mb-2" placeholder="Họ và tên mới" />
@@ -194,7 +186,7 @@
   <!-- Centered login notification -->
   <div id="loginNotifBox">
     🎉 Đăng nhập thành công!<br>
-    <button id="closeLoginNotifBtn">Đóng</button>
+    <button id="closeLoginNotifBtn" class="mt-2 bg-red-600 text-white px-3 py-1 rounded">Đóng</button>
   </div>
 
   <!-- Footer -->
@@ -377,8 +369,20 @@
       startHistoryListener();
     });
 
-    // Close login notification
-    closeLoginNotifBtn.addEventListener('click', () => { loginNotifBox.style.display = 'none'; });
+    // Show login popup with fade in/out and auto-close
+    function showLoginPopup() {
+      loginNotifBox.classList.add('show');  // fade in
+      setTimeout(() => { 
+        loginNotifBox.classList.remove('show'); // fade out
+        setTimeout(() => { loginNotifBox.style.display = 'none'; }, 500);
+      }, 5000);  // 5 giây
+    }
+
+    // Close login popup button
+    closeLoginNotifBtn.addEventListener('click', () => {
+      loginNotifBox.classList.remove('show');
+      setTimeout(() => { loginNotifBox.style.display = 'none'; }, 500);
+    });
 
     // Auth state
     onAuthStateChanged(auth,user=>{
@@ -390,8 +394,8 @@
         lastSeenKetQuaIds.clear();
         startHistoryListener();
 
-        // Show login popup
-        loginNotifBox.style.display = 'block';
+        // Show centered login notification
+        showLoginPopup();
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
         headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
