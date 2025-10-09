@@ -58,6 +58,16 @@
     @keyframes fadein {
       from {opacity:0;} to {opacity:1;}
     }
+    /* Forgot password link */
+    #forgotPassLink {
+      display: block;
+      text-align: right;
+      font-size: 0.875rem;
+      color: #3b82f6;
+      cursor: pointer;
+      margin-top: -0.5rem;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -128,6 +138,7 @@
             <form id="loginForm" class="space-y-2">
               <input id="loginEmail" type="email" class="w-full border rounded-md px-3 py-2" placeholder="Email" required />
               <input id="loginPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
+              <div id="forgotPassLink">Quên mật khẩu?</div>
               <div class="flex gap-2">
                 <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md">Đăng nhập</button>
                 <button id="showSignupBtn" class="flex-1 border rounded-md px-4 py-2">Đăng ký</button>
@@ -209,7 +220,7 @@
   <!-- Firebase + App logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -254,6 +265,7 @@
 
     const loginNotifBox = document.getElementById('loginNotifBox');
     const closeLoginNotifBtn = document.getElementById('closeLoginNotifBtn');
+    const forgotPassLink = document.getElementById('forgotPassLink');
 
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
@@ -286,121 +298,44 @@
       catch (err) { alert('Lỗi đăng nhập: ' + err.message); }
     });
 
+    // Quên mật khẩu
+    forgotPassLink.addEventListener('click', async () => {
+      const email = prompt('Nhập email để nhận link đặt lại mật khẩu:');
+      if (!email) return;
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert('Đã gửi email đặt lại mật khẩu. Vui lòng kiểm tra hộp thư của bạn.');
+      } catch(err) {
+        alert('Lỗi gửi email: ' + err.message);
+      }
+    });
+
     // Logout
-    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
+    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); alert('Đăng xuất thành công'); });
 
-    // Navigation
-    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
-    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); });
-
-    // Edit name
-    btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
+    // Update name
+    btnEditName.addEventListener('click', () => { updateNameBox.classList.remove('hidden'); updateNameInput.value = sidebarName.textContent; });
     cancelNameBtn.addEventListener('click', () => updateNameBox.classList.add('hidden'));
     saveNameBtn.addEventListener('click', async () => {
       const newName = updateNameInput.value.trim();
-      if (!newName) return alert('Nhập họ tên mới');
-      try {
-        await updateProfile(auth.currentUser, { displayName: newName });
-        sidebarName.textContent = newName;
-        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
-        updateNameBox.classList.add('hidden');
-        alert('Cập nhật thành công');
-      } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
+      if (!newName) return alert('Tên không được trống');
+      if (auth.currentUser) { await updateProfile(auth.currentUser, { displayName: newName }); sidebarName.textContent = newName; updateNameBox.classList.add('hidden'); }
     });
 
-    // Lookup submit
-    document.getElementById('lookupForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const customerName = document.getElementById('fullname').value.trim();
-      const cccd = document.getElementById('cccd').value.trim();
-      if (!customerName || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
+    // Navigation
+    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
+    btnNavHistory.addEventListener('click', () => { historyPage.classList.remove('hidden'); lookupPage.classList.add('hidden'); });
 
-      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
-      const user = auth.currentUser;
-      if (!user) { alert('Vui lòng đăng nhập'); return; }
-
-      try {
-        await addDoc(collection(db, 'tra_cuu_b11'), {
-          uid: user.uid,
-          customerName,
-          cccd,
-          ketQua: "",
-          employeeName: user.displayName || '(Chưa cập nhật)',
-          employeeEmail: user.email || null,
-          createdAt: serverTimestamp()
-        });
-        lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
-        document.getElementById('lookupForm').reset();
-      } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi: ${err.message}</span>`; }
+    // Login notification
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        sidebarName.textContent = user.displayName || '---';
+        sidebarEmail.textContent = user.email || '---';
+        authBox.classList.add('hidden'); appArea.classList.remove('hidden'); loginNotifBox.style.display = 'block';
+      } else { authBox.classList.remove('hidden'); appArea.classList.add('hidden'); loginNotifBox.style.display = 'none'; }
     });
-
-    // Realtime listener for history without sound
-    function startHistoryListener() {
-      if (unsubscribeHistory) unsubscribeHistory();
-      const user = auth.currentUser;
-      if (!user) return;
-      const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt','desc'), limit(100));
-
-      unsubscribeHistory = onSnapshot(q, snapshot => {
-        const items = [];
-        snapshot.forEach(doc => {
-          const d = doc.data();
-          if(d.uid === user.uid) items.push(d);
-        });
-
-        if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
-
-        historyList.innerHTML='';
-        items.forEach(d=>{
-          const t=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleString():'';
-          const item=document.createElement('div');
-          item.className='p-3 border rounded-md';
-          item.innerHTML=`<div class="font-medium">${d.customerName}</div>
-            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
-            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
-            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
-          historyList.appendChild(item);
-
-          if(!lastSeenKetQuaIds.has(d.createdAt)){
-            lastSeenKetQuaIds.add(d.createdAt);
-            newNotifCount++;
-            notifCount.textContent = newNotifCount;
-          }
-        });
-      });
-    }
-
-    // Bell click: reset & open history
-    notifBell.addEventListener('click', () => {
-      newNotifCount = 0;
-      notifCount.textContent = '0';
-      lookupPage.classList.add('hidden');
-      historyPage.classList.remove('hidden');
-      startHistoryListener();
-    });
-
-    // Close login notification
     closeLoginNotifBtn.addEventListener('click', () => { loginNotifBox.style.display = 'none'; });
-
-    // Auth state
-    onAuthStateChanged(auth,user=>{
-      if(user){
-        authBox.classList.add('hidden'); appArea.classList.remove('hidden');
-        const name=user.displayName||'(Chưa cập nhật)';
-        sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
-        headerRight.textContent=name + ' • ' + (user.email||'');
-        lastSeenKetQuaIds.clear();
-        startHistoryListener();
-
-        // Show centered login notification
-        loginNotifBox.style.display = 'block';
-        setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
-      }else{
-        authBox.classList.remove('hidden'); appArea.classList.add('hidden');
-        headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
-        if(unsubscribeHistory) unsubscribeHistory();
-      }
-    });
   </script>
+
 </body>
 </html>
