@@ -29,34 +29,35 @@
       border-radius: 50%;
       line-height: 18px;
     }
-
-    /* Centered login notification with fade */
+    /* Centered login notification */
     #loginNotifBox {
-      display: none;
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #facc15;   /* nền vàng */
-      color: #b91c1c;        /* chữ đỏ */
-      border: 2px solid #b91c1c;
+      background: #facc15; /* nền vàng */
+      border: 2px solid #eab308;
       border-radius: 8px;
-      padding: 20px 30px;
-      font-weight: bold;
-      text-align: center;
+      padding: 16px 24px;
+      z-index: 1000;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      z-index: 10000;
-
-      opacity: 0;
-      transition: opacity 0.5s ease;
+      display: none;
+      font-weight: bold;
+      color: #000;
+      animation: fadein 0.5s;
     }
-    #loginNotifBox.show {
-      display: block;
-      opacity: 1;
+    #loginNotifBox button {
+      margin-top: 10px;
+      background: #34d399;
+      color: white;
+      padding: 4px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
-
-    /* Other styles remain as original */
-    #updateNameBox { position: fixed; right: 1rem; bottom: 1rem; z-index: 50; display: none; }
+    @keyframes fadein {
+      from {opacity:0;} to {opacity:1;}
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -129,7 +130,7 @@
               <input id="loginPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
               <div class="flex gap-2">
                 <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md">Đăng nhập</button>
-                <button id="showSignupBtn" class="flex-1 border px-4 py-2 rounded-md">Đăng ký</button>
+                <button id="showSignupBtn" class="flex-1 border rounded-md px-4 py-2">Đăng ký</button>
               </div>
             </form>
           </div>
@@ -140,8 +141,14 @@
       <section id="appArea" class="hidden space-y-6">
         <!-- Lookup page -->
         <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
-          <div class="mb-4 bg-yellow-300 text-black font-bold p-3 rounded">
-            📢 Chào mừng bạn đến với hệ thống Tra cứu B11T! Hiện tại tra B11T chậm nên bạn vui lòng kiên nhẫn. Kết quả xem ở phần Lịch Sử Tra Cứu. Chúc bạn 1 ngày làm việc thành công! — VQT
+
+          <!-- THÔNG BÁO CHỮ ĐỎ, KHÔNG NỀN -->
+          <div class="mb-4 text-red-600 font-bold text-xs">
+            📢 Thông báo thời gian tra cứu B11- <br> 
+            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1 tiếng- <br>
+            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
+            Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
+            *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu" ***
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
@@ -172,7 +179,7 @@
   </div>
 
   <!-- Update name modal -->
-  <div id="updateNameBox" class="hidden z-50">
+  <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
     <div class="bg-white p-3 rounded-lg shadow w-64">
       <div class="mb-2 text-sm font-medium">Cập nhật họ tên</div>
       <input id="updateNameInput" class="w-full border rounded-md px-3 py-2 mb-2" placeholder="Họ và tên mới" />
@@ -186,15 +193,15 @@
   <!-- Centered login notification -->
   <div id="loginNotifBox">
     📢 Chào mừng bạn đến với hệ thống Tra cứu B11T!<br>
-    Kết quả xem ở phần Lịch Sử Tra Cứu!<br>
-    Chúc bạn 1 ngày làm việc thành công! VQT<br>
-    <button id="closeLoginNotifBtn" class="mt-2 bg-red-600 text-white px-3 py-1 rounded">Đóng</button>
+    Hiện tại tra B11T chậm nên bạn vui lòng kiên nhẫn. Kết quả xem ở phần Lịch Sử Tra Cứu.<br>
+    Chúc bạn 1 ngày làm việc thành công! VQT
+    <button id="closeLoginNotifBtn">Đóng</button>
   </div>
 
   <!-- Footer -->
   <footer class="mt-6 md:mt-8">
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
-      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín & Linh Hoạt
+      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
     </div>
   </footer>
 
@@ -371,20 +378,8 @@
       startHistoryListener();
     });
 
-    // Show login popup with fade in/out and auto-close
-    function showLoginPopup() {
-      loginNotifBox.classList.add('show');  // fade in
-      setTimeout(() => { 
-        loginNotifBox.classList.remove('show'); // fade out
-        setTimeout(() => { loginNotifBox.style.display = 'none'; }, 500);
-      }, 5000);  // 5 giây
-    }
-
-    // Close login popup button
-    closeLoginNotifBtn.addEventListener('click', () => {
-      loginNotifBox.classList.remove('show');
-      setTimeout(() => { loginNotifBox.style.display = 'none'; }, 500);
-    });
+    // Close login notification
+    closeLoginNotifBtn.addEventListener('click', () => { loginNotifBox.style.display = 'none'; });
 
     // Auth state
     onAuthStateChanged(auth,user=>{
@@ -397,7 +392,8 @@
         startHistoryListener();
 
         // Show centered login notification
-        showLoginPopup();
+        loginNotifBox.style.display = 'block';
+        setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
         headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
