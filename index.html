@@ -76,21 +76,6 @@
         <span id="notifBell" class="notif-bell">🔔<span id="notifCount" class="notif-count">0</span></span>
       </div>
     </div>
-
-    <!-- START: Quota box (thêm dưới logo) -->
-    <div class="max-w-6xl mx-auto px-4 md:px-6 py-2 border-t">
-      <div class="flex items-center justify-start gap-4">
-        <div>
-          <div class="text-sm text-gray-700">Số lượt tra cứu B11</div>
-          <div id="quotaCount" class="text-base font-semibold text-gray-800">0 lượt</div>
-        </div>
-        <div>
-          <button id="btnNapTien" class="ml-2 bg-yellow-400 text-sm px-3 py-1 rounded">Nạp tiền</button>
-        </div>
-      </div>
-    </div>
-    <!-- END: Quota box -->
-
   </header>
 
   <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
@@ -163,7 +148,7 @@
             Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1 tiếng- <br>
             Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
             Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
-            *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra CỨu" ***
+            *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu" ***
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
@@ -177,7 +162,7 @@
               <input id="cccd" maxlength="12" class="w-full border rounded-md px-3 py-2" placeholder="123456789012" required />
             </div>
             <div class="md:col-span-12">
-              <button type="submit" id="btnTraCuu" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
+              <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
             </div>
           </form>
           <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
@@ -191,33 +176,6 @@
       </section>
 
     </main>
-  </div>
-
-  <!-- Modal Nạp tiền -->
-  <div id="modalNapTien" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl p-6 w-[90%] max-w-md text-center relative">
-      <h2 class="text-xl font-bold text-green-700 mb-3">💳 NẠP TIỀN TRA CỨU</h2>
-      <p class="text-sm text-gray-600">Quét mã QR bên dưới để chuyển khoản (TPBank - VO QUOC THIEN - 0964307247):</p>
-      <div class="mt-4 flex justify-center">
-        <img id="qrImage" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAACgCAYAAABt6e8GAAAgAElEQVR4Xu2dB5QkWdfHf3dmZ2Z2dmZ2b2Z2dndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2Zn/..." class="w-48 h-48 rounded-lg border shadow">
-      </div>
-
-      <div class="mt-4">
-        <p class="font-semibold text-red-600">* Nội dung thanh toán:</p>
-        <p id="noiDungCK" class="text-xl text-red-700 font-bold select-all">NAP0000</p>
-        <p class="text-xs text-gray-500 mt-1">(Vui lòng ghi đúng nội dung này khi chuyển khoản)</p>
-      </div>
-
-      <p class="mt-4 text-sm text-gray-600">
-        🔹 Tỷ lệ quy đổi: <b>10.000đ = 1 lượt</b><br>
-        🔹 Nạp tối thiểu: <b>100.000đ = 10 lượt</b>
-      </p>
-
-      <div class="mt-5 flex gap-3 justify-center">
-        <button id="btnDaThanhToan" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">ĐÃ THANH TOÁN 💸</button>
-        <button id="btnDongNapTien" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">Đóng</button>
-      </div>
-    </div>
   </div>
 
   <!-- Update name modal -->
@@ -443,108 +401,6 @@
         if(unsubscribeHistory) unsubscribeHistory();
       }
     });
-
-    // ======= MÃ THÊM: QUOTA + NẠP TIỀN + POPUP QR =======
-    const qrBase64 = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAACgCAYAAABt6e8GAAAgAElEQVR4Xu2dB5QkWdfHf3dmZ2Z2dmZ2b2Z2dndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2Zn/RT*/?>iVBORw0KGgoAAAANSUhEUgAAAUAAAACgCAYAAABt6e8GAAAgAElEQVR4Xu2dB5QkWdfHf3dmZ2Z2dmZ2b2Z2dndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2ZndmZ2b2Zn`;
-    const quotaLabel = document.getElementById('quotaCount');
-    const btnNapTienEl = document.getElementById('btnNapTien');
-    const modalNapTien = document.getElementById('modalNapTien');
-    const qrImageEl = document.getElementById('qrImage');
-    const noiDungCKEl = document.getElementById('noiDungCK');
-    const btnDongNapTienEl = document.getElementById('btnDongNapTien');
-    const btnDaThanhToanEl = document.getElementById('btnDaThanhToan');
-    const btnTraCuu = document.getElementById('btnTraCuu');
-
-    function getQuotaKey(uid){ return 'b11_quota_' + uid; }
-
-    function updateQuotaDisplay(n){
-      quotaLabel.textContent = (n || 0) + ' lượt';
-      if(n <= 0){
-        btnTraCuu.setAttribute('disabled', 'disabled');
-        btnTraCuu.classList.add('opacity-50','cursor-not-allowed');
-      } else {
-        btnTraCuu.removeAttribute('disabled');
-        btnTraCuu.classList.remove('opacity-50','cursor-not-allowed');
-      }
-    }
-
-    function loadQuotaForUser(uid){
-      const key = getQuotaKey(uid);
-      const q = parseInt(localStorage.getItem(key) || '0', 10);
-      updateQuotaDisplay(q);
-      return q;
-    }
-
-    function setQuotaForUser(uid, n){
-      const key = getQuotaKey(uid);
-      localStorage.setItem(key, String(n));
-      updateQuotaDisplay(n);
-    }
-
-    // Khi bấm Nạp tiền: mở modal, sinh nội dung NAPxxxx và hiển thị QR
-    btnNapTienEl.addEventListener('click', ()=>{
-      const code = 'NAP' + Math.floor(1000 + Math.random()*9000);
-      noiDungCKEl.textContent = code;
-      // gán ảnh QR (base64 nhúng sẵn)
-      qrImageEl.src = qrBase64;
-      modalNapTien.classList.remove('hidden');
-    });
-
-    btnDongNapTienEl.addEventListener('click', ()=>{ modalNapTien.classList.add('hidden'); });
-
-    // Khi nhân viên bấm ĐÃ THANH TOÁN: ghi yêu cầu vào collection nap_tien (chờ admin)
-    btnDaThanhToanEl.addEventListener('click', async ()=>{
-      const user = auth.currentUser;
-      if(!user){ alert('Vui lòng đăng nhập trước khi thông báo đã thanh toán'); return; }
-      const code = noiDungCKEl.textContent || ('NAP' + Math.floor(1000 + Math.random()*9000));
-      try{
-        await addDoc(collection(db, 'nap_tien'), {
-          uid: user.uid,
-          so_tien: 100000,
-          noi_dung_ck: code,
-          trang_thai: 'cho_duyet',
-          createdAt: serverTimestamp()
-        });
-        alert('Đã gửi yêu cầu nạp tiền. Vui lòng chờ admin phê duyệt.');
-        modalNapTien.classList.add('hidden');
-      }catch(err){ alert('Lỗi khi gửi yêu cầu: ' + err.message); }
-    });
-
-    // Capture submit của lookupForm để kiểm tra và trừ 1 lượt trước khi submit chính
-    document.getElementById('lookupForm').addEventListener('submit', function(e){
-      const user = auth.currentUser;
-      if(!user){ alert('Vui lòng đăng nhập'); e.preventDefault(); e.stopImmediatePropagation(); return; }
-      const key = getQuotaKey(user.uid);
-      const q = parseInt(localStorage.getItem(key) || '0', 10);
-      if(q <= 0){ alert('Bạn đã hết lượt tra cứu. Vui lòng nạp thêm.'); e.preventDefault(); e.stopImmediatePropagation(); return; }
-      // trừ 1 lượt ngay lập tức
-      localStorage.setItem(key, String(q-1));
-      updateQuotaDisplay(q-1);
-      // cho phép handler gốc tiếp tục
-    }, true);
-
-    // Khi auth state thay đổi, load quota cho user nếu đăng nhập
-    onAuthStateChanged(auth, user => {
-      if(user){
-        loadQuotaForUser(user.uid);
-      } else {
-        // không đăng nhập => hiển thị 0
-        quotaLabel.textContent = '0 lượt';
-        btnTraCuu.setAttribute('disabled','disabled');
-        btnTraCuu.classList.add('opacity-50','cursor-not-allowed');
-      }
-    });
-
-    // Thay thế placeholder base64 bằng giá trị thực (được nhúng sẵn)
-    (function replaceBase64(){
-      const el = document.getElementById('qrImage');
-      if(el && el.src && el.src.includes('REPLACE_BASE64')){
-        el.src = el.src.replace('REPLACE_BASE64', '');
-      }
-    })();
-
-    // ======= END MÃ THÊM =======
-
   </script>
 </body>
 </html>
