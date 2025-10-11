@@ -29,12 +29,13 @@
       border-radius: 50%;
       line-height: 18px;
     }
+    /* Centered login notification */
     #loginNotifBox {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #facc15;
+      background: #facc15; /* nền vàng */
       border: 2px solid #eab308;
       border-radius: 8px;
       padding: 16px 24px;
@@ -56,38 +57,6 @@
     }
     @keyframes fadein {
       from {opacity:0;} to {opacity:1;}
-    }
-    /* Popup nạp tiền */
-    #depositPopup {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-    #depositContent {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 360px;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-    #depositContent img {
-      width: 200px;
-      margin: 10px auto;
-    }
-    #depositContent button {
-      margin-top: 10px;
-      background: #16a34a;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
     }
   </style>
 </head>
@@ -129,34 +98,105 @@
       <div class="mt-4 border-t pt-3">
         <button id="btnEditName" class="w-full text-left text-sm mb-2 px-2 py-2 rounded-md hover:bg-gray-100">✏️ Cập nhật họ tên</button>
         <button id="btnLogout" class="w-full text-left text-sm text-red-600 px-2 py-2 rounded-md hover:bg-red-50">🚪 Đăng xuất</button>
-        <button id="btnDeposit" class="w-full text-left text-sm text-blue-600 px-2 py-2 rounded-md hover:bg-blue-50 mt-2">💰 Nạp tiền</button>
       </div>
     </aside>
 
     <!-- MAIN -->
     <main class="flex-1">
 
-      <!-- (Các phần Đăng nhập, Đăng ký, Lookup, History giữ nguyên như file gốc của bạn) -->
-      <!-- ... (để tiết kiệm chỗ, phần này không đổi dòng nào) ... -->
+      <!-- LOGIN / SIGNUP BOX -->
+      <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
+        <div id="authForms">
+          <!-- Signup -->
+          <div id="signupArea">
+            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
+            <form id="signupForm" class="space-y-2">
+              <input id="signupName" class="w-full border rounded-md px-3 py-2" placeholder="Họ tên nhân viên" required />
+              <input id="signupEmail" type="email" class="w-full border rounded-md px-3 py-2" placeholder="Email" required />
+              <input id="signupPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
+              <input id="signupRepass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Nhập lại mật khẩu" required />
+              <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md">Đăng ký</button>
+                <button id="showLoginBtn" class="flex-1 border rounded-md px-4 py-2">Đã có tài khoản</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Login -->
+          <div id="loginArea" class="hidden">
+            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng nhập</h3>
+            <form id="loginForm" class="space-y-2">
+              <input id="loginEmail" type="email" class="w-full border rounded-md px-3 py-2" placeholder="Email" required />
+              <input id="loginPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
+              <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md">Đăng nhập</button>
+                <button id="showSignupBtn" class="flex-1 border rounded-md px-4 py-2">Đăng ký</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTROLLED PAGES -->
+      <section id="appArea" class="hidden space-y-6">
+        <!-- Lookup page -->
+        <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
+
+          <!-- THÔNG BÁO CHỮ ĐỎ, KHÔNG NỀN -->
+          <div class="mb-4 text-red-600 font-bold text-xs">
+            📢 Thông báo thời gian tra cứu B11- <br> 
+            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1 tiếng- <br>
+            Tra cứu sau giờ hành chính: Có thể chậm từ 2 - 4 tiếng hoặc sáng hôm sau. VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
+            Hiện tại mẫu B11T phải check qua bên Đối tác trả thủ công nên không thể nhanh như hệ thống tự động S37 luồng cũ, nên AE KHÓ TÍNH CẦN ĐỌC KỸ, CÂN NHẮC trước khi check, nếu thấy phù hợp thì dùng. Không có giải pháp nào luôn hoàn hảo, chỉ có giải pháp phù hợp nhất theo tình hình thực tế.<br>
+            *** KẾT QUẢ TRA CỨU CIC NẰM Ở MỤC "Lịch Sử Tra Cứu" ***
+          </div>
+
+          <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
+          <form id="lookupForm" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="md:col-span-7">
+              <label class="text-sm text-gray-600">Họ và tên khách hàng</label>
+              <input id="fullname" class="w-full border rounded-md px-3 py-2" placeholder="Nguyễn Văn A" required />
+            </div>
+            <div class="md:col-span-5">
+              <label class="text-sm text-gray-600">Số CCCD (12 số)</label>
+              <input id="cccd" maxlength="12" class="w-full border rounded-md px-3 py-2" placeholder="123456789012" required />
+            </div>
+            <div class="md:col-span-12">
+              <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
+            </div>
+          </form>
+          <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
+        </div>
+
+        <!-- History page -->
+        <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
+          <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
+          <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
+        </div>
+      </section>
 
     </main>
   </div>
 
-  <!-- Popup nạp tiền -->
-  <div id="depositPopup" class="flex">
-    <div id="depositContent">
-      <h3 class="text-lg font-semibold mb-2">💳 Nạp tiền vào hệ thống</h3>
-      <p class="text-sm text-gray-600 mb-2">Quét mã QR hoặc chuyển khoản thủ công</p>
-      <img src="https://drive.google.com/uc?export=view&id=1JZ9suny0blMSQ44As-Ir4AO-3-KCPD-o" alt="QR Code">
-      <div class="text-sm text-gray-800 mt-2 leading-relaxed">
-        <b>Ngân hàng:</b> TPBank<br>
-        <b>Chủ tài khoản:</b> VO QUOC THIEN<br>
-        <b>Số tài khoản:</b> 0964307247<br>
-        <b>Nội dung:</b> <span id="depositCode" class="text-red-600 font-semibold"></span>
+  <!-- Update name modal -->
+  <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
+    <div class="bg-white p-3 rounded-lg shadow w-64">
+      <div class="mb-2 text-sm font-medium">Cập nhật họ tên</div>
+      <input id="updateNameInput" class="w-full border rounded-md px-3 py-2 mb-2" placeholder="Họ và tên mới" />
+      <div class="flex gap-2">
+        <button id="saveNameBtn" class="bg-green-600 text-white px-3 py-1 rounded-md">Lưu</button>
+        <button id="cancelNameBtn" class="border px-3 py-1 rounded-md">Hủy</button>
       </div>
-      <button id="btnPaid" class="w-full mt-4">ĐÃ THANH TOÁN 💸</button>
-      <button id="btnCloseDeposit" class="w-full mt-2 bg-gray-400">Đóng</button>
     </div>
+  </div>
+
+  <!-- Centered login notification -->
+  <div id="loginNotifBox">
+    📢 Chào mừng bạn đến với hệ thống Tra cứu B11T!<br>
+    Hiện tại tra B11T chậm nên bạn vui lòng kiên nhẫn.<br>
+    Kết quả xem ở phần Lịch Sử Tra Cứu.<br>
+    Chúc bạn 1 ngày làm việc thành công! VQT
+    <button id="closeLoginNotifBtn">Đóng</button>
   </div>
 
   <!-- Footer -->
@@ -166,28 +206,200 @@
     </div>
   </footer>
 
+  <!-- Firebase + App logic -->
   <script type="module">
-    // Giữ nguyên toàn bộ code Firebase gốc của bạn ở đây
-    // ---- BỔ SUNG THÊM PHẦN NẠP TIỀN ----
-    const btnDeposit = document.getElementById("btnDeposit");
-    const depositPopup = document.getElementById("depositPopup");
-    const btnCloseDeposit = document.getElementById("btnCloseDeposit");
-    const btnPaid = document.getElementById("btnPaid");
-    const depositCode = document.getElementById("depositCode");
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    btnDeposit.addEventListener("click", () => {
-      const rand = Math.floor(1000 + Math.random() * 9000);
-      depositCode.textContent = "NAP" + rand;
-      depositPopup.style.display = "flex";
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
+      authDomain: "tracuucic-login.firebaseapp.com",
+      projectId: "tracuucic-login",
+      storageBucket: "tracuucic-login.firebasestorage.app",
+      messagingSenderId: "648747772689",
+      appId: "1:648747772689:web:69da6e1534ed63efddbab0",
+      measurementId: "G-ELVGHX2GL4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Elements
+    const authBox = document.getElementById('authBox');
+    const signupArea = document.getElementById('signupArea');
+    const loginArea = document.getElementById('loginArea');
+    const appArea = document.getElementById('appArea');
+    const lookupPage = document.getElementById('lookupPage');
+    const historyPage = document.getElementById('historyPage');
+    const historyList = document.getElementById('historyList');
+    const lookupResult = document.getElementById('lookupResult');
+    const headerRight = document.getElementById('headerRight');
+    const sidebarName = document.getElementById('sidebarName');
+    const sidebarEmail = document.getElementById('sidebarEmail');
+    const btnNavLookup = document.getElementById('navLookup');
+    const btnNavHistory = document.getElementById('navHistory');
+    const btnEditName = document.getElementById('btnEditName');
+    const updateNameBox = document.getElementById('updateNameBox');
+    const updateNameInput = document.getElementById('updateNameInput');
+    const saveNameBtn = document.getElementById('saveNameBtn');
+    const cancelNameBtn = document.getElementById('cancelNameBtn');
+
+    const notifBell = document.getElementById('notifBell');
+    const notifCount = document.getElementById('notifCount');
+    let newNotifCount = 0;
+    let lastSeenKetQuaIds = new Set();
+    let unsubscribeHistory = null;
+
+    const loginNotifBox = document.getElementById('loginNotifBox');
+    const closeLoginNotifBtn = document.getElementById('closeLoginNotifBtn');
+
+    // Show/hide auth forms
+    document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
+    document.getElementById('showSignupBtn').addEventListener('click', e => { e.preventDefault(); loginArea.classList.add('hidden'); signupArea.classList.remove('hidden'); });
+
+    // Signup
+    document.getElementById('signupForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const pass = document.getElementById('signupPass').value;
+      const repass = document.getElementById('signupRepass').value;
+      if (!name || !email || !pass) { alert('Vui lòng nhập đủ thông tin'); return; }
+      if (pass !== repass) { alert('Mật khẩu nhập lại không khớp'); return; }
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(userCred.user, { displayName: name });
+        alert('Đăng ký thành công — vui lòng đăng nhập');
+        document.getElementById('signupForm').reset();
+        loginArea.classList.remove('hidden'); signupArea.classList.add('hidden');
+      } catch (err) { alert('Lỗi đăng ký: ' + err.message); }
     });
 
-    btnCloseDeposit.addEventListener("click", () => {
-      depositPopup.style.display = "none";
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      try { await signInWithEmailAndPassword(auth, email, pass); document.getElementById('loginForm').reset(); }
+      catch (err) { alert('Lỗi đăng nhập: ' + err.message); }
     });
 
-    btnPaid.addEventListener("click", () => {
-      alert("Giao dịch đang được kiểm tra. Vui lòng chờ duyệt trong vài phút!");
-      depositPopup.style.display = "none";
+    // Logout
+    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
+
+    // Navigation
+    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
+    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); });
+
+    // Edit name
+    btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
+    cancelNameBtn.addEventListener('click', () => updateNameBox.classList.add('hidden'));
+    saveNameBtn.addEventListener('click', async () => {
+      const newName = updateNameInput.value.trim();
+      if (!newName) return alert('Nhập họ tên mới');
+      try {
+        await updateProfile(auth.currentUser, { displayName: newName });
+        sidebarName.textContent = newName;
+        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
+        updateNameBox.classList.add('hidden');
+        alert('Cập nhật thành công');
+      } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
+    });
+
+    // Lookup submit
+    document.getElementById('lookupForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const customerName = document.getElementById('fullname').value.trim();
+      const cccd = document.getElementById('cccd').value.trim();
+      if (!customerName || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
+
+      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
+      const user = auth.currentUser;
+      if (!user) { alert('Vui lòng đăng nhập'); return; }
+
+      try {
+        await addDoc(collection(db, 'tra_cuu_b11'), {
+          uid: user.uid,
+          customerName,
+          cccd,
+          ketQua: "",
+          employeeName: user.displayName || '(Chưa cập nhật)',
+          employeeEmail: user.email || null,
+          createdAt: serverTimestamp()
+        });
+        lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
+        document.getElementById('lookupForm').reset();
+      } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi: ${err.message}</span>`; }
+    });
+
+    // Realtime listener for history without sound
+    function startHistoryListener() {
+      if (unsubscribeHistory) unsubscribeHistory();
+      const user = auth.currentUser;
+      if (!user) return;
+      const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt','desc'), limit(100));
+
+      unsubscribeHistory = onSnapshot(q, snapshot => {
+        const items = [];
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          if(d.uid === user.uid) items.push(d);
+        });
+
+        if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
+
+        historyList.innerHTML='';
+        items.forEach(d=>{
+          const t=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleString():'';
+          const item=document.createElement('div');
+          item.className='p-3 border rounded-md';
+          item.innerHTML=`<div class="font-medium">${d.customerName}</div>
+            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
+            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
+            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
+          historyList.appendChild(item);
+
+          if(!lastSeenKetQuaIds.has(d.createdAt)){
+            lastSeenKetQuaIds.add(d.createdAt);
+            newNotifCount++;
+            notifCount.textContent = newNotifCount;
+          }
+        });
+      });
+    }
+
+    // Bell click: reset & open history
+    notifBell.addEventListener('click', () => {
+      newNotifCount = 0;
+      notifCount.textContent = '0';
+      lookupPage.classList.add('hidden');
+      historyPage.classList.remove('hidden');
+      startHistoryListener();
+    });
+
+    // Close login notification
+    closeLoginNotifBtn.addEventListener('click', () => { loginNotifBox.style.display = 'none'; });
+
+    // Auth state
+    onAuthStateChanged(auth,user=>{
+      if(user){
+        authBox.classList.add('hidden'); appArea.classList.remove('hidden');
+        const name=user.displayName||'(Chưa cập nhật)';
+        sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
+        headerRight.textContent=name + ' • ' + (user.email||'');
+        lastSeenKetQuaIds.clear();
+        startHistoryListener();
+
+        // Show centered login notification
+        loginNotifBox.style.display = 'block';
+        setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
+      }else{
+        authBox.classList.remove('hidden'); appArea.classList.add('hidden');
+        headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
+        if(unsubscribeHistory) unsubscribeHistory();
+      }
     });
   </script>
 </body>
