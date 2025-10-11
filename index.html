@@ -700,3 +700,117 @@
   </script>
 </body>
 </html>
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tra cứu CIC - B11</title>
+  <meta name="color-scheme" content="light dark" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col items-center">
+  <!-- ===== HEADER ===== -->
+  <header class="w-full bg-white shadow p-4 flex flex-col items-center">
+    <img src="https://miraeasset.com.vn/assets/logo.png" alt="Mirae Asset" class="h-12 mb-2">
+    <h1 class="text-xl font-bold text-gray-800">HỆ THỐNG TRA CỨU CIC - B11</h1>
+
+    <!-- Nút Nạp Tiền -->
+    <button id="napTienBtn" class="mt-3 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+      💳 NẠP TIỀN
+    </button>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="flex-grow w-full max-w-3xl p-4">
+    <div class="bg-white rounded-xl shadow p-6 mt-4">
+      <h2 class="text-lg font-semibold text-gray-800 mb-3 text-center">Thông tin tra cứu</h2>
+      <p class="text-center text-gray-600 mb-4">Vui lòng nhập thông tin để tra cứu kết quả B11.</p>
+
+      <!-- FORM TRA CỨU (ví dụ placeholder) -->
+      <div class="space-y-3">
+        <input type="text" placeholder="Nhập số CMND/CCCD..." class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-purple-200">
+        <input type="text" placeholder="Họ và tên khách hàng..." class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-purple-200">
+        <button class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">
+          🔍 TRA CỨU NGAY
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="w-full text-center text-sm text-gray-500 py-3">
+    © 2025 Mirae Asset - Hệ thống tra cứu CIC B11
+  </footer>
+
+  <!-- ===== POPUP NẠP TIỀN ===== -->
+  <div id="napTienPopup" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-6 shadow-xl w-96 text-gray-800 relative">
+      <h2 class="text-lg font-bold text-center mb-3">Thông tin thanh toán</h2>
+
+      <div class="text-sm space-y-1">
+        <p><strong>🏦 Ngân hàng:</strong> TPBank</p>
+        <p><strong>👤 Chủ tài khoản:</strong> VO QUOC THIEN</p>
+        <p><strong>🔢 Số tài khoản:</strong> 0964307247</p>
+        <p><strong>💬 Nội dung CK:</strong> <span id="noiDungNap" class="font-mono text-purple-600"></span></p>
+        <p><strong>💰 Quy đổi:</strong> 10.000đ = 1 lượt tra cứu <br> (Nạp tối thiểu 100.000đ)</p>
+      </div>
+
+      <div class="mt-4 flex justify-center">
+        <img src="https://drive.google.com/uc?export=view&id=1JZ9suny0blMSQ44As-Ir4AO-3-KCPD-o"
+             alt="QR TPBank - Võ Quốc Thiên"
+             class="w-56 h-56 object-contain border rounded-lg shadow" />
+      </div>
+
+      <div class="mt-6 flex justify-between">
+        <button id="daThanhToanBtn"
+                class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+          💸 ĐÃ THANH TOÁN
+        </button>
+        <button id="dongPopupBtn"
+                class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === KHỞI TẠO BIẾN ===
+    const napTienBtn = document.getElementById('napTienBtn');
+    const napTienPopup = document.getElementById('napTienPopup');
+    const dongPopupBtn = document.getElementById('dongPopupBtn');
+    const daThanhToanBtn = document.getElementById('daThanhToanBtn');
+    const noiDungNap = document.getElementById('noiDungNap');
+
+    // === SINH MÃ NGẪU NHIÊN: NAP1234 ===
+    const randomCode = "NAP" + Math.floor(1000 + Math.random() * 9000);
+    noiDungNap.textContent = randomCode;
+
+    // === MỞ POPUP ===
+    napTienBtn.addEventListener('click', () => {
+      napTienPopup.classList.remove('hidden');
+    });
+
+    // === ĐÓNG POPUP ===
+    dongPopupBtn.addEventListener('click', () => {
+      napTienPopup.classList.add('hidden');
+    });
+
+    // === GỬI DỮ LIỆU LÊN GOOGLE SHEETS ===
+    daThanhToanBtn.addEventListener('click', async () => {
+      const scriptURL = "https://script.google.com/macros/s/AKfycby2ZkKCO0PiRtw_KjTSYpeO3PBFfjn_1QSOV9mzHR3BwEA9Auzr5B7BykP9MR9jpHtk/exec";
+      const formData = new FormData();
+      formData.append("maGiaoDich", randomCode);
+      formData.append("trangThai", "Chờ duyệt");
+
+      try {
+        await fetch(scriptURL, { method: "POST", body: formData });
+        napTienPopup.classList.add('hidden');
+      } catch (e) {
+        console.error("Lỗi gửi dữ liệu:", e);
+      }
+    });
+  </script>
+</body>
+</html>
