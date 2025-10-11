@@ -58,6 +58,30 @@
     @keyframes fadein {
       from {opacity:0;} to {opacity:1;}
     }
+
+    /* Deposit modal */
+    #depositModal {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 420px;
+      max-width: calc(100% - 40px);
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      z-index: 1200;
+      padding: 16px;
+      display: none;
+    }
+    #depositModal header { font-weight: 700; margin-bottom: 8px; }
+    #depositModal .qr { width: 180px; height: auto; border: 1px solid #eee; padding: 6px; background:#fff; display:block; margin:6px 0; }
+    #depositModal .muted { color:#374151; } /* gray-700 */
+    .small-note { font-size:12px; color:#4b5563; margin-top:6px; }
+    .copy-btn { background:#10b981; color:#fff; padding:6px 10px; border-radius:6px; cursor:pointer; border:none; }
+    .btn-primary { background:#059669; color:white; padding:8px 12px; border-radius:6px; border:none; cursor:pointer; }
+    .btn-secondary { background:#e5e7eb; color:#111827; padding:8px 12px; border-radius:6px; border:none; cursor:pointer; }
+    /* quota badge under logo */
+    .quota-box { display:flex; align-items:center; gap:12px; padding:8px 12px; border-radius:8px; background:#ecfdf5; color:#065f46; width:180px; font-weight:600; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -71,8 +95,25 @@
           <div class="text-base md:text-lg font-semibold">Tra cứu CIC - B11T</div>
           <div class="text-xs text-gray-500">Giải Pháp Tạm Thời-Call:0964307247</div>
         </div>
+        <!-- QR image under logo -->
+        <div id="qrUnderLogo" style="margin-left:12px;">
+          <!-- show QR image (file must be in same folder) -->
+          <img src="1760102581080.png" alt="QR Nạp tiền" style="width:96px;height:auto;border-radius:6px;border:1px solid #e5e7eb;">
+        </div>
+        <!-- quota box under logo area -->
+        <div id="quotaBox" style="margin-left:12px;">
+          <div id="quotaBadge" class="quota-box" aria-live="polite">
+            <div style="background:#ecfdf5;border-radius:6px;padding:6px 8px;">🔍</div>
+            <div style="line-height:1;">
+              <div style="font-size:12px;color:#065f46">Số lượt tra cứu B11</div>
+              <div id="quotaCount" style="font-size:18px;color:#064e3b;font-weight:800">0</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
+
+      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right flex items-center gap-3">
+        <button id="openDepositBtn" class="btn-secondary">NẠP TIỀN</button>
         <span id="notifBell" class="notif-bell">🔔<span id="notifCount" class="notif-count">0</span></span>
       </div>
     </div>
@@ -162,7 +203,7 @@
               <input id="cccd" maxlength="12" class="w-full border rounded-md px-3 py-2" placeholder="123456789012" required />
             </div>
             <div class="md:col-span-12">
-              <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
+              <button type="submit" id="lookupBtn" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
             </div>
           </form>
           <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
@@ -187,6 +228,48 @@
         <button id="saveNameBtn" class="bg-green-600 text-white px-3 py-1 rounded-md">Lưu</button>
         <button id="cancelNameBtn" class="border px-3 py-1 rounded-md">Hủy</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Deposit Modal -->
+  <div id="depositModal" role="dialog" aria-hidden="true">
+    <header>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-weight:700;">NẠP XU</div>
+        <button id="closeDeposit" style="background:none;border:none;font-weight:700;cursor:pointer;">✕</button>
+      </div>
+    </header>
+
+    <div style="margin-top:8px;">
+      <div class="muted">Tên ngân hàng: TPBank</div>
+      <div class="muted">Chủ tài khoản: VO QUOC THIEN</div>
+      <div class="muted">Số tài khoản: 0964307247</div>
+
+      <img id="depositQR" class="qr" src="1760102581080.png" alt="QR Nạp tiền">
+
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px;">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">Nội dung thanh toán</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input id="depositCode" readonly class="w-full border rounded-md px-3 py-2" />
+            <button id="copyDepositCode" class="copy-btn">Copy</button>
+          </div>
+          <div class="small-note">* Nội dung thanh toán phải copy chính xác hoặc dùng QR code.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <label class="small-note">Số tiền (VNĐ) — tối thiểu 100.000đ (mỗi 10.000đ = 1 lượt)</label>
+        <input id="depositAmount" type="number" min="100000" step="1000" value="100000" class="w-full border rounded-md px-3 py-2 mt-1" />
+        <div id="depositInfo" class="small-note">100.000đ = 10 lượt</div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;">
+        <button id="confirmPaidBtn" class="btn-primary">ĐÃ THANH TOÁN</button>
+        <button id="cancelPaidBtn" class="btn-secondary">Đóng</button>
+      </div>
+
+      <div id="depositMessage" class="small-note" style="margin-top:8px;color:#374151;"></div>
     </div>
   </div>
 
@@ -255,6 +338,26 @@
     const loginNotifBox = document.getElementById('loginNotifBox');
     const closeLoginNotifBtn = document.getElementById('closeLoginNotifBtn');
 
+    // Deposit elements
+    const openDepositBtn = document.getElementById('openDepositBtn');
+    const depositModal = document.getElementById('depositModal');
+    const closeDeposit = document.getElementById('closeDeposit');
+    const depositCode = document.getElementById('depositCode');
+    const copyDepositCode = document.getElementById('copyDepositCode');
+    const depositAmount = document.getElementById('depositAmount');
+    const depositInfo = document.getElementById('depositInfo');
+    const confirmPaidBtn = document.getElementById('confirmPaidBtn');
+    const cancelPaidBtn = document.getElementById('cancelPaidBtn');
+    const depositMessage = document.getElementById('depositMessage');
+    const quotaCount = document.getElementById('quotaCount');
+
+    // Google Apps Script endpoint (your link)
+    const SHEET_API = 'https://script.google.com/macros/s/AKfycby2ZkKCO0PiRtw_KjTSYpeO3PBFfjn_1QSOV9mzHR3BwEA9Auzr5B7BykP9MR9jpHtk/exec';
+
+    // State for checks
+    let currentChecks = 0;
+    let pollInterval = null;
+
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
     document.getElementById('showSignupBtn').addEventListener('click', e => { e.preventDefault(); loginArea.classList.add('hidden'); signupArea.classList.remove('hidden'); });
@@ -287,7 +390,7 @@
     });
 
     // Logout
-    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
+    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); if (pollInterval) clearInterval(pollInterval); });
 
     // Navigation
     btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
@@ -308,18 +411,23 @@
       } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
     });
 
-    // Lookup submit
+    // Lookup submit (now checks for available checks and decrements)
     document.getElementById('lookupForm').addEventListener('submit', async e => {
       e.preventDefault();
       const customerName = document.getElementById('fullname').value.trim();
       const cccd = document.getElementById('cccd').value.trim();
       if (!customerName || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
 
-      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
-      const user = auth.currentUser;
-      if (!user) { alert('Vui lòng đăng nhập'); return; }
+      if (!auth.currentUser) { alert('Vui lòng đăng nhập'); return; }
+      // check available checks
+      const uid = auth.currentUser.uid;
+      const stored = Number(localStorage.getItem('checks_' + uid) || 0);
+      if (stored <= 0) { alert('Hết lượt tra cứu. Vui lòng nạp thêm.'); return; }
 
+      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
       try {
+        // create the request doc as before
+        const user = auth.currentUser;
         await addDoc(collection(db, 'tra_cuu_b11'), {
           uid: user.uid,
           customerName,
@@ -329,6 +437,11 @@
           employeeEmail: user.email || null,
           createdAt: serverTimestamp()
         });
+        // decrement one check (client-side)
+        const newVal = stored - 1;
+        localStorage.setItem('checks_' + uid, newVal);
+        currentChecks = newVal;
+        updateChecksUI();
         lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
         document.getElementById('lookupForm').reset();
       } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi: ${err.message}</span>`; }
@@ -382,25 +495,208 @@
     // Close login notification
     closeLoginNotifBtn.addEventListener('click', () => { loginNotifBox.style.display = 'none'; });
 
+    // Deposit modal logic
+    function generateDepositCode(){
+      const rnd = Math.floor(1000 + Math.random()*9000);
+      return 'NAP' + rnd;
+    }
+
+    openDepositBtn.addEventListener('click', () => {
+      depositModal.style.display = 'block';
+      depositCode.value = generateDepositCode();
+      depositMessage.textContent = '';
+      depositAmount.value = 100000;
+      const amt = Number(depositAmount.value || 100000);
+      depositInfo.textContent = `${amt.toLocaleString('vi-VN')}đ = ${Math.floor(amt/10000)} lượt`;
+    });
+    closeDeposit.addEventListener('click', ()=> depositModal.style.display='none');
+    cancelPaidBtn.addEventListener('click', ()=> depositModal.style.display='none');
+
+    copyDepositCode.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(depositCode.value);
+        depositMessage.style.color = '#065f46';
+        depositMessage.textContent = 'Đã copy nội dung thanh toán';
+      } catch (e) {
+        depositMessage.style.color = '#ef4444';
+        depositMessage.textContent = 'Trình duyệt không cho phép copy';
+      }
+    });
+
+    depositAmount.addEventListener('input', () => {
+      const amt = Number(depositAmount.value || 0);
+      depositInfo.textContent = `${amt.toLocaleString('vi-VN')}đ = ${Math.floor(amt/10000)} lượt`;
+    });
+
+    // When confirm paid — send request to Google Apps Script (Sheet API)
+    confirmPaidBtn.addEventListener('click', async () => {
+      if (!auth.currentUser) { alert('Vui lòng đăng nhập trước khi thông báo đã thanh toán'); return; }
+      const amt = Number(depositAmount.value || 0);
+      if (amt < 100000) { alert('Số tiền phải tối thiểu 100.000đ'); return; }
+      const payload = {
+        maGD: depositCode.value,
+        hoten: auth.currentUser.displayName || '(Chưa cập nhật)',
+        email: auth.currentUser.email || '',
+        sotien: amt,
+        noidung: depositCode.value
+      };
+      try {
+        confirmPaidBtn.disabled = true;
+        confirmPaidBtn.textContent = 'Đang gửi...';
+        const res = await fetch(SHEET_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const txt = await res.text();
+        depositMessage.style.color = '#065f46';
+        depositMessage.textContent = 'Yêu cầu đã gửi. Vui lòng chờ Admin duyệt trên Google Sheet.';
+        // store locally a pending record for reference (not processed yet)
+        const uid = auth.currentUser.uid;
+        const pendKey = 'pendingDeps_' + uid;
+        const pend = JSON.parse(localStorage.getItem(pendKey) || '[]');
+        pend.push({ maGD: payload.maGD, sotien: payload.sotien, time: new Date().toISOString() });
+        localStorage.setItem(pendKey, JSON.stringify(pend));
+        // reset button
+        confirmPaidBtn.disabled = false;
+        confirmPaidBtn.textContent = 'ĐÃ THANH TOÁN';
+      } catch (err) {
+        depositMessage.style.color = '#ef4444';
+        depositMessage.textContent = 'Gửi thất bại: ' + err.message;
+        confirmPaidBtn.disabled = false;
+        confirmPaidBtn.textContent = 'ĐÃ THANH TOÁN';
+      }
+    });
+
+    // Polling Sheet API to detect approvals
+    async function pollSheetForApprovals(){
+      if (!auth.currentUser) return;
+      try {
+        const res = await fetch(SHEET_API);
+        const data = await res.json(); // array of rows as objects
+        // data items: expects properties matching headers in sheet (e.g., Ma giao dich, Ho ten, So tien, Trang thai)
+        // Try to find rows where email/hoten match current user and Trang thai === 'Da duyet' or 'Đã duyệt'
+        const uid = auth.currentUser.uid;
+        const userEmail = auth.currentUser.email || '';
+        const processedKey = 'processedTX_' + uid;
+        const processed = JSON.parse(localStorage.getItem(processedKey) || '[]');
+
+        // Normalize common header names
+        const normalized = data.map(r => {
+          const obj = {};
+          for (const k in r) {
+            const key = k.trim().toLowerCase().replace(/\s+/g,'_');
+            obj[key] = r[k];
+          }
+          return obj;
+        });
+
+        // possible header keys to check
+        // we look for fields that contain 'email' or 'ho_ten' or 'mã' or 'ma' for id; and 'trang_thai' for status; 'số_tiền' or 'so_tien' for money
+        for (const row of normalized) {
+          const status = row['trang_thai'] || row['trạng_thái'] || row['trangthai'] || row['status'] || '';
+          const ma = row['mã_giao_dịch'] || row['ma_giao_dich'] || row['mã_giao_dich'] || row['ma_gd'] || row['ma'] || row['mã'] || '';
+          const mail = row['email'] || row['e-mail'] || row['mail'] || '';
+          const hoten = row['họ_tên'] || row['ho_ten'] || row['hoten'] || '';
+          const sotien = Number(row['số_tiền'] || row['so_tien'] || row['sotien'] || row['số tiền'] || 0);
+
+          // match by email OR hoten (email preferred)
+          const isMine = (userEmail && mail && mail.toLowerCase().trim() === userEmail.toLowerCase().trim())
+                         || (hoten && auth.currentUser.displayName && hoten.trim() === auth.currentUser.displayName.trim());
+
+          if (!isMine) continue;
+          if (!ma) continue;
+          const statusNormalized = String(status).toLowerCase();
+          if ((statusNormalized === 'đã duyệt' || statusNormalized === 'da duyet' || statusNormalized === 'đã duyet' || statusNormalized === 'da duyet' || statusNormalized==='approved') ) {
+            // if not processed yet, add checks
+            if (!processed.includes(ma)) {
+              const toAdd = Math.floor((sotien || 0) / 10000);
+              if (toAdd > 0) {
+                const key = 'checks_' + uid;
+                const old = Number(localStorage.getItem(key) || 0);
+                const next = old + toAdd;
+                localStorage.setItem(key, next);
+                currentChecks = next;
+                updateChecksUI();
+                // mark processed
+                processed.push(ma);
+                localStorage.setItem(processedKey, JSON.stringify(processed));
+                // optional: notify user
+                alert(`Yêu cầu ${ma} đã được duyệt — cộng ${toAdd} lượt. Tổng lượt: ${next}`);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        // silent
+        console.debug('Poll error', err);
+      }
+    }
+
+    function startPollingApprovals(){
+      if (pollInterval) clearInterval(pollInterval);
+      // run immediately once then interval
+      pollSheetForApprovals();
+      pollInterval = setInterval(pollSheetForApprovals, 20 * 1000); // every 20s
+    }
+
+    function stopPollingApprovals(){
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = null;
+    }
+
+    function loadChecksForUser(uid){
+      const val = Number(localStorage.getItem('checks_' + uid) || 0);
+      currentChecks = val;
+      updateChecksUI();
+    }
+
+    function updateChecksUI(){
+      quotaCount.textContent = currentChecks;
+    }
+
+    // Realtime listener for history without sound (unchanged) - already above
+
     // Auth state
     onAuthStateChanged(auth,user=>{
       if(user){
         authBox.classList.add('hidden'); appArea.classList.remove('hidden');
         const name=user.displayName||'(Chưa cập nhật)';
         sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
-        headerRight.textContent=name + ' • ' + (user.email||'');
+        headerRight.textContent = name + ' • ' + (user.email||'');
         lastSeenKetQuaIds.clear();
         startHistoryListener();
-
         // Show centered login notification
         loginNotifBox.style.display = 'block';
         setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
+
+        // load checks
+        loadChecksForUser(user.uid);
+        // start polling sheet approvals
+        startPollingApprovals();
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
         headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
         if(unsubscribeHistory) unsubscribeHistory();
+        stopPollingApprovals();
       }
     });
+
+    // Misc helpers
+    // copy helper
+    async function copyText(t){
+      try { await navigator.clipboard.writeText(t); return true; } catch(e){ return false; }
+    }
+
+    // On page load show quota 0 until login
+    updateChecksUI();
+
+    // Clean unload
+    window.addEventListener('beforeunload', ()=> {
+      if (pollInterval) clearInterval(pollInterval);
+    });
+
+    // End module
   </script>
 </body>
 </html>
