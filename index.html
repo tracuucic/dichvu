@@ -58,6 +58,49 @@
     @keyframes fadein {
       from {opacity:0;} to {opacity:1;}
     }
+
+    /* Nạp tiền popup (simple, matches original look) */
+    #napTienBox {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 60;
+      display: none;
+      width: 360px;
+      max-width: calc(100% - 2rem);
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      padding: 16px;
+      font-size: 14px;
+      color: #1f2937; /* text-gray-800 like original */
+    }
+    #napTienBox .qr {
+      display:block;
+      width:180px;
+      height:180px;
+      object-fit:contain;
+      margin: 0 auto 10px;
+      border-radius:6px;
+      background:#f8fafc;
+    }
+    #napTienBox .muted { color: #6b7280; } /* text-gray-500 */
+    #napTienBox .btn {
+      background:#10b981; color:white; padding:8px 12px; border-radius:6px; border:none; cursor:pointer;
+    }
+    #napTienBox .btn.secondary {
+      background:transparent; color:#374151; border:1px solid #e5e7eb;
+    }
+    #creditsBadge {
+      display:inline-block;
+      min-width:32px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid #e5e7eb;
+      color:#374151;
+      font-weight:600;
+      background:#fff;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -74,6 +117,10 @@
       </div>
       <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
         <span id="notifBell" class="notif-bell">🔔<span id="notifCount" class="notif-count">0</span></span>
+        <!-- Hiển thị lượt hiện có (đồng bộ client-side) -->
+        <div id="creditsArea" style="display:inline-block; margin-left:12px; vertical-align:middle;">
+          <span class="muted">Lượt:</span> <span id="creditsBadge">0</span>
+        </div>
       </div>
     </div>
   </header>
@@ -98,6 +145,12 @@
       <div class="mt-4 border-t pt-3">
         <button id="btnEditName" class="w-full text-left text-sm mb-2 px-2 py-2 rounded-md hover:bg-gray-100">✏️ Cập nhật họ tên</button>
         <button id="btnLogout" class="w-full text-left text-sm text-red-600 px-2 py-2 rounded-md hover:bg-red-50">🚪 Đăng xuất</button>
+
+        <!-- ===== NÚT NẠP TIỀN (thêm dưới Đăng xuất) ===== -->
+        <div style="margin-top:8px;">
+          <button id="btnNapTien" class="w-full text-left text-sm px-2 py-2 rounded-md hover:bg-gray-100">💰 NẠP TIỀN</button>
+        </div>
+        <!-- ============================================ -->
       </div>
     </aside>
 
@@ -162,7 +215,7 @@
               <input id="cccd" maxlength="12" class="w-full border rounded-md px-3 py-2" placeholder="123456789012" required />
             </div>
             <div class="md:col-span-12">
-              <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
+              <button id="btnDoLookup" type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
             </div>
           </form>
           <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
@@ -187,6 +240,37 @@
         <button id="saveNameBtn" class="bg-green-600 text-white px-3 py-1 rounded-md">Lưu</button>
         <button id="cancelNameBtn" class="border px-3 py-1 rounded-md">Hủy</button>
       </div>
+    </div>
+  </div>
+
+  <!-- NẠP TIỀN POPUP -->
+  <div id="napTienBox" role="dialog" aria-hidden="true">
+    <div style="text-align:center; font-weight:600; margin-bottom:8px;">Nạp tiền - Thêm lượt tra cứu</div>
+    <!-- QR image (tôi để link Drive bạn gửi; nếu muốn đổi thì đổi link dưới) -->
+    <img id="qrImg" class="qr" src="https://drive.google.com/uc?id=1JZ9suny0blMSQ44As-Ir4AO-3-KCPD-o" alt="QR" />
+    <div style="text-align:center; margin-bottom:8px;">
+      <div class="muted">💳 TPBank</div>
+      <div style="font-weight:600">VO QUOC THIEN</div>
+      <div class="muted">Số tài khoản: <span style="font-weight:600">0964307247</span></div>
+    </div>
+
+    <div style="margin-top:8px;">
+      <label class="text-sm muted">Số tiền (VNĐ) — tối thiểu 100.000đ</label>
+      <input id="napAmount" type="number" min="100000" step="10000" value="100000" class="w-full border rounded-md px-3 py-2 mt-1" />
+    </div>
+
+    <div style="margin-top:8px;">
+      <label class="text-sm muted">Nội dung chuyển khoản (mẫu)</label>
+      <input id="napNote" type="text" readonly class="w-full border rounded-md px-3 py-2 mt-1 bg-gray-50" />
+    </div>
+
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button id="napDoneBtn" class="btn" style="flex:1">ĐÃ THANH TOÁN 💸</button>
+      <button id="napCloseBtn" class="btn secondary" style="flex:1">Đóng</button>
+    </div>
+
+    <div style="margin-top:8px; text-align:center; color:#6b7280; font-size:13px;">
+      Sau khi nhấn "ĐÃ THANH TOÁN" hệ thống sẽ ghi "Chờ duyệt". Admin duyệt xong mới cộng lượt.
     </div>
   </div>
 
@@ -248,12 +332,93 @@
 
     const notifBell = document.getElementById('notifBell');
     const notifCount = document.getElementById('notifCount');
+    const creditsBadge = document.getElementById('creditsBadge');
     let newNotifCount = 0;
     let lastSeenKetQuaIds = new Set();
     let unsubscribeHistory = null;
 
     const loginNotifBox = document.getElementById('loginNotifBox');
     const closeLoginNotifBtn = document.getElementById('closeLoginNotifBtn');
+
+    // Nạp tiền elements
+    const btnNapTien = document.getElementById('btnNapTien');
+    const napTienBox = document.getElementById('napTienBox');
+    const napCloseBtn = document.getElementById('napCloseBtn');
+    const napDoneBtn = document.getElementById('napDoneBtn');
+    const napAmount = document.getElementById('napAmount');
+    const napNote = document.getElementById('napNote');
+    const qrImg = document.getElementById('qrImg');
+
+    // Apps Script endpoint (Web App) - your deployed URL
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwK09Y26VomIjaLX5FJbwZTAS64wvnBsX1CU69v2ucaePdtw5wyjDkiGyyoQCS1nFht/exec";
+
+    // helper: random nap code
+    function genNapCode() {
+      const num = Math.floor(1000 + Math.random() * 9000);
+      return 'NAP' + num;
+    }
+
+    // init nap note
+    function refreshNapNote() {
+      const code = genNapCode();
+      napNote.value = code;
+      // store latest generated code so we can reference after admin approves
+      localStorage.setItem('lastNapCode', code);
+    }
+    refreshNapNote();
+
+    // Show/hide nap popup
+    btnNapTien.addEventListener('click', () => {
+      napTienBox.style.display = 'block';
+      refreshNapNote();
+    });
+    napCloseBtn.addEventListener('click', () => napTienBox.style.display = 'none');
+
+    // Send napTien to Apps Script when user clicks "ĐÃ THANH TOÁN"
+    napDoneBtn.addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        alert('Vui lòng đăng nhập trước khi nạp tiền');
+        return;
+      }
+
+      const amount = parseInt(napAmount.value || 0, 10);
+      if (!amount || amount < 100000) {
+        alert('Số tiền tối thiểu là 100.000đ');
+        return;
+      }
+
+      const maNap = napNote.value || genNapCode();
+      const luot = Math.floor(amount / 10000); // 10k = 1 lượt
+
+      // Gửi tới Apps Script - action "napTien"
+      try {
+        const body = {
+          action: "napTien",
+          hoTen: user.displayName || sidebarName.textContent || '',
+          soTien: amount,
+          trangThai: "Chờ duyệt",
+          maNap: maNap,
+          luotCheck: luot,
+          employeeEmail: user.email || ''
+        };
+
+        const res = await fetch(WEBAPP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const text = await res.text();
+
+        // Lưu tạm mã nạp và trạng thái chờ trên client
+        localStorage.setItem('pendingNapCode', maNap);
+        localStorage.setItem('pendingNapAmount', amount);
+        alert('Đã gửi thông tin nạp. Trạng thái: Chờ duyệt. (Mã: ' + maNap + ')');
+        napTienBox.style.display = 'none';
+      } catch (err) {
+        alert('Lỗi gửi nạp tiền: ' + err);
+      }
+    });
 
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
@@ -308,17 +473,71 @@
       } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
     });
 
-    // Lookup submit
+    // Lookup submit (trừ lượt trước khi gửi tra cứu)
     document.getElementById('lookupForm').addEventListener('submit', async e => {
       e.preventDefault();
       const customerName = document.getElementById('fullname').value.trim();
       const cccd = document.getElementById('cccd').value.trim();
       if (!customerName || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
 
-      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
       const user = auth.currentUser;
       if (!user) { alert('Vui lòng đăng nhập'); return; }
 
+      // Kiểm tra credits ở client
+      let credits = parseInt(localStorage.getItem('credits') || '0', 10);
+
+      // Nếu không có credits trên client, thử đồng bộ từ server (Apps Script) theo mã nạp lưu trong pending (nếu có)
+      if (!credits || credits <= 0) {
+        const pendingCode = localStorage.getItem('lastNapCode') || localStorage.getItem('pendingNapCode') || '';
+        if (pendingCode) {
+          // gọi endpoint getCredits (Apps Script phải hỗ trợ action "getCredits" hoặc "getByMa")
+          try {
+            const resp = await fetch(WEBAPP_URL, {
+              method: 'POST',
+              headers: {'Content-Type':'application/json'},
+              body: JSON.stringify({ action: 'getCredits', maNap: pendingCode })
+            });
+            const txt = await resp.text();
+            // nếu server trả dạng số hoặc JSON {credits: N}
+            let parsed = parseInt(txt, 10);
+            if (!isNaN(parsed)) {
+              credits = parsed;
+              localStorage.setItem('credits', credits);
+              creditsBadge.textContent = credits;
+            }
+          } catch (err) {
+            // ignore - server có thể chưa hỗ trợ getCredits
+          }
+        }
+      }
+
+      if (!credits || credits <= 0) {
+        alert('Bạn không có lượt tra cứu. Vui lòng nạp tiền và chờ admin duyệt.');
+        return;
+      }
+
+      // trừ 1 lượt ở client ngay
+      credits = credits - 1;
+      localStorage.setItem('credits', credits);
+      creditsBadge.textContent = credits;
+
+      // gọi Apps Script action truLuot để trừ ở Sheet (nếu admin đã duyệt và có mã nạp)
+      // dùng pendingNapCode nếu có (nên là mã đã được duyệt)
+      const codeToUse = localStorage.getItem('approvedNapCode') || localStorage.getItem('pendingNapCode') || localStorage.getItem('lastNapCode') || '';
+      if (codeToUse) {
+        try {
+          await fetch(WEBAPP_URL, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ action: 'truLuot', maNap: codeToUse })
+          });
+        } catch (err) {
+          // không bắt buộc; nếu lỗi, lượt trên client vẫn đã trừ để ngăn dùng vượt quá
+        }
+      }
+
+      // Gửi dữ liệu tra cứu lên Firestore (giữ nguyên logic cũ)
+      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
       try {
         await addDoc(collection(db, 'tra_cuu_b11'), {
           uid: user.uid,
@@ -395,12 +614,46 @@
         // Show centered login notification
         loginNotifBox.style.display = 'block';
         setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
+
+        // Khi login, cập nhật badge credits từ localStorage nếu có
+        const localCredits = parseInt(localStorage.getItem('credits') || '0', 10) || 0;
+        creditsBadge.textContent = localCredits;
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
         headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
+        creditsBadge.textContent = 0;
         if(unsubscribeHistory) unsubscribeHistory();
       }
     });
+
+    // Optional: nút đồng bộ lượt (nếu bạn thêm nút ở tương lai)
+    // Mình không hiển thị nút này mặc định, nhưng để bạn dễ copy nếu muốn:
+    async function syncCreditsFromServer(maNap) {
+      if(!maNap) return 0;
+      try {
+        const resp = await fetch(WEBAPP_URL, {
+          method: 'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ action: 'getCredits', maNap })
+        });
+        const txt = await resp.text();
+        const parsed = parseInt(txt, 10);
+        if(!isNaN(parsed)) {
+          localStorage.setItem('credits', parsed);
+          creditsBadge.textContent = parsed;
+          // nếu có credits >0, lưu đã approved code
+          if(parsed > 0) localStorage.setItem('approvedNapCode', maNap);
+          return parsed;
+        }
+      } catch (err) {
+        // nếu server chưa hỗ trợ getCredits, trả về 0
+      }
+      return 0;
+    }
+
+    // Khi trang tải, cập nhật napNote (mã) và hiển thị QR (bạn có thể thay link qrImg.src)
+    // qrImg.src already set above.
+
   </script>
 </body>
 </html>
