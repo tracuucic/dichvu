@@ -9,55 +9,16 @@
   <style>
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
-    .notif-bell {
-      position: relative;
-      cursor: pointer;
-      display: inline-block;
-      font-size: 24px;
-    }
-    .notif-count {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      background: red;
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
-      width: 18px;
-      height: 18px;
-      text-align: center;
-      border-radius: 50%;
-      line-height: 18px;
-    }
+    .notif-bell { position: relative; cursor: pointer; display: inline-block; font-size: 24px; }
+    .notif-count { position: absolute; top: -6px; right: -6px; background: red; color: white; font-size: 12px; font-weight: bold; width: 18px; height: 18px; text-align: center; border-radius: 50%; line-height: 18px; }
     /* Centered login notification */
-    #loginNotifBox {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #facc15; /* nền vàng */
-      border: 2px solid #eab308;
-      border-radius: 8px;
-      padding: 16px 24px;
-      z-index: 1000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: none;
-      font-weight: bold;
-      color: #000;
-      animation: fadein 0.5s;
-    }
-    #loginNotifBox button {
-      margin-top: 10px;
-      background: #34d399;
-      color: white;
-      padding: 4px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    @keyframes fadein {
-      from {opacity:0;} to {opacity:1;}
-    }
+    #loginNotifBox { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #facc15; border: 2px solid #eab308; border-radius: 8px; padding: 16px 24px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: none; font-weight: bold; color: #000; animation: fadein 0.5s; }
+    #loginNotifBox button { margin-top: 10px; background: #34d399; color: white; padding: 4px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    @keyframes fadein { from {opacity:0;} to {opacity:1;} }
+
+    /* Modal */
+    .modal-backdrop { position: fixed; inset:0; background: rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:50; }
+    .modal { background: white; width: 360px; max-width:95%; border-radius:8px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -98,6 +59,9 @@
       <div class="mt-4 border-t pt-3">
         <button id="btnEditName" class="w-full text-left text-sm mb-2 px-2 py-2 rounded-md hover:bg-gray-100">✏️ Cập nhật họ tên</button>
         <button id="btnLogout" class="w-full text-left text-sm text-red-600 px-2 py-2 rounded-md hover:bg-red-50">🚪 Đăng xuất</button>
+
+        <!-- NẠP TIỀN -->
+        <button id="btnTopup" class="w-full mt-3 text-left text-sm px-2 py-2 rounded-md bg-yellow-50 hover:bg-yellow-100">💰 NẠP TIỀN</button>
       </div>
     </aside>
 
@@ -162,7 +126,7 @@
               <input id="cccd" maxlength="12" class="w-full border rounded-md px-3 py-2" placeholder="123456789012" required />
             </div>
             <div class="md:col-span-12">
-              <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
+              <button id="btnTraCuu" type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
             </div>
           </form>
           <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
@@ -176,6 +140,31 @@
       </section>
 
     </main>
+  </div>
+
+  <!-- Topup Modal -->
+  <div id="topupBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <h3 class="text-lg font-semibold mb-3">Nạp tiền - Thêm lượt tra cứu</h3>
+      <div class="mb-3">
+        <img id="qrImg" src="" alt="QR" class="w-full rounded-md mb-2" />
+        <div class="text-sm text-gray-600">💳 Tên ngân hàng: <strong>TPBank</strong></div>
+        <div class="text-sm text-gray-600">👤 Chủ tài khoản: <strong>VO QUOC THIEN</strong></div>
+        <div class="text-sm text-gray-600">🔢 Số tài khoản: <strong>0964307247</strong></div>
+      </div>
+
+      <label class="text-sm text-gray-600">Số tiền (VND) — tối thiểu 100.000đ</label>
+      <input id="topupAmount" type="number" min="100000" step="10000" value="100000" class="w-full border rounded-md px-3 py-2 mb-2" />
+
+      <label class="text-sm text-gray-600">Nội dung chuyển khoản (mẫu)</label>
+      <input id="topupCode" class="w-full border rounded-md px-3 py-2 mb-3" readonly />
+
+      <div class="flex gap-2">
+        <button id="confirmTopupBtn" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md">ĐÃ THANH TOÁN 💸</button>
+        <button id="closeTopupBtn" class="flex-1 border px-4 py-2 rounded-md">Đóng</button>
+      </div>
+      <p class="mt-2 text-xs text-gray-500">Sau khi nhấn "ĐÃ THANH TOÁN" hệ thống sẽ ghi "Chờ duyệt". Admin duyệt xong mới cộng lượt.</p>
+    </div>
   </div>
 
   <!-- Update name modal -->
@@ -211,6 +200,11 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // ---------- Cấu hình: thay 2 giá trị này ----------
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIPFx6NVWx1kb1Se9LkmruBXB22_ULmVTg1ukmGN8UUZ4IWCF6R0CbD3M5uTrPSobs/exec";
+    const QR_IMAGE_URL = "https://drive.google.com/uc?export=view&id=1JZ9suny0blMSQ44As-Ir4AO-3-KCPD-o";
+    // ------------------------------------------------
 
     const firebaseConfig = {
       apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
@@ -255,6 +249,21 @@
     const loginNotifBox = document.getElementById('loginNotifBox');
     const closeLoginNotifBtn = document.getElementById('closeLoginNotifBtn');
 
+    // Topup modal elements
+    const btnTopup = document.getElementById('btnTopup');
+    const topupBackdrop = document.getElementById('topupBackdrop');
+    const qrImg = document.getElementById('qrImg');
+    const topupAmount = document.getElementById('topupAmount');
+    const topupCode = document.getElementById('topupCode');
+    const confirmTopupBtn = document.getElementById('confirmTopupBtn');
+    const closeTopupBtn = document.getElementById('closeTopupBtn');
+
+    // Utility - random code
+    function genCode(){
+      const n = Math.floor(1000 + Math.random()*9000);
+      return "NAP" + n;
+    }
+
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
     document.getElementById('showSignupBtn').addEventListener('click', e => { e.preventDefault(); loginArea.classList.add('hidden'); signupArea.classList.remove('hidden'); });
@@ -289,7 +298,7 @@
     // Logout
     document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
 
-    // Navigation
+    // Nav
     btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
     btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); });
 
@@ -308,33 +317,100 @@
       } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
     });
 
-    // Lookup submit
+    // Topup modal handling
+    btnTopup.addEventListener('click', () => {
+      qrImg.src = QR_IMAGE_URL;
+      topupBackdrop.style.display = 'flex';
+      topupCode.value = genCode();
+      topupAmount.value = 100000;
+    });
+    closeTopupBtn.addEventListener('click', () => { topupBackdrop.style.display = 'none'; });
+
+    confirmTopupBtn.addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if(!user) { alert('Vui lòng đăng nhập trước khi nạp'); return; }
+      const hoTen = user.displayName || '(Chưa cập nhật)';
+      const soTien = Number(topupAmount.value) || 0;
+      if(soTien < 100000){ alert('Số tiền tối thiểu 100.000đ'); return; }
+      const maNap = topupCode.value || genCode();
+      const luotCheck = Math.floor(soTien / 10000); // 100k = 10 lượt
+
+      confirmTopupBtn.disabled = true;
+      confirmTopupBtn.textContent = 'Đang gửi...';
+      try{
+        const resp = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            type: 'topup',
+            hoTen, soTien, maNap, luotCheck, trangThai: 'Chờ duyệt'
+          })
+        });
+        const j = await resp.json();
+        if(j.status === 'ok'){
+          alert('Đã ghi nhận nạp — trạng thái: Chờ duyệt. Admin duyệt xong sẽ cộng lượt.');
+          topupBackdrop.style.display = 'none';
+        } else {
+          alert('Lỗi nạp: ' + (j.message || JSON.stringify(j)));
+        }
+      } catch(err){
+        alert('Lỗi gửi nạp tiền: ' + err.message + '\nKiểm tra lại URL Apps Script hoặc quyền truy cập (deploy).');
+      } finally {
+        confirmTopupBtn.disabled = false;
+        confirmTopupBtn.textContent = 'ĐÃ THANH TOÁN 💸';
+      }
+    });
+
+    // Lookup submit: trước hết gọi apps script để trừ 1 lượt theo tên nhân viên
     document.getElementById('lookupForm').addEventListener('submit', async e => {
       e.preventDefault();
       const customerName = document.getElementById('fullname').value.trim();
       const cccd = document.getElementById('cccd').value.trim();
       if (!customerName || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
 
-      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
       const user = auth.currentUser;
       if (!user) { alert('Vui lòng đăng nhập'); return; }
+      const hoTenNV = user.displayName || '(Chưa cập nhật)';
 
+      lookupResult.innerHTML = '⏳ Kiểm tra lượt...';
+      // gọi Apps Script để trừ lượt
       try {
-        await addDoc(collection(db, 'tra_cuu_b11'), {
-          uid: user.uid,
-          customerName,
-          cccd,
-          ketQua: "",
-          employeeName: user.displayName || '(Chưa cập nhật)',
-          employeeEmail: user.email || null,
-          createdAt: serverTimestamp()
+        const r = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ type: 'useCheck', hoTen: hoTenNV })
         });
-        lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
-        document.getElementById('lookupForm').reset();
-      } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi: ${err.message}</span>`; }
+        const jr = await r.json();
+        if(jr.status === 'ok'){
+          // đã trừ 1 lượt thành công -> gửi yêu cầu tra cứu vào Firestore như trước
+          lookupResult.innerHTML = '⏳ Đang gửi dữ liệu tra cứu...';
+          try {
+            await addDoc(collection(db, 'tra_cuu_b11'), {
+              uid: user.uid,
+              customerName,
+              cccd,
+              ketQua: "",
+              employeeName: hoTenNV,
+              createdAt: serverTimestamp()
+            });
+            lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công. Đã trừ 1 lượt.</span>`;
+            document.getElementById('lookupForm').reset();
+          } catch (err) {
+            lookupResult.innerHTML = `<span class="text-red-600">Lỗi gửi tra cứu: ${err.message}</span>`;
+          }
+        } else if(jr.status === 'no_check'){
+          lookupResult.innerHTML = `<span class="text-red-600">🔒 Hết lượt tra cứu — vui lòng nạp thêm!</span>`;
+          alert('Bạn đã hết lượt. Vui lòng nạp thêm trước khi tra cứu.');
+        } else {
+          lookupResult.innerHTML = `<span class="text-red-600">Lỗi: ${jr.message || JSON.stringify(jr)}</span>`;
+        }
+      } catch(err){
+        lookupResult.innerHTML = `<span class="text-red-600">Lỗi kết nối: ${err.message}</span>`;
+        alert('Lỗi kết nối tới server (Apps Script). Kiểm tra URL và quyền truy cập (deploy).');
+      }
     });
 
-    // Realtime listener for history without sound
+    // Realtime history (Firestore)
     function startHistoryListener() {
       if (unsubscribeHistory) unsubscribeHistory();
       const user = auth.currentUser;
@@ -358,14 +434,8 @@
           item.innerHTML=`<div class="font-medium">${d.customerName}</div>
             <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
             <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
-            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
+            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName || ''}</div>`;
           historyList.appendChild(item);
-
-          if(!lastSeenKetQuaIds.has(d.createdAt)){
-            lastSeenKetQuaIds.add(d.createdAt);
-            newNotifCount++;
-            notifCount.textContent = newNotifCount;
-          }
         });
       });
     }
@@ -392,9 +462,9 @@
         lastSeenKetQuaIds.clear();
         startHistoryListener();
 
-        // Show centered login notification
+        // Show centered login notification shortly
         loginNotifBox.style.display = 'block';
-        setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
+        setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 4000);
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
         headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
