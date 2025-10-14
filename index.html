@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tra cứu CIC - B11T</title>
+  <title>Tra cứu CIC - B11T (Chat với Admin)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <meta name="color-scheme" content="light">
   <style>
@@ -58,6 +58,18 @@
     @keyframes fadein {
       from {opacity:0;} to {opacity:1;}
     }
+
+    /* Chat popup styles */
+    .chat-popup { width: 360px; max-width: calc(100vw - 32px); }
+    .chat-header { background: linear-gradient(90deg,#16a34a,#059669); color: white; padding: 10px; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+    .chat-body { height: 320px; overflow-y: auto; background: #f8fafc; padding: 12px; }
+    .chat-input-row { display:flex; gap:8px; padding:12px; background: #fff; border-bottom-left-radius:8px; border-bottom-right-radius:8px; }
+    .bubble { display:inline-block; padding:8px 12px; border-radius:12px; max-width:78%; }
+    .bubble.me { background:#dcfce7; align-self:flex-end; }
+    .bubble.admin { background:#e0f2fe; }
+    .chat-msg { display:flex; flex-direction:column; margin-bottom:8px; }
+    .chat-meta { font-size:11px; color:#6b7280; margin-bottom:4px; }
+    #chatToggleBtn { cursor:pointer; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -93,6 +105,7 @@
       <nav class="space-y-2">
         <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700 flex items-center gap-3">🔍 Tra cứu CIC</button>
         <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">📜 Lịch sử tra cứu</button>
+        <button id="navChatAdmin" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">💬 CHAT VỚI ADMIN</button>
       </nav>
 
       <div class="mt-4 border-t pt-3">
@@ -104,7 +117,7 @@
     <!-- MAIN -->
     <main class="flex-1">
 
-      <!-- LOGIN / SIGNUP BOX -->
+      <!-- LOGIN / SIGNUP BOX (giữ nguyên) -->
       <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
         <div id="authForms">
           <!-- Signup -->
@@ -173,6 +186,7 @@
           <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
           <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
         </div>
+
       </section>
 
     </main>
@@ -188,6 +202,34 @@
         <button id="cancelNameBtn" class="border px-3 py-1 rounded-md">Hủy</button>
       </div>
     </div>
+  </div>
+
+  <!-- Chat popup (hidden by default) -->
+  <div id="chatPopup" class="fixed right-4 bottom-4 z-50 hidden">
+    <div class="chat-popup w-80 md:w-96 rounded-lg shadow-lg">
+      <div class="chat-header flex items-center justify-between">
+        <div class="pl-3">
+          <div id="chatTitle" class="font-medium">Chat với Admin</div>
+          <div id="chatSubtitle" class="text-xs opacity-90">Bạn đang chat với Admin</div>
+        </div>
+        <div class="pr-3 flex items-center gap-2">
+          <button id="chatMinimize" class="text-sm">—</button>
+          <button id="chatClose" class="text-sm">✕</button>
+        </div>
+      </div>
+      <div id="chatBody" class="chat-body"></div>
+      <div class="chat-input-row">
+        <input id="chatTextInput" class="flex-1 border rounded-md px-3 py-2" placeholder="Nhập tin nhắn..." autocomplete="off" />
+        <button id="chatSendBtn" class="bg-green-600 text-white px-4 py-2 rounded-md">Gửi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating small button to open chat (shown when not open) -->
+  <div id="chatToggleBtnWrapper" class="fixed right-4 bottom-4 z-40">
+    <button id="chatToggleBtn" class="bg-green-600 text-white p-3 rounded-full shadow-lg">
+      💬
+    </button>
   </div>
 
   <!-- Centered login notification -->
@@ -208,10 +250,26 @@
 
   <!-- Firebase + App logic -->
   <script type="module">
+    // Firebase v11 modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import {
+      getFirestore,
+      initializeFirestore,
+      collection,
+      addDoc,
+      setDoc,
+      doc,
+      serverTimestamp,
+      query,
+      orderBy,
+      limit,
+      onSnapshot,
+      getDocs,
+      where
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+    // Firebase config (giữ nguyên nếu bạn dùng config cũ)
     const firebaseConfig = {
       apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
       authDomain: "tracuucic-login.firebaseapp.com",
@@ -223,8 +281,17 @@
     };
 
     const app = initializeApp(firebaseConfig);
+
+    // Tắt cache local của Firestore (nếu SDK hỗ trợ), nếu không fallback về getFirestore
+    let db;
+    try {
+      db = initializeFirestore(app, { localCache: null });
+    } catch (e) {
+      db = getFirestore(app);
+      console.warn('initializeFirestore(..., { localCache: null }) không được hỗ trợ trên SDK này. Đang dùng getFirestore() mặc định.');
+    }
+
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
     // Elements
     const authBox = document.getElementById('authBox');
@@ -240,6 +307,7 @@
     const sidebarEmail = document.getElementById('sidebarEmail');
     const btnNavLookup = document.getElementById('navLookup');
     const btnNavHistory = document.getElementById('navHistory');
+    const btnNavChatAdmin = document.getElementById('navChatAdmin');
     const btnEditName = document.getElementById('btnEditName');
     const updateNameBox = document.getElementById('updateNameBox');
     const updateNameInput = document.getElementById('updateNameInput');
@@ -254,6 +322,24 @@
 
     const loginNotifBox = document.getElementById('loginNotifBox');
     const closeLoginNotifBtn = document.getElementById('closeLoginNotifBtn');
+
+    // Chat elements
+    const chatToggleBtn = document.getElementById('chatToggleBtn');
+    const chatPopup = document.getElementById('chatPopup');
+    const chatClose = document.getElementById('chatClose');
+    const chatMinimize = document.getElementById('chatMinimize');
+    const chatBody = document.getElementById('chatBody');
+    const chatTextInput = document.getElementById('chatTextInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatToggleBtnWrapper = document.getElementById('chatToggleBtnWrapper');
+
+    let unsubscribeAdminChat = null;
+    let currentChatDocName = null; // sanitized employee name used as doc id
+
+    // Utility: sanitize name to use as doc id (replace spaces and slashes)
+    function sanitizeDocId(name){
+      return name.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
+    }
 
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
@@ -271,6 +357,8 @@
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(userCred.user, { displayName: name });
+        // Lưu profile cơ bản vào collection users (dùng để liệt kê nhân viên)
+        try { await setDoc(doc(db, 'users', userCred.user.uid), { uid: userCred.user.uid, name, email }); } catch(e){console.warn('Không lưu users collection:', e.message)}
         alert('Đăng ký thành công — vui lòng đăng nhập');
         document.getElementById('signupForm').reset();
         loginArea.classList.remove('hidden'); signupArea.classList.add('hidden');
@@ -287,11 +375,12 @@
     });
 
     // Logout
-    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
+    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); if (unsubscribeAdminChat) unsubscribeAdminChat(); });
 
     // Navigation
     btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
     btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); });
+    btnNavChatAdmin.addEventListener('click', () => { openChatPopup(); });
 
     // Edit name
     btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
@@ -301,6 +390,7 @@
       if (!newName) return alert('Nhập họ tên mới');
       try {
         await updateProfile(auth.currentUser, { displayName: newName });
+        try { await setDoc(doc(db, 'users', auth.currentUser.uid), { uid: auth.currentUser.uid, name: newName, email: auth.currentUser.email }, { merge: true }); } catch(e){console.warn('Không cập nhật users collection:', e.message)}
         sidebarName.textContent = newName;
         headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
         updateNameBox.classList.add('hidden');
@@ -329,12 +419,12 @@
           employeeEmail: user.email || null,
           createdAt: serverTimestamp()
         });
-        lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
+        lookupResult.innerHTML = `<span class=\"text-green-600 font-semibold\">Đã gửi thành công.</span>`;
         document.getElementById('lookupForm').reset();
-      } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi: ${err.message}</span>`; }
+      } catch (err) { lookupResult.innerHTML = `<span class=\"text-red-600\">Lỗi: ${err.message}</span>`; }
     });
 
-    // Realtime listener for history without sound
+    // Realtime listener for history
     function startHistoryListener() {
       if (unsubscribeHistory) unsubscribeHistory();
       const user = auth.currentUser;
@@ -355,10 +445,10 @@
           const t=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleString():'';
           const item=document.createElement('div');
           item.className='p-3 border rounded-md';
-          item.innerHTML=`<div class="font-medium">${d.customerName}</div>
-            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
-            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
-            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
+          item.innerHTML=`<div class=\"font-medium\">${d.customerName}</div>
+            <div class=\"text-xs text-gray-500\">CCCD: ${d.cccd} — ${t}</div>
+            <div class=\"text-sm text-blue-600\">Kết quả: ${d.ketQua || \"Chưa có\"}</div>
+            <div class=\"text-xs text-gray-400\">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
           historyList.appendChild(item);
 
           if(!lastSeenKetQuaIds.has(d.createdAt)){
@@ -370,17 +460,111 @@
       });
     }
 
-    // Bell click: reset & open history
-    notifBell.addEventListener('click', () => {
-      newNotifCount = 0;
-      notifCount.textContent = '0';
-      lookupPage.classList.add('hidden');
-      historyPage.classList.remove('hidden');
-      startHistoryListener();
+    // Chat popup controls
+    function openChatPopup(){
+      chatPopup.classList.remove('hidden');
+      chatToggleBtnWrapper.style.display = 'none';
+      initChatForCurrentUser();
+    }
+    function closeChatPopup(){
+      chatPopup.classList.add('hidden');
+      chatToggleBtnWrapper.style.display = 'block';
+      if (unsubscribeAdminChat) unsubscribeAdminChat();
+      currentChatDocName = null;
+      chatBody.innerHTML = '';
+    }
+
+    chatToggleBtn.addEventListener('click', openChatPopup);
+    chatClose.addEventListener('click', closeChatPopup);
+    chatMinimize.addEventListener('click', () => { chatPopup.classList.toggle('hidden'); chatToggleBtnWrapper.style.display = chatPopup.classList.contains('hidden') ? 'block' : 'none'; });
+
+    // Initialize chat for current logged-in user (employee view)
+    async function initChatForCurrentUser(){
+      const user = auth.currentUser;
+      let displayName = 'Khách vãng lai';
+      if (user && user.displayName) displayName = user.displayName;
+      else if (document.getElementById('sidebarName')) displayName = document.getElementById('sidebarName').textContent || displayName;
+      else {
+        const ask = prompt('Nhập tên bạn để chat với Admin (nếu chưa đăng nhập):');
+        if (ask) displayName = ask;
+      }
+
+      // create a doc id from displayName so admin dễ đọc (you can change to uid if you prefer)
+      const docId = sanitizeDocId(displayName);
+      currentChatDocName = docId;
+
+      // Display name in header
+      document.getElementById('chatTitle').textContent = `Chat: ${displayName}`;
+      document.getElementById('chatSubtitle').textContent = `Bạn đang chat với Admin`;
+
+      // start listening to admin_chat/{docId}/messages
+      startListeningAdminChat(docId);
+
+      // ensure there's a users doc for admin to know who messaged (optional)
+      try {
+        if (user && user.uid) {
+          await setDoc(doc(db, 'users', user.uid), { uid: user.uid, name: displayName, email: user.email || null }, { merge: true });
+        }
+      } catch(e){ console.warn('Không lưu users doc', e.message); }
+    }
+
+    // Start listening to admin_chat/{docId}/messages
+    function startListeningAdminChat(docId){
+      if (unsubscribeAdminChat) unsubscribeAdminChat();
+      chatBody.innerHTML = '';
+      const q = query(collection(db, 'admin_chat', docId, 'messages'), orderBy('createdAt','asc'));
+      unsubscribeAdminChat = onSnapshot(q, snapshot => {
+        chatBody.innerHTML = '';
+        snapshot.forEach(snap => {
+          const m = snap.data();
+          const row = document.createElement('div');
+          row.className = 'chat-msg';
+          const meta = document.createElement('div');
+          meta.className = 'chat-meta';
+          meta.textContent = `${m.from || m.fromName || 'Không tên'} • ${m.createdAt && m.createdAt.toDate ? m.createdAt.toDate().toLocaleString() : ''}`;
+          const bubble = document.createElement('div');
+          bubble.className = 'bubble ' + ((m.from && m.from === 'Admin') ? 'admin' : 'me');
+          bubble.innerText = m.text;
+          if (m.from && m.from === 'Admin') {
+            row.appendChild(meta);
+            row.appendChild(bubble);
+          } else {
+            row.appendChild(meta);
+            row.appendChild(bubble);
+          }
+          chatBody.appendChild(row);
+        });
+        chatBody.scrollTop = chatBody.scrollHeight;
+      });
+    }
+
+    // Send chat message
+    chatSendBtn.addEventListener('click', async () => {
+      const text = chatTextInput.value.trim();
+      if (!text) return;
+      // if currentChatDocName not set, prompt init
+      if (!currentChatDocName) {
+        await initChatForCurrentUser();
+      }
+      const user = auth.currentUser;
+      let fromName = 'Khách';
+      let fromUid = null;
+      if (user && user.displayName) fromName = user.displayName;
+      else if (document.getElementById('sidebarName')) fromName = document.getElementById('sidebarName').textContent || fromName;
+
+      try {
+        await addDoc(collection(db, 'admin_chat', currentChatDocName, 'messages'), {
+          from: fromName,
+          fromUid: user ? user.uid : null,
+          text,
+          createdAt: serverTimestamp()
+        });
+        chatTextInput.value = '';
+      } catch(e){ alert('Gửi thất bại: ' + e.message); }
     });
 
-    // Close login notification
-    closeLoginNotifBtn.addEventListener('click', () => { loginNotifBox.style.display = 'none'; });
+    // Also allow Enter key to send
+    chatTextInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); chatSendBtn.click(); } });
 
     // Auth state
     onAuthStateChanged(auth,user=>{
@@ -391,16 +575,15 @@
         headerRight.textContent=name + ' • ' + (user.email||'');
         lastSeenKetQuaIds.clear();
         startHistoryListener();
-
-        // Show centered login notification
-        loginNotifBox.style.display = 'block';
-        setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
+        // no auto-open chat; user clicks CHAT VỚI ADMIN
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
         headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
         if(unsubscribeHistory) unsubscribeHistory();
+        if(unsubscribeAdminChat) unsubscribeAdminChat();
       }
     });
+
   </script>
 </body>
 </html>
