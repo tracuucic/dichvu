@@ -185,15 +185,19 @@
           <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
         </div>
 
-        <!-- Tính lãi suất page (iframe) -->
-        <div id="tinhLaiPage" class="card rounded-lg p-4 md:p-6 hidden">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold">💰 Tính Lãi Suất</h3>
-            <button id="btnBackFromTinhLai" class="text-sm px-3 py-1 rounded-md border">⬅ Quay lại</button>
-          </div>
-          <div class="w-full h-[72vh]">
-            <iframe id="iframeTinhLai" src="" class="w-full h-full rounded-lg border"></iframe>
-          </div>
+        <!-- TÍNH LÃI SUẤT PAGE -->
+<div id="tinhLaiPage" class="card rounded-lg p-0 md:p-0 hidden" style="height: calc(100vh - 100px);">
+  <div class="flex items-center justify-between px-4 py-3 border-b">
+    <h3 class="text-lg font-semibold">💰 Tính Lãi Suất</h3>
+    <button id="btnBackFromTinhLai" class="text-sm px-3 py-1 rounded-md border">⬅ Quay lại</button>
+  </div>
+  <iframe 
+    id="iframeTinhLai"
+    src="https://miraeasset-mt.github.io/vaytieudung/" 
+    class="w-full h-full rounded-lg border-0" 
+    style="min-height: calc(100vh - 100px);">
+  </iframe>
+</div>
         </div>
 
       </section>
