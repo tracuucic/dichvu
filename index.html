@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chào Mừng Đến Với Team Mirae Asset Ngọc Trân</title>
+  <title>Tra cứu CIC - B11T</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <meta name="color-scheme" content="light">
   <style>
@@ -76,7 +76,7 @@
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 md:w-10 md:h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">B11</div>
         <div>
-          <div class="text-base md:text-lg font-semibold">Trang Tổng Hợp</div>
+          <div class="text-base md:text-lg font-semibold">Tra cứu CIC - B11T</div>
           <div class="text-xs text-gray-500">Giải Pháp Tạm Thời-Call:0964307247</div>
         </div>
       </div>
@@ -104,9 +104,6 @@
 
         <!-- NEW: Tính Lãi Suất button added directly under history -->
         <button id="navTinhLai" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">💰 Tính Lãi Suất</button>
-
-        <!-- ✅ Nút mới: Quy Trình Sản Phẩm MAFC -->
-        <button id="navQuyTrinh" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">📘 Quy Trình Sản Phẩm MAFC</button>
       </nav>
 
       <div class="mt-4 border-t pt-3">
@@ -188,34 +185,18 @@
         </div>
 
         <!-- TÍNH LÃI SUẤT PAGE -->
-        <div id="tinhLaiPage" class="card rounded-lg p-0 md:p-0 hidden" style="height: calc(100vh - 100px);">
-          <div class="flex items-center justify-between px-4 py-3 border-b">
-            <h3 class="text-lg font-semibold">💰 Tính Lãi Suất</h3>
-            <button id="btnBackFromTinhLai" class="text-sm px-3 py-1 rounded-md border">⬅ Quay lại</button>
-          </div>
-          <iframe 
-            id="iframeTinhLai"
-            src="https://miraeasset-mt.github.io/vaytieudung/" 
-            class="w-full h-full rounded-lg border-0" 
-            style="min-height: calc(100vh - 100px);">
-          </iframe>
-        </div>
-
-        <!-- QUY TRÌNH SẢN PHẨM MAFC PAGE -->
-        <div id="mafcPage" class="card rounded-lg p-0 md:p-0 hidden" style="height: calc(100vh - 100px);">
-          <div class="flex items-center justify-between px-4 py-3 border-b bg-white sticky top-0 z-10">
-            <h3 class="text-lg font-semibold">📘 Quy Trình Sản Phẩm MAFC</h3>
-            <button id="btnBackFromMAFC" class="text-sm px-3 py-1 rounded-md border bg-gray-100 hover:bg-gray-200">⬅ Quay lại</button>
-          </div>
-
-          <div class="w-full h-[calc(100vh-140px)] overflow-hidden">
-            <iframe 
-              id="iframeMAFC"
-              src="https://docs.google.com/spreadsheets/d/18OexpmKorotbSB2i9Wvb5PW1UYqVEAgl/preview"
-              class="w-full h-full rounded-b-lg border-0"
-              style="zoom:0.95; transform-origin:0 0;">
-            </iframe>
-          </div>
+<div id="tinhLaiPage" class="card rounded-lg p-0 md:p-0 hidden" style="height: calc(100vh - 100px);">
+  <div class="flex items-center justify-between px-4 py-3 border-b">
+    <h3 class="text-lg font-semibold">💰 Tính Lãi Suất</h3>
+    <button id="btnBackFromTinhLai" class="text-sm px-3 py-1 rounded-md border">⬅ Quay lại</button>
+  </div>
+  <iframe 
+    id="iframeTinhLai"
+    src="https://miraeasset-mt.github.io/vaytieudung/" 
+    class="w-full h-full rounded-lg border-0" 
+    style="min-height: calc(100vh - 100px);">
+  </iframe>
+</div>
         </div>
 
       </section>
@@ -301,37 +282,168 @@
     let lastSeenKetQuaIds = new Set();
     let unsubscribeHistory = null;
 
-    const btnNavQuyTrinh = document.getElementById('navQuyTrinh');
-    const quyTrinhPage = document.getElementById('mafcPage'); // fix
-    const iframeQuyTrinh = document.getElementById('iframeMAFC'); // fix
-    const btnBackFromQuyTrinh = document.getElementById('btnBackFromMAFC'); // fix
+    const loginNotifBox = document.getElementById('loginNotifBox');
+    const closeLoginNotifBtn = document.getElementById('closeLoginNotifBtn');
 
-    // SHOW/HIDE PAGES
-    function showPage(page) {
-      lookupPage.classList.add('hidden');
-      historyPage.classList.add('hidden');
-      tinhLaiPage.classList.add('hidden');
-      quyTrinhPage.classList.add('hidden');
+    // Show/hide auth forms
+    document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
+    document.getElementById('showSignupBtn').addEventListener('click', e => { e.preventDefault(); loginArea.classList.add('hidden'); signupArea.classList.remove('hidden'); });
 
-      page.classList.remove('hidden');
-    }
-
-    btnNavLookup.addEventListener('click', () => showPage(lookupPage));
-    btnNavHistory.addEventListener('click', () => showPage(historyPage));
-    btnNavTinhLai.addEventListener('click', () => showPage(tinhLaiPage));
-    btnBackFromTinhLai.addEventListener('click', () => showPage(lookupPage));
-
-    btnNavQuyTrinh.addEventListener('click', () => showPage(quyTrinhPage));
-    btnBackFromQuyTrinh.addEventListener('click', () => showPage(lookupPage));
-
-    // B11 Lookup simulation
-    document.getElementById('lookupForm').addEventListener('submit', e => {
+    // Signup
+    document.getElementById('signupForm').addEventListener('submit', async e => {
       e.preventDefault();
-      const fullname = document.getElementById('fullname').value;
-      const cccd = document.getElementById('cccd').value;
-      lookupResult.innerHTML = `✅ Đang tra cứu: <b>${fullname}</b> - <b>${cccd}</b>`;
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const pass = document.getElementById('signupPass').value;
+      const repass = document.getElementById('signupRepass').value;
+      if (!name || !email || !pass) { alert('Vui lòng nhập đủ thông tin'); return; }
+      if (pass !== repass) { alert('Mật khẩu nhập lại không khớp'); return; }
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(userCred.user, { displayName: name });
+        alert('Đăng ký thành công — vui lòng đăng nhập');
+        document.getElementById('signupForm').reset();
+        loginArea.classList.remove('hidden'); signupArea.classList.add('hidden');
+      } catch (err) { alert('Lỗi đăng ký: ' + err.message); }
     });
 
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      try { await signInWithEmailAndPassword(auth, email, pass); document.getElementById('loginForm').reset(); }
+      catch (err) { alert('Lỗi đăng nhập: ' + err.message); }
+    });
+
+    // Logout
+    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
+
+    // Navigation
+    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); tinhLaiPage.classList.add('hidden'); });
+    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); tinhLaiPage.classList.add('hidden'); startHistoryListener(); });
+    btnNavTinhLai.addEventListener('click', () => {
+      lookupPage.classList.add('hidden');
+      historyPage.classList.add('hidden');
+      tinhLaiPage.classList.remove('hidden');
+      iframeTinhLai.src = 'https://miraeasset-mt.github.io/vaytieudung/';
+    });
+
+    // Back from tinh lai
+    btnBackFromTinhLai.addEventListener('click', () => {
+      tinhLaiPage.classList.add('hidden');
+      lookupPage.classList.remove('hidden');
+    });
+
+    // Edit name
+    btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
+    cancelNameBtn.addEventListener('click', () => updateNameBox.classList.add('hidden'));
+    saveNameBtn.addEventListener('click', async () => {
+      const newName = updateNameInput.value.trim();
+      if (!newName) return alert('Nhập họ tên mới');
+      try {
+        await updateProfile(auth.currentUser, { displayName: newName });
+        sidebarName.textContent = newName;
+        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
+        updateNameBox.classList.add('hidden');
+        alert('Cập nhật thành công');
+      } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
+    });
+
+    // Lookup submit
+    document.getElementById('lookupForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const customerName = document.getElementById('fullname').value.trim();
+      const cccd = document.getElementById('cccd').value.trim();
+      if (!customerName || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
+
+      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
+      const user = auth.currentUser;
+      if (!user) { alert('Vui lòng đăng nhập'); return; }
+
+      try {
+        await addDoc(collection(db, 'tra_cuu_b11'), {
+          uid: user.uid,
+          customerName,
+          cccd,
+          ketQua: "",
+          employeeName: user.displayName || '(Chưa cập nhật)',
+          employeeEmail: user.email || null,
+          createdAt: serverTimestamp()
+        });
+        lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
+        document.getElementById('lookupForm').reset();
+      } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi: ${err.message}</span>`; }
+    });
+
+    // Realtime listener for history without sound
+    function startHistoryListener() {
+      if (unsubscribeHistory) unsubscribeHistory();
+      const user = auth.currentUser;
+      if (!user) return;
+      const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt','desc'), limit(100));
+
+      unsubscribeHistory = onSnapshot(q, snapshot => {
+        const items = [];
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          if(d.uid === user.uid) items.push({ id: doc.id, ...d });
+        });
+
+        if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
+
+        historyList.innerHTML='';
+        items.forEach(d=>{
+          const t=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleString():'';
+          const item=document.createElement('div');
+          item.className='p-3 border rounded-md';
+          item.innerHTML=`<div class="font-medium">${d.customerName}</div>
+            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
+            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
+            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
+          historyList.appendChild(item);
+
+          // notify only when ketQua exists and not seen yet
+          if(d.ketQua && !lastSeenKetQuaIds.has(d.id)){
+            lastSeenKetQuaIds.add(d.id);
+            newNotifCount++;
+            notifCount.textContent = newNotifCount;
+          }
+        });
+      });
+    }
+
+    // Bell click: reset & open history
+    notifBell.addEventListener('click', () => {
+      newNotifCount = 0;
+      notifCount.textContent = '0';
+      lookupPage.classList.add('hidden');
+      historyPage.classList.remove('hidden');
+      startHistoryListener();
+    });
+
+    // Close login notification (kept but no-op since hidden)
+    closeLoginNotifBtn.addEventListener('click', () => { loginNotifBox.style.display = 'none'; });
+
+    // Auth state
+    onAuthStateChanged(auth,user=>{
+      if(user){
+        authBox.classList.add('hidden'); appArea.classList.remove('hidden');
+        const name=user.displayName||'(Chưa cập nhật)';
+        sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
+        headerRight.textContent=name + ' • ' + (user.email||'');
+        lastSeenKetQuaIds.clear();
+        startHistoryListener();
+
+        // NOTE: login notification intentionally not shown (removed)
+        // loginNotifBox.style.display = 'block';
+        // setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
+      }else{
+        authBox.classList.remove('hidden'); appArea.classList.add('hidden');
+        headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
+        if(unsubscribeHistory) unsubscribeHistory();
+      }
+    });
   </script>
 </body>
 </html>
