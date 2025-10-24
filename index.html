@@ -783,3 +783,101 @@
 
 </body>
 </html>
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tra cứu CIC - B11T</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="color-scheme" content="light">
+  <style>
+    .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
+    .card { background: #ffffff; }
+    .notif-bell { position: relative; cursor: pointer; display: inline-block; font-size: 24px; }
+    .notif-count { position: absolute; top: -6px; right: -6px; background: red; color: white; font-size: 12px; font-weight: bold; width: 18px; height: 18px; text-align: center; border-radius: 50%; line-height: 18px; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- ========== TOÀN BỘ NỘI DUNG CHÍNH ========== -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-lg font-bold text-blue-700">TRA CỨU CIC - B11T</h1>
+  </header>
+
+  <main class="p-4">
+    <!-- Ví dụ: Khu vực nhập thông tin tra cứu -->
+    <section id="lookup" class="mb-4">
+      <div class="card shadow p-4 rounded-xl">
+        <h2 class="text-base font-semibold mb-2 text-gray-700">Tra cứu CIC khách hàng</h2>
+        <input id="searchInput" class="border border-gray-300 rounded px-3 py-2 w-full" placeholder="Nhập số CCCD hoặc họ tên..." />
+        <button id="lookupBtn" class="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Tra cứu</button>
+      </div>
+    </section>
+
+    <!-- Ví dụ: Khu vực lịch sử -->
+    <section id="history">
+      <div class="card shadow p-4 rounded-xl">
+        <h2 class="text-base font-semibold mb-2 text-gray-700">Lịch sử tra cứu</h2>
+        <ul id="historyList" class="text-sm text-gray-600 list-disc pl-5">
+          <li>Chưa có lịch sử.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Nút Tính Lãi Suất -->
+    <div class="mt-4 flex justify-center">
+      <button
+        onclick="window.open('https://miraeasset-mt.github.io/vaytieudung/', '_blank')"
+        class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow">
+        💰 Tính Lãi Suất
+      </button>
+    </div>
+  </main>
+
+  <!-- ========== SCRIPT CƠ BẢN (KHÔNG CHAT) ========== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
+      authDomain: "tracuucic-login.firebaseapp.com",
+      projectId: "tracuucic-login",
+      storageBucket: "tracuucic-login.firebasestorage.app",
+      messagingSenderId: "648747772689",
+      appId: "1:648747772689:web:69da6e1534ed63efddbab0",
+      measurementId: "G-ELVGHX2GL4",
+      databaseURL: "https://tracuucic-login-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Kiểm tra trạng thái đăng nhập (nếu có)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("Đã đăng nhập:", user.email || user.displayName);
+      } else {
+        console.log("Chưa đăng nhập.");
+      }
+    });
+
+    // Nút tra cứu minh họa
+    const lookupBtn = document.getElementById("lookupBtn");
+    const searchInput = document.getElementById("searchInput");
+    const historyList = document.getElementById("historyList");
+
+    lookupBtn.onclick = () => {
+      const val = searchInput.value.trim();
+      if (!val) return alert("Vui lòng nhập thông tin tra cứu!");
+      const li = document.createElement("li");
+      li.textContent = `Đã tra cứu: ${val} (${new Date().toLocaleString()})`;
+      historyList.appendChild(li);
+      searchInput.value = "";
+    };
+  </script>
+
+</body>
+</html>
