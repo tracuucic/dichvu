@@ -29,7 +29,11 @@
       border-radius: 50%;
       line-height: 18px;
     }
-    /* Centered login notification */
+
+    /* Ensure login notification removed entirely (hidden) */
+    #loginNotifBox { display: none !important; }
+
+    /* Centered login notification styles (kept but hidden) */
     #loginNotifBox {
       position: fixed;
       top: 50%;
@@ -58,6 +62,10 @@
     @keyframes fadein {
       from {opacity:0;} to {opacity:1;}
     }
+
+    /* iframe container styling for Tính lãi suất page */
+    #tinhLaiPage iframe { border: 0; width: 100%; height: 100%; border-radius: 8px; }
+    #tinhLaiPage { height: calc(100vh - 180px); } /* roughly fit page minus header/footer */
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -93,6 +101,9 @@
       <nav class="space-y-2">
         <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700 flex items-center gap-3">🔍 Tra cứu CIC</button>
         <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">📜 Lịch sử tra cứu</button>
+
+        <!-- NEW: Tính Lãi Suất button added directly under history -->
+        <button id="navTinhLai" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">💰 Tính Lãi Suất</button>
       </nav>
 
       <div class="mt-4 border-t pt-3">
@@ -173,6 +184,18 @@
           <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
           <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
         </div>
+
+        <!-- Tính lãi suất page (iframe) -->
+        <div id="tinhLaiPage" class="card rounded-lg p-4 md:p-6 hidden">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-semibold">💰 Tính Lãi Suất</h3>
+            <button id="btnBackFromTinhLai" class="text-sm px-3 py-1 rounded-md border">⬅ Quay lại</button>
+          </div>
+          <div class="w-full h-[72vh]">
+            <iframe id="iframeTinhLai" src="" class="w-full h-full rounded-lg border"></iframe>
+          </div>
+        </div>
+
       </section>
 
     </main>
@@ -190,7 +213,7 @@
     </div>
   </div>
 
-  <!-- Centered login notification -->
+  <!-- Centered login notification (kept in DOM but hidden via CSS) -->
   <div id="loginNotifBox">
     📢 Chào mừng bạn đến với hệ thống Tra cứu B11T!<br>
     Hiện tại tra B11T chậm nên bạn vui lòng kiên nhẫn.<br>
@@ -240,11 +263,15 @@
     const sidebarEmail = document.getElementById('sidebarEmail');
     const btnNavLookup = document.getElementById('navLookup');
     const btnNavHistory = document.getElementById('navHistory');
+    const btnNavTinhLai = document.getElementById('navTinhLai');
     const btnEditName = document.getElementById('btnEditName');
     const updateNameBox = document.getElementById('updateNameBox');
     const updateNameInput = document.getElementById('updateNameInput');
     const saveNameBtn = document.getElementById('saveNameBtn');
     const cancelNameBtn = document.getElementById('cancelNameBtn');
+    const tinhLaiPage = document.getElementById('tinhLaiPage');
+    const iframeTinhLai = document.getElementById('iframeTinhLai');
+    const btnBackFromTinhLai = document.getElementById('btnBackFromTinhLai');
 
     const notifBell = document.getElementById('notifBell');
     const notifCount = document.getElementById('notifCount');
@@ -290,8 +317,20 @@
     document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
 
     // Navigation
-    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); });
-    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); startHistoryListener(); });
+    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); tinhLaiPage.classList.add('hidden'); });
+    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); tinhLaiPage.classList.add('hidden'); startHistoryListener(); });
+    btnNavTinhLai.addEventListener('click', () => {
+      lookupPage.classList.add('hidden');
+      historyPage.classList.add('hidden');
+      tinhLaiPage.classList.remove('hidden');
+      iframeTinhLai.src = 'https://miraeasset-mt.github.io/vaytieudung/';
+    });
+
+    // Back from tinh lai
+    btnBackFromTinhLai.addEventListener('click', () => {
+      tinhLaiPage.classList.add('hidden');
+      lookupPage.classList.remove('hidden');
+    });
 
     // Edit name
     btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
@@ -345,7 +384,7 @@
         const items = [];
         snapshot.forEach(doc => {
           const d = doc.data();
-          if(d.uid === user.uid) items.push(d);
+          if(d.uid === user.uid) items.push({ id: doc.id, ...d });
         });
 
         if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
@@ -361,8 +400,9 @@
             <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
           historyList.appendChild(item);
 
-          if(!lastSeenKetQuaIds.has(d.createdAt)){
-            lastSeenKetQuaIds.add(d.createdAt);
+          // notify only when ketQua exists and not seen yet
+          if(d.ketQua && !lastSeenKetQuaIds.has(d.id)){
+            lastSeenKetQuaIds.add(d.id);
             newNotifCount++;
             notifCount.textContent = newNotifCount;
           }
@@ -379,7 +419,7 @@
       startHistoryListener();
     });
 
-    // Close login notification
+    // Close login notification (kept but no-op since hidden)
     closeLoginNotifBtn.addEventListener('click', () => { loginNotifBox.style.display = 'none'; });
 
     // Auth state
@@ -392,9 +432,9 @@
         lastSeenKetQuaIds.clear();
         startHistoryListener();
 
-        // Show centered login notification
-        loginNotifBox.style.display = 'block';
-        setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
+        // NOTE: login notification intentionally not shown (removed)
+        // loginNotifBox.style.display = 'block';
+        // setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
       }else{
         authBox.classList.remove('hidden'); appArea.classList.add('hidden');
         headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
