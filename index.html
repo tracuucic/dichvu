@@ -104,6 +104,9 @@
 
         <!-- NEW: Tính Lãi Suất button added directly under history -->
         <button id="navTinhLai" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">💰 Tính Lãi Suất</button>
+
+        <!-- ✅ Nút mới: Quy Trình Sản Phẩm MAFC -->
+        <button id="navQuyTrinh" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">📘 Quy Trình Sản Phẩm MAFC</button>
       </nav>
 
       <div class="mt-4 border-t pt-3">
@@ -197,6 +200,20 @@
     style="min-height: calc(100vh - 100px);">
   </iframe>
 </div>
+
+        <!-- QUY TRÌNH SẢN PHẨM MAFC PAGE -->
+        <div id="quyTrinhPage" class="card rounded-lg p-0 md:p-0 hidden" style="height: calc(100vh - 100px);">
+          <div class="flex items-center justify-between px-4 py-3 border-b">
+            <h3 class="text-lg font-semibold">📘 Quy Trình Sản Phẩm MAFC</h3>
+            <button id="btnBackFromQuyTrinh" class="text-sm px-3 py-1 rounded-md border">⬅ Quay lại</button>
+          </div>
+          <iframe 
+            id="iframeQuyTrinh"
+            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTpUkz-p9g7OLuKMoS1ai5jOzKlXsAo1_WRAOsm48ziDDDDLdYf0PeXCohCgjhEJA/pubhtml"
+            class="w-full h-full rounded-lg border-0"
+            style="min-height: calc(100vh - 100px);">
+          </iframe>
+        </div>
         </div>
 
       </section>
@@ -285,6 +302,12 @@
     const loginNotifBox = document.getElementById('loginNotifBox');
     const closeLoginNotifBtn = document.getElementById('closeLoginNotifBtn');
 
+    // New elements for Quy Trình MAFC
+    const btnNavQuyTrinh = document.getElementById('navQuyTrinh');
+    const quyTrinhPage = document.getElementById('quyTrinhPage');
+    const iframeQuyTrinh = document.getElementById('iframeQuyTrinh');
+    const btnBackFromQuyTrinh = document.getElementById('btnBackFromQuyTrinh');
+
     // Show/hide auth forms
     document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
     document.getElementById('showSignupBtn').addEventListener('click', e => { e.preventDefault(); loginArea.classList.add('hidden'); signupArea.classList.remove('hidden'); });
@@ -329,9 +352,25 @@
       iframeTinhLai.src = 'https://miraeasset-mt.github.io/vaytieudung/';
     });
 
+    // Navigation for Quy Trình MAFC
+    btnNavQuyTrinh && btnNavQuyTrinh.addEventListener('click', () => {
+      lookupPage.classList.add('hidden');
+      historyPage.classList.add('hidden');
+      tinhLaiPage.classList.add('hidden');
+      quyTrinhPage.classList.remove('hidden');
+      // ensure iframe src is set (useful if you want to lazy-load)
+      iframeQuyTrinh.src = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTpUkz-p9g7OLuKMoS1ai5jOzKlXsAo1_WRAOsm48ziDDDDLdYf0PeXCohCgjhEJA/pubhtml";
+    });
+
     // Back from tinh lai
     btnBackFromTinhLai.addEventListener('click', () => {
       tinhLaiPage.classList.add('hidden');
+      lookupPage.classList.remove('hidden');
+    });
+
+    // Back from Quy Trình
+    btnBackFromQuyTrinh && btnBackFromQuyTrinh.addEventListener('click', () => {
+      quyTrinhPage.classList.add('hidden');
       lookupPage.classList.remove('hidden');
     });
 
