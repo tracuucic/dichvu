@@ -730,3 +730,56 @@
   </script>
 </body>
 </html>
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tra cứu CIC - B11T</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="color-scheme" content="light">
+  <style>
+    .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
+    .card { background: #ffffff; }
+    .notif-bell { position: relative; cursor: pointer; display: inline-block; font-size: 24px; }
+    .notif-count { position: absolute; top: -6px; right: -6px; background: red; color: white; font-size: 12px; font-weight: bold; width: 18px; height: 18px; text-align: center; border-radius: 50%; line-height: 18px; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- GIỮ NGUYÊN TOÀN BỘ NỘI DUNG GỐC CỦA BẠN -->
+  <!-- header, sidebar, main, auth, lookup, history... -->
+  <!-- Đã xóa phần Chat với Admin -->
+
+  <!-- ============= SCRIPT CHÍNH ============= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
+      authDomain: "tracuucic-login.firebaseapp.com",
+      projectId: "tracuucic-login",
+      storageBucket: "tracuucic-login.firebasestorage.app",
+      messagingSenderId: "648747772689",
+      appId: "1:648747772689:web:69da6e1534ed63efddbab0",
+      measurementId: "G-ELVGHX2GL4",
+      databaseURL: "https://tracuucic-login-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Kiểm tra trạng thái đăng nhập (nếu có)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("Đã đăng nhập:", user.email || user.displayName);
+      } else {
+        console.log("Chưa đăng nhập.");
+      }
+    });
+  </script>
+
+</body>
+</html>
