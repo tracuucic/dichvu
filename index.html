@@ -97,11 +97,11 @@
     <!-- SIDEBAR -->
     <aside class="w-full md:w-64 bg-white border rounded-lg p-4 md:p-6 flex-shrink-0">
       <div class="flex items-center gap-3 mb-4 md:mb-6">
-        <div class="w-10 h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">P</div>
-        <div class="min-w-0">
-          <div id="sidebarName" class="font-semibold truncate">---</div>
-          <div id="sidebarEmail" class="text-xs text-gray-500 truncate">---</div>
-        </div>
+        <div id="sidebarAvatar" class="w-10 h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">?</div>
+<div class="min-w-0">
+  <div id="sidebarName" class="font-semibold truncate">---</div>
+  <div id="sidebarEmail" class="text-xs text-gray-500 truncate">---</div>
+</div>
       </div>
 
       <nav class="space-y-2">
@@ -491,5 +491,19 @@
       }
     });
   </script>
+  <script>
+  // Khi tải trang, nếu có tên nhân viên trong localStorage, hiển thị chữ cái đầu
+  window.addEventListener("load", () => {
+    const name = localStorage.getItem("userName") || "Nhân viên";
+    const avatarEl = document.getElementById("sidebarAvatar");
+    const nameEl = document.getElementById("sidebarName");
+
+    if (nameEl) nameEl.textContent = name;
+    if (avatarEl) {
+      avatarEl.textContent = name.trim().charAt(0).toUpperCase(); // Lấy chữ đầu tiên
+    }
+  });
+</script>
+
 </body>
 </html>
