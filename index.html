@@ -113,10 +113,11 @@
         </button>
       </div>
     </aside>
+
     <!-- MAIN CONTENT -->
     <main class="flex-1">
 
-      <!-- AUTH BOX (LOGIN + SIGNUP) -->
+      <!-- AUTH BOX -->
       <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
         <div id="authForms">
 
@@ -183,8 +184,6 @@
 
         </div>
       </section>
-
-
       <!-- APP AREA (SAU KHI ĐĂNG NHẬP) -->
       <section id="appArea" class="hidden space-y-6">
 
@@ -296,15 +295,18 @@
       © Copyright 2025 VQT — Giải pháp vay tiêu dùng uy tín & linh hoạt
     </div>
   </footer>
-<!-- FIREBASE SDK COMPAT (chạy được trên GitHub Pages) -->
+<!-- ============================
+       FIREBASE SDK (COMPAT v9)
+       CHẠY ĐƯỢC TRÊN GITHUB PAGES
+=============================== -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
 /* ============================================================
-                 FIREBASE CONFIGURATION
-   ============================================================ */
+    FIREBASE CONFIGURATION
+============================================================ */
 
 const firebaseConfig = {
   apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
@@ -317,16 +319,15 @@ const firebaseConfig = {
 };
 
 /* ============================================================
-                 INIT FIREBASE
-   ============================================================ */
-
+    INITIALIZE FIREBASE
+============================================================ */
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
 /* ============================================================
-                 DOM ELEMENTS
-   ============================================================ */
+    DOM ELEMENTS
+============================================================ */
 
 const authBox      = document.getElementById("authBox");
 const signupArea   = document.getElementById("signupArea");
@@ -336,20 +337,20 @@ const sidebarName  = document.getElementById("sidebarName");
 const sidebarEmail = document.getElementById("sidebarEmail");
 const sidebarAvatar = document.getElementById("sidebarAvatar");
 
-const navLookup  = document.getElementById("navLookup");
-const navHistory = document.getElementById("navHistory");
-const navAdmin   = document.getElementById("navAdmin");
-
-const appArea     = document.getElementById("appArea");
-
 const updateNameBox   = document.getElementById("updateNameBox");
 const updateNameInput = document.getElementById("updateNameInput");
 const saveNameBtn     = document.getElementById("saveNameBtn");
 const cancelNameBtn   = document.getElementById("cancelNameBtn");
 
+const navLookup  = document.getElementById("navLookup");
+const navHistory = document.getElementById("navHistory");
+const navAdmin   = document.getElementById("navAdmin");
+
+const appArea = document.getElementById("appArea");
+
 /* ============================================================
-                 ADMIN EMAIL
-   ============================================================ */
+    ADMIN EMAIL (CỐ ĐỊNH)
+============================================================ */
 
 const ADMIN_EMAIL = "vothienbdn@gmail.com";
 
@@ -358,8 +359,8 @@ function isAdmin(user) {
 }
 
 /* ============================================================
-                 SWITCH LOGIN / SIGNUP UI
-   ============================================================ */
+    SWITCH LOGIN <-> SIGNUP UI
+============================================================ */
 
 document.getElementById("showLoginBtn").addEventListener("click", (e) => {
   e.preventDefault();
@@ -374,8 +375,8 @@ document.getElementById("showSignupBtn").addEventListener("click", (e) => {
 });
 
 /* ============================================================
-                 SIGNUP ACCOUNT
-   ============================================================ */
+    SIGNUP ACCOUNT
+============================================================ */
 
 const signupForm = document.getElementById("signupForm");
 
@@ -400,6 +401,7 @@ signupForm.addEventListener("submit", async (event) => {
   try {
     const userCred = await auth.createUserWithEmailAndPassword(email, pass);
 
+    // Gán tên hiển thị cho tài khoản
     await userCred.user.updateProfile({ displayName: name });
 
     alert("Đăng ký thành công! Vui lòng đăng nhập.");
@@ -414,8 +416,8 @@ signupForm.addEventListener("submit", async (event) => {
 });
 
 /* ============================================================
-                 LOGIN ACCOUNT
-   ============================================================ */
+    LOGIN ACCOUNT
+============================================================ */
 
 const loginForm = document.getElementById("loginForm");
 
@@ -435,8 +437,8 @@ loginForm.addEventListener("submit", async (event) => {
 });
 
 /* ============================================================
-                 LOGOUT ACCOUNT
-   ============================================================ */
+    LOGOUT ACCOUNT
+============================================================ */
 
 document.getElementById("btnLogout").addEventListener("click", async () => {
   await auth.signOut();
@@ -445,19 +447,25 @@ document.getElementById("btnLogout").addEventListener("click", async () => {
 });
 
 /* ============================================================
-                 UPDATE DISPLAY NAME
-   ============================================================ */
+    UPDATE DISPLAY NAME
+============================================================ */
 
+// Mở popup
 document.getElementById("btnEditName").addEventListener("click", () => {
-  const current = sidebarName.textContent === "---" ? "" : sidebarName.textContent;
+  const current = sidebarName.textContent === "---"
+    ? ""
+    : sidebarName.textContent;
+
   updateNameInput.value = current;
   updateNameBox.classList.remove("hidden");
 });
 
+// Đóng popup
 cancelNameBtn.addEventListener("click", () => {
   updateNameBox.classList.add("hidden");
 });
 
+// Lưu tên mới
 saveNameBtn.addEventListener("click", async () => {
   const newName = updateNameInput.value.trim();
 
@@ -469,8 +477,9 @@ saveNameBtn.addEventListener("click", async () => {
   try {
     await auth.currentUser.updateProfile({ displayName: newName });
 
+    // Cập nhật UI
     sidebarName.textContent = newName;
-    sidebarAvatar.textContent = newName.trim().charAt(0).toUpperCase();
+    sidebarAvatar.textContent = newName.charAt(0).toUpperCase();
 
     updateNameBox.classList.add("hidden");
     alert("Cập nhật thành công!");
@@ -480,8 +489,8 @@ saveNameBtn.addEventListener("click", async () => {
   }
 });
 /* ============================================================
-                 PAGE NAVIGATION (MENU)
-   ============================================================ */
+    PAGE NAVIGATION (MENU)
+============================================================ */
 
 function showLookupPage() {
   lookupPage.classList.remove("hidden");
@@ -505,9 +514,11 @@ navLookup.addEventListener("click", showLookupPage);
 navHistory.addEventListener("click", showHistoryPage);
 navAdmin.addEventListener("click", showAdminPage);
 
+
+
 /* ============================================================
-                 EMPLOYEE — GỬI YÊU CẦU TRA CỨU B11
-   ============================================================ */
+    EMPLOYEE — GỬI YÊU CẦU TRA CỨU B11
+============================================================ */
 
 lookupForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -538,7 +549,7 @@ lookupForm.addEventListener("submit", async (event) => {
       customerName: customerName,
       cccd: cccdValue,
 
-      ketQua: {}, 
+      ketQua: {}, // admin sẽ cập nhật sau
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
@@ -553,9 +564,11 @@ lookupForm.addEventListener("submit", async (event) => {
   }
 });
 
+
+
 /* ============================================================
-                 EMPLOYEE — REALTIME LỊCH SỬ TRA CỨU
-   ============================================================ */
+    EMPLOYEE — REALTIME LỊCH SỬ TRA CỨU
+============================================================ */
 
 let unsubHistory = null;
 let seenResultIDs = new Set();
@@ -595,6 +608,7 @@ function startHistoryListener() {
           item.ketQua &&
           Object.keys(item.ketQua).length > 0;
 
+        // 🔔 thông báo mới
         if (hasResult && !seenResultIDs.has(item.id)) {
           seenResultIDs.add(item.id);
           newNotifCount++;
@@ -636,9 +650,11 @@ function startHistoryListener() {
     });
 }
 
+
+
 /* ============================================================
-                     CLICK CHUÔNG → MỞ LỊCH SỬ
-   ============================================================ */
+    CLICK CHUÔNG — MỞ LỊCH SỬ + RESET NOTIFICATION
+============================================================ */
 
 notifBell.addEventListener("click", () => {
   newNotifCount = 0;
@@ -648,9 +664,11 @@ notifBell.addEventListener("click", () => {
   startHistoryListener();
 });
 
+
+
 /* ============================================================
-                 ADMIN — REALTIME LOAD TẤT CẢ YÊU CẦU
-   ============================================================ */
+    ADMIN — REALTIME TẢI TẤT CẢ YÊU CẦU
+============================================================ */
 
 let unsubAdmin = null;
 
@@ -740,9 +758,11 @@ function startAdminListener() {
     });
 }
 
+
+
 /* ============================================================
-                 ADMIN — LƯU KẾT QUẢ TRẢ CIC
-   ============================================================ */
+    ADMIN — LƯU KẾT QUẢ CIC
+============================================================ */
 
 function attachAdminSaveEvents() {
   document.querySelectorAll(".saveKetQua").forEach((btn) => {
@@ -771,21 +791,28 @@ function attachAdminSaveEvents() {
   });
 }
 
+
+
 /* ============================================================
-                 AUTH STATE LISTENER
-   ============================================================ */
+    AUTH STATE LISTENER
+============================================================ */
 
 auth.onAuthStateChanged((user) => {
 
   if (user) {
+    // Ẩn form đăng nhập
     authBox.classList.add("hidden");
+
+    // Hiện giao diện
     appArea.classList.remove("hidden");
 
+    // Sidebar info
     const name = user.displayName || "(Chưa cập nhật)";
     sidebarName.textContent = name;
     sidebarEmail.textContent = user.email;
-    sidebarAvatar.textContent = name.trim().charAt(0).toUpperCase();
+    sidebarAvatar.textContent = name.charAt(0).toUpperCase();
 
+    // Admin permission
     if (isAdmin(user)) {
       navAdmin.classList.remove("hidden");
       startAdminListener();
@@ -793,18 +820,21 @@ auth.onAuthStateChanged((user) => {
       navAdmin.classList.add("hidden");
     }
 
+    // Reset notification
     seenResultIDs.clear();
     newNotifCount = 0;
     notifCount.textContent = "0";
 
+    // Bắt đầu load lịch sử realtime
     startHistoryListener();
 
   } else {
+    // Người dùng đăng xuất
     authBox.classList.remove("hidden");
     appArea.classList.add("hidden");
 
     sidebarName.textContent = "---";
-    sidebarEmail.textContent = "---";
+   _sidebarEmail.textContent = "---";
     sidebarAvatar.textContent = "?";
 
     notifCount.textContent = "0";
