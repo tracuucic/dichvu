@@ -6,6 +6,7 @@
   <title>Trang Tổng Hợp</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <meta name="color-scheme" content="light">
+
   <style>
     .avatar-green { background: linear-gradient(135deg,#16a34a,#34d399); }
     .card { background: #ffffff; }
@@ -30,111 +31,81 @@
       line-height: 18px;
     }
 
-    /* Ensure login notification removed entirely (hidden) */
     #loginNotifBox { display: none !important; }
 
-    /* Centered login notification styles (kept but hidden) */
-    #loginNotifBox {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #facc15; /* nền vàng */
-      border: 2px solid #eab308;
-      border-radius: 8px;
-      padding: 16px 24px;
-      z-index: 1000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: none;
-      font-weight: bold;
-      color: #000;
-      animation: fadein 0.5s;
-    }
-    #loginNotifBox button {
-      margin-top: 10px;
-      background: #34d399;
-      color: white;
-      padding: 4px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    @keyframes fadein {
-      from {opacity:0;} to {opacity:1;}
-    }
+    #tinhLaiPage iframe { border: 0; width: 100%; height: 100%; border-radius: 8px; }
+    #tinhLaiPage { height: calc(100vh - 180px); min-height: 480px; }
 
-    /* iframe container styling for Tính lãi suất & Quy Trình page */
-    /* Use full available height minus header/footer, and set a sensible min-height for mobile */
-    #tinhLaiPage iframe, #quyTrinhPage iframe { border: 0; width: 100%; height: 100%; border-radius: 8px; }
-    #tinhLaiPage, #quyTrinhPage { height: calc(100vh - 180px); min-height: 480px; } /* roughly fit page minus header/footer */
-    
-    /* Small screens tweak to avoid overflow behind header */
     @media (max-width: 640px) {
-      #tinhLaiPage, #quyTrinhPage { height: calc(100vh - 160px); }
+      #tinhLaiPage { height: calc(100vh - 160px); }
     }
   </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800">
 
   <!-- Header -->
   <header class="bg-white border-b">
-    <div class="max-w-6xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-4">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 md:w-10 md:h-10 rounded-md avatar-green flex items-center justify-center text-white font-semibold text-sm">MAFC</div>
+        <div class="w-10 h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">MAFC</div>
         <div>
-          <div class="text-base md:text-lg font-semibold">TRANG TỔNG HỢP</div>
-          <div class="text-xs text-gray-500">Giải Pháp Tạm Thời-Call:0964307247</div>
+          <div class="text-lg font-semibold">TRANG TỔNG HỢP</div>
+          <div class="text-xs text-gray-500">Giải Pháp Tạm Thời - Call:0964307247</div>
         </div>
       </div>
-      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs md:max-w-md text-right">
+
+      <div id="headerRight" class="text-sm text-gray-600 truncate max-w-xs text-right">
         <span id="notifBell" class="notif-bell">🔔<span id="notifCount" class="notif-count">0</span></span>
       </div>
     </div>
   </header>
 
-  <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
+  <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
 
     <!-- SIDEBAR -->
-    <aside class="w-full md:w-64 bg-white border rounded-lg p-4 md:p-6 flex-shrink-0">
-      <div class="flex items-center gap-3 mb-4 md:mb-6">
+    <aside class="w-full md:w-64 bg-white border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-6">
         <div id="sidebarAvatar" class="w-10 h-10 rounded-md avatar-green flex items-center justify-center text-white font-bold">?</div>
-<div class="min-w-0">
-  <div id="sidebarName" class="font-semibold truncate">---</div>
-  <div id="sidebarEmail" class="text-xs text-gray-500 truncate">---</div>
-</div>
+        <div>
+          <div id="sidebarName" class="font-semibold truncate">---</div>
+          <div id="sidebarEmail" class="text-xs text-gray-500 truncate">---</div>
+        </div>
       </div>
 
       <nav class="space-y-2">
-        <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700 flex items-center gap-3">🔍 Tra cứu CIC</button>
-        <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">📜 Lịch sử tra cứu</button>
+        <button id="navLookup" class="w-full text-left px-3 py-2 rounded-md bg-green-50 text-green-700">🔍 Tra cứu CIC</button>
+        <button id="navHistory" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100">📜 Lịch sử tra cứu</button>
 
-        <!-- NEW: Tính Lãi Suất button added directly under history -->
-        <button id="navTinhLai" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">💰 Tính Lãi Suất</button>
+        <!-- NÚT ADMIN - ẨN ĐẾN KHI ĐÚNG ADMIN -->
+        <button id="navAdmin" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 hidden">🛡️ Trang Admin</button>
 
-        <!-- ✅ MỚI: Nút Quy Trình Sản Phẩm MAFC (ngay dưới Tính Lãi Suất) -->
-        <button id="navQuyTrinh" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">📋 Quy Trình Sản Phẩm MAFC</button>
+        <button id="navTinhLai" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100">💰 Tính Lãi Suất</button>
       </nav>
 
       <div class="mt-4 border-t pt-3">
-        <button id="btnEditName" class="w-full text-left text-sm mb-2 px-2 py-2 rounded-md hover:bg-gray-100">✏️ Cập nhật họ tên</button>
-        <button id="btnLogout" class="w-full text-left text-sm text-red-600 px-2 py-2 rounded-md hover:bg-red-50">🚪 Đăng xuất</button>
+        <button id="btnEditName" class="w-full text-left text-sm mb-2 px-2 py-2 hover:bg-gray-100">✏️ Cập nhật họ tên</button>
+        <button id="btnLogout" class="w-full text-left text-sm text-red-600 px-2 py-2 hover:bg-red-50">🚪 Đăng xuất</button>
       </div>
     </aside>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTENT (sẽ gửi phần này ở PHẦN 2) -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1">
 
       <!-- LOGIN / SIGNUP BOX -->
-      <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
+      <section id="authBox" class="mx-auto card rounded-lg shadow p-6 max-w-lg">
         <div id="authForms">
-          <!-- Signup -->
+
+          <!-- SIGNUP -->
           <div id="signupArea">
-            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
+            <h3 class="text-lg font-semibold mb-3">Đăng ký tài khoản</h3>
             <form id="signupForm" class="space-y-2">
               <input id="signupName" class="w-full border rounded-md px-3 py-2" placeholder="Họ tên nhân viên" required />
               <input id="signupEmail" type="email" class="w-full border rounded-md px-3 py-2" placeholder="Email" required />
               <input id="signupPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
               <input id="signupRepass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Nhập lại mật khẩu" required />
+
               <div class="flex gap-2">
                 <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md">Đăng ký</button>
                 <button id="showLoginBtn" class="flex-1 border rounded-md px-4 py-2">Đã có tài khoản</button>
@@ -142,83 +113,81 @@
             </form>
           </div>
 
-          <!-- Login -->
+          <!-- LOGIN -->
           <div id="loginArea" class="hidden">
-            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng nhập</h3>
+            <h3 class="text-lg font-semibold mb-3">Đăng nhập</h3>
             <form id="loginForm" class="space-y-2">
               <input id="loginEmail" type="email" class="w-full border rounded-md px-3 py-2" placeholder="Email" required />
               <input id="loginPass" type="password" class="w-full border rounded-md px-3 py-2" placeholder="Mật khẩu" required />
+
               <div class="flex gap-2">
                 <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md">Đăng nhập</button>
                 <button id="showSignupBtn" class="flex-1 border rounded-md px-4 py-2">Đăng ký</button>
               </div>
             </form>
           </div>
+
         </div>
       </section>
 
-      <!-- CONTROLLED PAGES -->
+      <!-- APP AREA -->
       <section id="appArea" class="hidden space-y-6">
-        <!-- Lookup page -->
-        <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
 
-          <!-- THÔNG BÁO CHỮ ĐỎ, KHÔNG NỀN -->
+        <!-- TRA CỨU PAGE -->
+        <div id="lookupPage" class="card rounded-lg p-6">
+
           <div class="mb-4 text-red-600 font-bold text-xs">
-            📢 Thông báo thời gian tra cứu B11- <br> 
-            Tra cứu trong giờ hành chính: Kết quả từ 30 phút đến 1 tiếng- <br>
-            VUI LÒNG GHI CHÍNH XÁC TÊN KHÁCH HÀNG, KHÔNG CHECK ĐC SỐ CMND CŨ NHÉ.<br>
-            *** KẾT QUẢ TRA CỨU CIC NẲM Ở MỤC "Lịch Sử Tra CỨU" ***
+            📢 Thông báo thời gian tra cứu B11<br>
+            Tra cứu giờ hành chính: kết quả từ 30 phút – 1 tiếng<br>
+            Vui lòng ghi chính xác họ tên khách hàng, không check được CMND cũ.<br>
+            *** KẾT QUẢ TRA CỨU HIỂN THỊ Ở "Lịch Sử Tra Cứu" ***
           </div>
 
           <h3 class="text-lg font-semibold mb-4">🔎 Tra cứu B11</h3>
+
           <form id="lookupForm" class="grid grid-cols-1 md:grid-cols-12 gap-4">
             <div class="md:col-span-7">
               <label class="text-sm text-gray-600">Họ và tên khách hàng</label>
               <input id="fullname" class="w-full border rounded-md px-3 py-2" placeholder="Nguyễn Văn A" required />
             </div>
+
             <div class="md:col-span-5">
               <label class="text-sm text-gray-600">Số CCCD (12 số)</label>
               <input id="cccd" maxlength="12" class="w-full border rounded-md px-3 py-2" placeholder="123456789012" required />
             </div>
+
             <div class="md:col-span-12">
               <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">Tra cứu</button>
             </div>
           </form>
+
           <div id="lookupResult" class="mt-4 text-sm text-gray-700">Chưa có kết quả.</div>
+
         </div>
 
-        <!-- History page -->
-        <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
+        <!-- LỊCH SỬ PAGE (NHÂN VIÊN) -->
+        <div id="historyPage" class="card rounded-lg p-6 hidden">
           <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
           <div id="historyList" class="space-y-2 text-sm text-gray-700">Chưa có lịch sử.</div>
         </div>
 
-        <!-- TÍNH LÃI SUẤT PAGE -->
-        <div id="tinhLaiPage" class="card rounded-lg p-0 md:p-0 hidden" style="height: calc(100vh - 100px);">
+        <!-- ADMIN PAGE (QUẢN LÝ TẤT CẢ TRA CỨU) -->
+        <div id="adminPage" class="card rounded-lg p-6 hidden">
+          <h3 class="text-xl font-semibold mb-4">🛡️ Quản lý tra cứu (ADMIN)</h3>
+          <div id="adminList" class="space-y-4 text-sm text-gray-700">Đang tải...</div>
+        </div>
+
+        <!-- TÍNH LÃI PAGE -->
+        <div id="tinhLaiPage" class="card rounded-lg p-0 hidden" style="height: calc(100vh - 120px);">
           <div class="flex items-center justify-between px-4 py-3 border-b">
             <h3 class="text-lg font-semibold">💰 Tính Lãi Suất</h3>
             <button id="btnBackFromTinhLai" class="text-sm px-3 py-1 rounded-md border">⬅ Quay lại</button>
           </div>
+
           <iframe 
             id="iframeTinhLai"
-            src="https://miraeasset-mt.github.io/vaytieudung/" 
-            class="w-full h-full rounded-lg border-0" 
-            style="min-height: calc(100vh - 100px);">
-          </iframe>
-        </div>
-
-        <!-- MỚI: QUY TRÌNH SẢN PHẨM MAFC PAGE -->
-        <div id="quyTrinhPage" class="card rounded-lg p-0 md:p-0 hidden" style="height: calc(100vh - 100px);">
-          <div class="flex items-center justify-between px-4 py-3 border-b">
-            <h3 class="text-lg font-semibold">📋 Quy Trình Sản Phẩm MAFC</h3>
-            <button id="btnBackFromQuyTrinh" class="text-sm px-3 py-1 rounded-md border">⬅ Quay lại</button>
-          </div>
-          <iframe 
-            id="iframeQuyTrinh"
-            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTpUkz-p9g7OLuKMoS1ai5jOzKlXsAo1_WRAOsm48ziDDDDLdYf0PeXCohCgjhEJA/pubhtml?widget=true&amp;headers=false" 
-            class="w-full h-full rounded-lg border-0" 
-            style="min-height: calc(100vh - 100px);" 
-            allowfullscreen>
+            src="https://miraeasset-mt.github.io/vaytieudung/"
+            class="w-full h-full rounded-lg border-0">
           </iframe>
         </div>
 
@@ -227,283 +196,424 @@
     </main>
   </div>
 
-  <!-- Update name modal -->
-  <div id="updateNameBox" class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
-    <div class="bg-white p-3 rounded-lg shadow w-64">
-      <div class="mb-2 text-sm font-medium">Cập nhật họ tên</div>
-      <input id="updateNameInput" class="w-full border rounded-md px-3 py-2 mb-2" placeholder="Họ và tên mới" />
-      <div class="flex gap-2">
-        <button id="saveNameBtn" class="bg-green-600 text-white px-3 py-1 rounded-md">Lưu</button>
-        <button id="cancelNameBtn" class="border px-3 py-1 rounded-md">Hủy</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Centered login notification (kept in DOM but hidden via CSS) -->
-  <div id="loginNotifBox">
-    📢 Chào mừng bạn đến với hệ thống Tra cứu B11T!<br>
-    Hiện tại tra B11T chậm nên bạn vui lòng kiên nhẫn.<br>
-    Kết quả xem ở phần Lịch Sử Tra Cứu.<br>
-    Chúc bạn 1 ngày làm việc thành công! VQT
-    <button id="closeLoginNotifBtn">Đóng</button>
-  </div>
-
-  <!-- Footer -->
-  <footer class="mt-6 md:mt-8">
-    <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
-      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín &amp; Linh Hoạt
+  <!-- FOOTER -->
+  <footer class="mt-6">
+    <div class="max-w-6xl mx-auto px-4 py-4 text-center text-sm text-gray-500 border-t bg-white">
+      © Copyright 2025 VQT. Giải Pháp Vay Tiêu Dùng Uy Tín & Linh Hoạt
     </div>
   </footer>
+<script type="module">
+  import { 
+    initializeApp 
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
-  <!-- Firebase + App logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { 
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+    signOut, updateProfile, onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
-      authDomain: "tracuucic-login.firebaseapp.com",
-      projectId: "tracuucic-login",
-      storageBucket: "tracuucic-login.firebasestorage.app",
-      messagingSenderId: "648747772689",
-      appId: "1:648747772689:web:69da6e1534ed63efddbab0",
-      measurementId: "G-ELVGHX2GL4"
-    };
+  import { 
+    getFirestore, collection, addDoc, serverTimestamp, query, orderBy, 
+    limit, onSnapshot, doc, getDoc, updateDoc, where 
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
 
-    // Elements
-    const authBox = document.getElementById('authBox');
-    const signupArea = document.getElementById('signupArea');
-    const loginArea = document.getElementById('loginArea');
-    const appArea = document.getElementById('appArea');
-    const lookupPage = document.getElementById('lookupPage');
-    const historyPage = document.getElementById('historyPage');
-    const historyList = document.getElementById('historyList');
-    const lookupResult = document.getElementById('lookupResult');
-    const headerRight = document.getElementById('headerRight');
-    const sidebarName = document.getElementById('sidebarName');
-    const sidebarEmail = document.getElementById('sidebarEmail');
-    const btnNavLookup = document.getElementById('navLookup');
-    const btnNavHistory = document.getElementById('navHistory');
-    const btnNavTinhLai = document.getElementById('navTinhLai');
-    const btnNavQuyTrinh = document.getElementById('navQuyTrinh');
-    const btnEditName = document.getElementById('btnEditName');
-    const updateNameBox = document.getElementById('updateNameBox');
-    const updateNameInput = document.getElementById('updateNameInput');
-    const saveNameBtn = document.getElementById('saveNameBtn');
-    const cancelNameBtn = document.getElementById('cancelNameBtn');
-    const tinhLaiPage = document.getElementById('tinhLaiPage');
-    const iframeTinhLai = document.getElementById('iframeTinhLai');
-    const btnBackFromTinhLai = document.getElementById('btnBackFromTinhLai');
+  /* ==========================
+     FIREBASE CONFIG
+  ========================== */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
+    authDomain: "tracuucic-login.firebaseapp.com",
+    projectId: "tracuucic-login",
+    storageBucket: "tracuucic-login.firebasestorage.app",
+    messagingSenderId: "648747772689",
+    appId: "1:648747772689:web:69da6e1534ed63efddbab0",
+    measurementId: "G-ELVGHX2GL4"
+  };
 
-    // NEW elements for Quy Trình
-    const quyTrinhPage = document.getElementById('quyTrinhPage');
-    const iframeQuyTrinh = document.getElementById('iframeQuyTrinh');
-    const btnBackFromQuyTrinh = document.getElementById('btnBackFromQuyTrinh');
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    const notifBell = document.getElementById('notifBell');
-    const notifCount = document.getElementById('notifCount');
-    let newNotifCount = 0;
-    let lastSeenKetQuaIds = new Set();
-    let unsubscribeHistory = null;
 
-    const loginNotifBox = document.getElementById('loginNotifBox');
-    const closeLoginNotifBtn = document.getElementById('closeLoginNotifBtn');
+  /* ==========================
+     DOM ELEMENTS
+  ========================== */
+  const authBox = document.getElementById("authBox");
+  const appArea = document.getElementById("appArea");
 
-    // Show/hide auth forms
-    document.getElementById('showLoginBtn').addEventListener('click', e => { e.preventDefault(); signupArea.classList.add('hidden'); loginArea.classList.remove('hidden'); });
-    document.getElementById('showSignupBtn').addEventListener('click', e => { e.preventDefault(); loginArea.classList.add('hidden'); signupArea.classList.remove('hidden'); });
+  const signupArea = document.getElementById("signupArea");
+  const loginArea = document.getElementById("loginArea");
 
-    // Signup
-    document.getElementById('signupForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const name = document.getElementById('signupName').value.trim();
-      const email = document.getElementById('signupEmail').value.trim();
-      const pass = document.getElementById('signupPass').value;
-      const repass = document.getElementById('signupRepass').value;
-      if (!name || !email || !pass) { alert('Vui lòng nhập đủ thông tin'); return; }
-      if (pass !== repass) { alert('Mật khẩu nhập lại không khớp'); return; }
-      try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(userCred.user, { displayName: name });
-        alert('Đăng ký thành công — vui lòng đăng nhập');
-        document.getElementById('signupForm').reset();
-        loginArea.classList.remove('hidden'); signupArea.classList.add('hidden');
-      } catch (err) { alert('Lỗi đăng ký: ' + err.message); }
-    });
+  const sidebarName = document.getElementById("sidebarName");
+  const sidebarEmail = document.getElementById("sidebarEmail");
 
-    // Login
-    document.getElementById('loginForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
-      const pass = document.getElementById('loginPass').value;
-      try { await signInWithEmailAndPassword(auth, email, pass); document.getElementById('loginForm').reset(); }
-      catch (err) { alert('Lỗi đăng nhập: ' + err.message); }
-    });
+  const navLookup = document.getElementById("navLookup");
+  const navHistory = document.getElementById("navHistory");
+  const navAdmin = document.getElementById("navAdmin");
+  const navTinhLai = document.getElementById("navTinhLai");
 
-    // Logout
-    document.getElementById('btnLogout').addEventListener('click', async () => { await signOut(auth); if (unsubscribeHistory) unsubscribeHistory(); });
+  const lookupPage = document.getElementById("lookupPage");
+  const historyPage = document.getElementById("historyPage");
+  const adminPage = document.getElementById("adminPage");
+  const tinhLaiPage = document.getElementById("tinhLaiPage");
 
-    // Navigation
-    btnNavLookup.addEventListener('click', () => { lookupPage.classList.remove('hidden'); historyPage.classList.add('hidden'); tinhLaiPage.classList.add('hidden'); quyTrinhPage.classList.add('hidden'); });
-    btnNavHistory.addEventListener('click', () => { lookupPage.classList.add('hidden'); historyPage.classList.remove('hidden'); tinhLaiPage.classList.add('hidden'); quyTrinhPage.classList.add('hidden'); startHistoryListener(); });
-    btnNavTinhLai.addEventListener('click', () => {
-      lookupPage.classList.add('hidden');
-      historyPage.classList.add('hidden');
-      tinhLaiPage.classList.remove('hidden');
-      quyTrinhPage.classList.add('hidden');
-      iframeTinhLai.src = 'https://miraeasset-mt.github.io/vaytieudung/';
-    });
+  const notifBell = document.getElementById("notifBell");
+  const notifCount = document.getElementById("notifCount");
 
-    // NEW: Quy Trình navigation
-    btnNavQuyTrinh.addEventListener('click', () => {
-      lookupPage.classList.add('hidden');
-      historyPage.classList.add('hidden');
-      tinhLaiPage.classList.add('hidden');
-      quyTrinhPage.classList.remove('hidden');
-      // src already set in HTML; if you want to lazy-load, uncomment next line and comment src in HTML
-      // iframeQuyTrinh.src = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTpUkz-p9g7OLuKMoS1ai5jOzKlXsAo1_WRAOsm48ziDDDDLdYf0PeXCohCgjhEJA/pubhtml?widget=true&headers=false';
-    });
+  let newNotifCount = 0;
+  let lastSeen = new Set();
+  let unsubscribeHistory = null;
 
-    // Back from tinh lai
-    btnBackFromTinhLai.addEventListener('click', () => {
-      tinhLaiPage.classList.add('hidden');
-      lookupPage.classList.remove('hidden');
-    });
 
-    // Back from Quy Trình
-    btnBackFromQuyTrinh.addEventListener('click', () => {
-      quyTrinhPage.classList.add('hidden');
-      lookupPage.classList.remove('hidden');
-    });
+  /* ==========================
+     SHOW LOGIN / SIGNUP
+  ========================== */
+  document.getElementById("showLoginBtn").onclick = (e) => {
+    e.preventDefault();
+    signupArea.classList.add("hidden");
+    loginArea.classList.remove("hidden");
+  };
 
-    // Edit name
-    btnEditName.addEventListener('click', () => { updateNameInput.value = sidebarName.textContent==='---'?'':sidebarName.textContent; updateNameBox.classList.remove('hidden'); });
-    cancelNameBtn.addEventListener('click', () => updateNameBox.classList.add('hidden'));
-    saveNameBtn.addEventListener('click', async () => {
-      const newName = updateNameInput.value.trim();
-      if (!newName) return alert('Nhập họ tên mới');
-      try {
-        await updateProfile(auth.currentUser, { displayName: newName });
-        sidebarName.textContent = newName;
-        headerRight.textContent = newName + ' • ' + (auth.currentUser.email || '');
-        updateNameBox.classList.add('hidden');
-        alert('Cập nhật thành công');
-      } catch (err) { alert('Lỗi cập nhật: ' + err.message); }
-    });
+  document.getElementById("showSignupBtn").onclick = (e) => {
+    e.preventDefault();
+    signupArea.classList.remove("hidden");
+    loginArea.classList.add("hidden");
+  };
 
-    // Lookup submit
-    document.getElementById('lookupForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const customerName = document.getElementById('fullname').value.trim();
-      const cccd = document.getElementById('cccd').value.trim();
-      if (!customerName || cccd.length !== 12) { alert('Nhập họ tên & CCCD 12 chữ số'); return; }
 
-      lookupResult.innerHTML = '⏳ Đang gửi dữ liệu...';
-      const user = auth.currentUser;
-      if (!user) { alert('Vui lòng đăng nhập'); return; }
+  /* ==========================
+     SIGNUP
+  ========================== */
+  document.getElementById("signupForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      try {
-        await addDoc(collection(db, 'tra_cuu_b11'), {
-          uid: user.uid,
-          customerName,
-          cccd,
-          ketQua: "",
-          employeeName: user.displayName || '(Chưa cập nhật)',
-          employeeEmail: user.email || null,
-          createdAt: serverTimestamp()
-        });
-        lookupResult.innerHTML = `<span class="text-green-600 font-semibold">Đã gửi thành công.</span>`;
-        document.getElementById('lookupForm').reset();
-      } catch (err) { lookupResult.innerHTML = `<span class="text-red-600">Lỗi: ${err.message}</span>`; }
-    });
+    const name = document.getElementById("signupName").value.trim();
+    const email = document.getElementById("signupEmail").value.trim();
+    const pass = document.getElementById("signupPass").value;
+    const repass = document.getElementById("signupRepass").value;
 
-    // Realtime listener for history without sound
-    function startHistoryListener() {
-      if (unsubscribeHistory) unsubscribeHistory();
-      const user = auth.currentUser;
-      if (!user) return;
-      const q = query(collection(db, 'tra_cuu_b11'), orderBy('createdAt','desc'), limit(100));
+    if (pass !== repass) return alert("Mật khẩu nhập lại không khớp");
 
-      unsubscribeHistory = onSnapshot(q, snapshot => {
-        const items = [];
-        snapshot.forEach(doc => {
-          const d = doc.data();
-          if(d.uid === user.uid) items.push({ id: doc.id, ...d });
-        });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(userCredential.user, { displayName: name });
+      alert("Đăng ký thành công, vui lòng đăng nhập!");
 
-        if(!items.length){ historyList.innerHTML='<div>Chưa có lịch sử tra cứu.</div>'; return; }
-
-        historyList.innerHTML='';
-        items.forEach(d=>{
-          const t=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleString():'';
-          const item=document.createElement('div');
-          item.className='p-3 border rounded-md';
-          item.innerHTML=`<div class="font-medium">${d.customerName}</div>
-            <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
-            <div class="text-sm text-blue-600">Kết quả: ${d.ketQua || "Chưa có"}</div>
-            <div class="text-xs text-gray-400">Nhân viên: ${d.employeeName} • ${d.employeeEmail || ''}</div>`;
-          historyList.appendChild(item);
-
-          // notify only when ketQua exists and not seen yet
-          if(d.ketQua && !lastSeenKetQuaIds.has(d.id)){
-            lastSeenKetQuaIds.add(d.id);
-            newNotifCount++;
-            notifCount.textContent = newNotifCount;
-          }
-        });
-      });
-    }
-
-    // Bell click: reset & open history
-    notifBell.addEventListener('click', () => {
-      newNotifCount = 0;
-      notifCount.textContent = '0';
-      lookupPage.classList.add('hidden');
-      historyPage.classList.remove('hidden');
-      startHistoryListener();
-    });
-
-    // Close login notification (kept but no-op since hidden)
-    closeLoginNotifBtn.addEventListener('click', () => { loginNotifBox.style.display = 'none'; });
-
-    // Auth state
-    onAuthStateChanged(auth,user=>{
-      if(user){
-        authBox.classList.add('hidden'); appArea.classList.remove('hidden');
-        const name=user.displayName||'(Chưa cập nhật)';
-        sidebarName.textContent=name; sidebarEmail.textContent=user.email||'';
-        headerRight.textContent=name + ' • ' + (user.email||'');
-        lastSeenKetQuaIds.clear();
-        startHistoryListener();
-
-        // NOTE: login notification intentionally not shown (removed)
-        // loginNotifBox.style.display = 'block';
-        // setTimeout(()=>{ loginNotifBox.style.display = 'none'; }, 5000);
-      }else{
-        authBox.classList.remove('hidden'); appArea.classList.add('hidden');
-        headerRight.textContent=''; sidebarName.textContent='---'; sidebarEmail.textContent='---';
-        if(unsubscribeHistory) unsubscribeHistory();
-      }
-    });
-  </script>
-  <script>
-  // Khi tải trang, nếu có tên nhân viên trong localStorage, hiển thị chữ cái đầu
-  window.addEventListener("load", () => {
-    const name = localStorage.getItem("userName") || "Nhân viên";
-    const avatarEl = document.getElementById("sidebarAvatar");
-    const nameEl = document.getElementById("sidebarName");
-
-    if (nameEl) nameEl.textContent = name;
-    if (avatarEl) {
-      avatarEl.textContent = name.trim().charAt(0).toUpperCase(); // Lấy chữ đầu tiên
+      signupArea.classList.add("hidden");
+      loginArea.classList.remove("hidden");
+    } 
+    catch (err) {
+      alert("Lỗi đăng ký: " + err.message);
     }
   });
-</script>
 
-</body>
-</html>
+
+  /* ==========================
+     LOGIN
+  ========================== */
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const pass = document.getElementById("loginPass").value;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } 
+    catch (err) {
+      alert("Lỗi đăng nhập: " + err.message);
+    }
+  });
+
+
+  /* ==========================
+     LOGOUT
+  ========================== */
+  document.getElementById("btnLogout").onclick = async () => {
+    await signOut(auth);
+  };
+
+
+  /* ==========================
+     CHECK ADMIN ROLE
+  ========================== */
+  async function isAdmin(user) {
+    if (!user) return false;
+
+    // CỐ ĐỊNH ADMIN EMAIL THEO YÊU CẦU
+    if (user.email === "thien.miraeasset@gmail.com") return true;
+
+    return false;
+  }
+
+
+  /* ==========================
+     AUTH STATE CHANGE
+  ========================== */
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      authBox.classList.add("hidden");
+      appArea.classList.remove("hidden");
+
+      sidebarName.textContent = user.displayName || "(Chưa cập nhật)";
+      sidebarEmail.textContent = user.email;
+
+      const adminStatus = await isAdmin(user);
+
+      if (adminStatus) {
+        navAdmin.classList.remove("hidden");
+      } else {
+        navAdmin.classList.add("hidden");
+      }
+
+      startEmployeeHistoryListener();
+    } 
+    else {
+      appArea.classList.add("hidden");
+      authBox.classList.remove("hidden");
+    }
+  });
+
+
+  /* ==========================
+     EMPLOYEE HISTORY LISTENER
+  ========================== */
+  function startEmployeeHistoryListener() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const q = query(
+      collection(db, "tra_cuu_b11"),
+      where("uid", "==", user.uid),
+      orderBy("createdAt", "desc"),
+      limit(100)
+    );
+
+    if (unsubscribeHistory) unsubscribeHistory();
+
+    unsubscribeHistory = onSnapshot(q, (snapshot) => {
+      const historyList = document.getElementById("historyList");
+      historyList.innerHTML = "";
+
+      if (snapshot.empty) {
+        historyList.innerHTML = "<div>Chưa có lịch sử tra cứu.</div>";
+        return;
+      }
+
+      snapshot.forEach((docu) => {
+        const d = docu.data();
+        const t = d.createdAt?.toDate?.().toLocaleString() || "";
+
+        const el = document.createElement("div");
+        el.className = "p-3 border rounded-md";
+
+        el.innerHTML = `
+          <div class="font-medium">${d.customerName}</div>
+          <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
+
+          <div class="mt-1 text-sm text-blue-700 font-medium">Kết quả tra cứu:</div>
+          <div class="text-xs text-gray-700 ml-2">
+            TCTD: ${d.ketQua?.tctd || "—"}<br>
+            Nợ xấu: ${d.ketQua?.noXau || "—"}<br>
+            Nợ chú ý: ${d.ketQua?.noChuY || "—"}<br>
+            Tổng dư nợ: ${d.ketQua?.tongDuNo || "—"}<br>
+            Ghi chú: ${d.ketQua?.ghiChu || "—"}
+          </div>
+        `;
+
+        historyList.appendChild(el);
+
+        if (d.ketQua && !lastSeen.has(docu.id)) {
+          lastSeen.add(docu.id);
+          newNotifCount++;
+          notifCount.textContent = newNotifCount;
+        }
+      });
+    });
+  }
+
+
+  /* ==========================
+     NOTIFICATION BELL
+  ========================== */
+  notifBell.onclick = () => {
+    newNotifCount = 0;
+    notifCount.textContent = "0";
+
+    lookupPage.classList.add("hidden");
+    historyPage.classList.remove("hidden");
+    adminPage.classList.add("hidden");
+    tinhLaiPage.classList.add("hidden");
+  };
+
+
+  /* ==========================
+     NAVIGATION
+  ========================== */
+  navLookup.onclick = () => {
+    lookupPage.classList.remove("hidden");
+    historyPage.classList.add("hidden");
+    adminPage.classList.add("hidden");
+    tinhLaiPage.classList.add("hidden");
+  };
+
+  navHistory.onclick = () => {
+    lookupPage.classList.add("hidden");
+    historyPage.classList.remove("hidden");
+    adminPage.classList.add("hidden");
+    tinhLaiPage.classList.add("hidden");
+  };
+
+  navTinhLai.onclick = () => {
+    lookupPage.classList.add("hidden");
+    historyPage.classList.add("hidden");
+    adminPage.classList.add("hidden");
+    tinhLaiPage.classList.remove("hidden");
+  };
+
+  document.getElementById("btnBackFromTinhLai").onclick = () => {
+    tinhLaiPage.classList.add("hidden");
+    lookupPage.classList.remove("hidden");
+  };
+
+  navAdmin.onclick = () => {
+    lookupPage.classList.add("hidden");
+    historyPage.classList.add("hidden");
+    adminPage.classList.remove("hidden");
+    tinhLaiPage.classList.add("hidden");
+    startAdminListener();
+  };
+
+
+  /* ==========================
+     ADMIN LISTENER
+  ========================== */
+  function startAdminListener() {
+    const q = query(
+      collection(db, "tra_cuu_b11"),
+      orderBy("createdAt", "desc"),
+      limit(200)
+    );
+
+    onSnapshot(q, (snapshot) => {
+      const adminList = document.getElementById("adminList");
+      adminList.innerHTML = "";
+
+      snapshot.forEach((docu) => {
+        const d = docu.data();
+        const id = docu.id;
+        const t = d.createdAt?.toDate?.().toLocaleString() || "";
+
+        const el = document.createElement("div");
+        el.className = "p-4 border rounded-lg";
+
+        el.innerHTML = `
+          <div class="font-medium text-lg">${d.customerName}</div>
+          <div class="text-xs text-gray-500">CCCD: ${d.cccd} — ${t}</div>
+          <div class="text-xs text-gray-400 mb-2">Nhân viên: ${d.employeeName} • ${d.employeeEmail}</div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+            <div>
+              <label class="text-xs">Hiện đang quan hệ tại TCTD</label>
+              <input id="tctd_${id}" class="border rounded-md px-2 py-1 w-full" 
+                     value="${d.ketQua?.tctd || ""}">
+            </div>
+
+            <div>
+              <label class="text-xs">Hiện đang nợ xấu</label>
+              <input id="noxau_${id}" class="border rounded-md px-2 py-1 w-full" 
+                     value="${d.ketQua?.noXau || ""}">
+            </div>
+
+            <div>
+              <label class="text-xs">Hiện đang nợ chú ý</label>
+              <input id="nochuy_${id}" class="border rounded-md px-2 py-1 w-full" 
+                     value="${d.ketQua?.noChuY || ""}">
+            </div>
+
+            <div>
+              <label class="text-xs">Tổng dư nợ</label>
+              <input id="tongduno_${id}" class="border rounded-md px-2 py-1 w-full" 
+                     value="${d.ketQua?.tongDuNo || ""}">
+            </div>
+
+          </div>
+
+          <div class="mt-2">
+            <label class="text-xs">Ghi chú khác</label>
+            <textarea id="ghichu_${id}" class="border rounded-md px-2 py-1 w-full" rows="2">${d.ketQua?.ghiChu || ""}</textarea>
+          </div>
+
+          <button onclick="saveKetQua('${id}')" 
+            class="mt-3 bg-green-600 text-white px-4 py-2 rounded-md text-sm">
+            💾 Lưu kết quả
+          </button>
+        `;
+
+        adminList.appendChild(el);
+      });
+    });
+  }
+
+
+  /* ==========================
+     SAVE ADMIN RESULT
+  ========================== */
+  window.saveKetQua = async (id) => {
+    const tctd = document.getElementById(`tctd_${id}`).value.trim();
+    const noXau = document.getElementById(`noxau_${id}`).value.trim();
+    const noChuY = document.getElementById(`nochuy_${id}`).value.trim();
+    const tongDuNo = document.getElementById(`tongduno_${id}`).value.trim();
+    const ghiChu = document.getElementById(`ghichu_${id}`).value.trim();
+
+    try {
+      await updateDoc(doc(db, "tra_cuu_b11", id), {
+        ketQua: { tctd, noXau, noChuY, tongDuNo, ghiChu }
+      });
+
+      alert("Đã lưu kết quả!");
+    }
+    catch (err) {
+      alert("Lỗi khi lưu: " + err.message);
+    }
+  };
+
+
+  /* ==========================
+     SUBMIT TRA CỨU (NV)
+  ========================== */
+  document.getElementById("lookupForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const customerName = document.getElementById("fullname").value.trim();
+    const cccd = document.getElementById("cccd").value.trim();
+
+    if (cccd.length !== 12) return alert("CCCD phải đủ 12 số");
+
+    const user = auth.currentUser;
+    if (!user) return alert("Bạn chưa đăng nhập");
+
+    try {
+      await addDoc(collection(db, "tra_cuu_b11"), {
+        uid: user.uid,
+        customerName,
+        cccd,
+        employeeName: user.displayName || "(Chưa cập nhật)",
+        employeeEmail: user.email,
+        ketQua: {},
+        createdAt: serverTimestamp()
+      });
+
+      document.getElementById("lookupResult").innerHTML =
+        `<span class="text-green-600 font-semibold">Đã gửi tra cứu thành công!</span>`;
+
+      document.getElementById("lookupForm").reset();
+    }
+    catch (err) {
+      alert("Lỗi gửi tra cứu: " + err.message);
+    }
+  });
+
+</script>
