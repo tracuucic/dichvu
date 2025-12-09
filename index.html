@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Trang Tổng Hợp</title>
+
+  <!-- TAILWIND -->
   <script src="https://cdn.tailwindcss.com"></script>
   <meta name="color-scheme" content="light">
 
@@ -34,7 +36,6 @@
       line-height: 18px;
     }
 
-    /* Ẩn popup welcome */
     #loginNotifBox { display: none !important; }
   </style>
 </head>
@@ -94,7 +95,6 @@
           📜 Lịch sử tra cứu
         </button>
 
-        <!-- ADMIN BUTTON ẩn cho nhân viên -->
         <button id="navAdmin"
           class="hidden w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">
           🛡️ Trang Admin
@@ -183,6 +183,8 @@
 
         </div>
       </section>
+
+
       <!-- APP AREA (SAU KHI ĐĂNG NHẬP) -->
       <section id="appArea" class="hidden space-y-6">
 
@@ -230,6 +232,7 @@
         </div> <!-- END LOOKUP PAGE -->
 
 
+
         <!-- HISTORY PAGE — NHÂN VIÊN NHẬN KẾT QUẢ -->
         <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
 
@@ -242,7 +245,8 @@
         </div> <!-- END HISTORY PAGE -->
 
 
-        <!-- ADMIN PAGE – ADMIN TRẢ KẾT QUẢ -->
+
+        <!-- ADMIN PAGE — ADMIN TRẢ KẾT QUẢ CIC -->
         <div id="adminPage" class="card rounded-lg p-4 md:p-6 hidden">
 
           <h3 class="text-xl font-semibold mb-4">🛡️ TRANG ADMIN – TRẢ KẾT QUẢ CIC</h3>
@@ -257,7 +261,9 @@
 
     </main>
   </div> <!-- END MAIN LAYOUT -->
-  <!-- MODAL: CẬP NHẬT TÊN NHÂN VIÊN -->
+
+
+  <!-- MODAL UPDATE NAME -->
   <div id="updateNameBox"
        class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
     <div class="bg-white p-3 rounded-lg shadow w-64">
@@ -290,579 +296,524 @@
       © Copyright 2025 VQT — Giải pháp vay tiêu dùng uy tín & linh hoạt
     </div>
   </footer>
+<!-- FIREBASE SDK COMPAT (chạy được trên GitHub Pages) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+<script>
+/* ============================================================
+                 FIREBASE CONFIGURATION
+   ============================================================ */
 
-  <!-- BẮT ĐẦU FIREBASE SCRIPT -->
-  <script type="module">
+const firebaseConfig = {
+  apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
+  authDomain: "tracuucic-login.firebaseapp.com",
+  projectId: "tracuucic-login",
+  storageBucket: "tracuucic-login.firebasestorage.app",
+  messagingSenderId: "648747772689",
+  appId: "1:648747772689:web:69da6e1534ed63efddbab0",
+  measurementId: "G-ELVGHX2GL4"
+};
 
-    /* =============================
-          IMPORT FIREBASE SDK
-    ============================== */
+/* ============================================================
+                 INIT FIREBASE
+   ============================================================ */
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
 
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      signOut,
-      updateProfile,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+/* ============================================================
+                 DOM ELEMENTS
+   ============================================================ */
 
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      serverTimestamp,
-      query,
-      orderBy,
-      limit,
-      onSnapshot,
-      doc,
-      updateDoc
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+const authBox      = document.getElementById("authBox");
+const signupArea   = document.getElementById("signupArea");
+const loginArea    = document.getElementById("loginArea");
 
+const sidebarName  = document.getElementById("sidebarName");
+const sidebarEmail = document.getElementById("sidebarEmail");
+const sidebarAvatar = document.getElementById("sidebarAvatar");
 
-    /* =============================
-            FIREBASE CONFIG
-    ============================== */
+const navLookup  = document.getElementById("navLookup");
+const navHistory = document.getElementById("navHistory");
+const navAdmin   = document.getElementById("navAdmin");
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDyksVWuBPVVbHix7u-OZmIh8nFu66uNFo",
-      authDomain: "tracuucic-login.firebaseapp.com",
-      projectId: "tracuucic-login",
-      storageBucket: "tracuucic-login.firebasestorage.app",
-      messagingSenderId: "648747772689",
-      appId: "1:648747772689:web:69da6e1534ed63efddbab0",
-      measurementId: "G-ELVGHX2GL4"
-    };
+const appArea     = document.getElementById("appArea");
 
-    /* =============================
-          INIT FIREBASE APP
-    ============================== */
+const updateNameBox   = document.getElementById("updateNameBox");
+const updateNameInput = document.getElementById("updateNameInput");
+const saveNameBtn     = document.getElementById("saveNameBtn");
+const cancelNameBtn   = document.getElementById("cancelNameBtn");
 
-    const app  = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
+/* ============================================================
+                 ADMIN EMAIL
+   ============================================================ */
 
-    /* =============================
-              DOM ELEMENTS
-    ============================== */
+const ADMIN_EMAIL = "vothienbdn@gmail.com";
 
-    const authBox      = document.getElementById("authBox");
-    const signupArea   = document.getElementById("signupArea");
-    const loginArea    = document.getElementById("loginArea");
+function isAdmin(user) {
+  return user && user.email === ADMIN_EMAIL;
+}
 
-    const sidebarName  = document.getElementById("sidebarName");
-    const sidebarEmail = document.getElementById("sidebarEmail");
-    const sidebarAvatar = document.getElementById("sidebarAvatar");
+/* ============================================================
+                 SWITCH LOGIN / SIGNUP UI
+   ============================================================ */
 
-    const navLookup  = document.getElementById("navLookup");
-    const navHistory = document.getElementById("navHistory");
-    const navAdmin   = document.getElementById("navAdmin");
+document.getElementById("showLoginBtn").addEventListener("click", (e) => {
+  e.preventDefault();
+  signupArea.classList.add("hidden");
+  loginArea.classList.remove("hidden");
+});
 
-    const appArea     = document.getElementById("appArea");
-    const lookupPage  = document.getElementById("lookupPage");
-    const historyPage = document.getElementById("historyPage");
-    const adminPage   = document.getElementById("adminPage");
+document.getElementById("showSignupBtn").addEventListener("click", (e) => {
+  e.preventDefault();
+  loginArea.classList.add("hidden");
+  signupArea.classList.remove("hidden");
+});
 
-    const notifBell  = document.getElementById("notifBell");
-    const notifCount = document.getElementById("notifCount");
+/* ============================================================
+                 SIGNUP ACCOUNT
+   ============================================================ */
 
-    const lookupForm   = document.getElementById("lookupForm");
-    const lookupResult = document.getElementById("lookupResult");
+const signupForm = document.getElementById("signupForm");
 
-    const historyList = document.getElementById("historyList");
-    const adminList   = document.getElementById("adminList");
+signupForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-    const updateNameBox   = document.getElementById("updateNameBox");
-    const updateNameInput = document.getElementById("updateNameInput");
-    const saveNameBtn     = document.getElementById("saveNameBtn");
-    const cancelNameBtn   = document.getElementById("cancelNameBtn");
+  const name   = document.getElementById("signupName").value.trim();
+  const email  = document.getElementById("signupEmail").value.trim();
+  const pass   = document.getElementById("signupPass").value;
+  const repass = document.getElementById("signupRepass").value;
 
+  if (!name || !email || !pass) {
+    alert("Vui lòng nhập đầy đủ thông tin!");
+    return;
+  }
 
-    /* =============================
-          ADMIN EMAIL (CỐ ĐỊNH)
-    ============================== */
-    const ADMIN_EMAIL = "vothienbdn@gmail.com";
+  if (pass !== repass) {
+    alert("Mật khẩu nhập lại không khớp!");
+    return;
+  }
 
-    function isAdmin(user) {
-      return user && user.email === ADMIN_EMAIL;
-    }
+  try {
+    const userCred = await auth.createUserWithEmailAndPassword(email, pass);
 
+    await userCred.user.updateProfile({ displayName: name });
 
-    /* =============================
-        SWITCH SIGNUP <-> LOGIN
-    ============================== */
+    alert("Đăng ký thành công! Vui lòng đăng nhập.");
+    signupForm.reset();
 
-    document.getElementById("showLoginBtn").addEventListener("click", (e) => {
-      e.preventDefault();
-      signupArea.classList.add("hidden");
-      loginArea.classList.remove("hidden");
+    signupArea.classList.add("hidden");
+    loginArea.classList.remove("hidden");
+
+  } catch (err) {
+    alert("Lỗi đăng ký: " + err.message);
+  }
+});
+
+/* ============================================================
+                 LOGIN ACCOUNT
+   ============================================================ */
+
+const loginForm = document.getElementById("loginForm");
+
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass  = document.getElementById("loginPass").value;
+
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+    loginForm.reset();
+
+  } catch (err) {
+    alert("Lỗi đăng nhập: " + err.message);
+  }
+});
+
+/* ============================================================
+                 LOGOUT ACCOUNT
+   ============================================================ */
+
+document.getElementById("btnLogout").addEventListener("click", async () => {
+  await auth.signOut();
+  alert("Đã đăng xuất!");
+  location.reload();
+});
+
+/* ============================================================
+                 UPDATE DISPLAY NAME
+   ============================================================ */
+
+document.getElementById("btnEditName").addEventListener("click", () => {
+  const current = sidebarName.textContent === "---" ? "" : sidebarName.textContent;
+  updateNameInput.value = current;
+  updateNameBox.classList.remove("hidden");
+});
+
+cancelNameBtn.addEventListener("click", () => {
+  updateNameBox.classList.add("hidden");
+});
+
+saveNameBtn.addEventListener("click", async () => {
+  const newName = updateNameInput.value.trim();
+
+  if (!newName) {
+    alert("Vui lòng nhập họ tên mới!");
+    return;
+  }
+
+  try {
+    await auth.currentUser.updateProfile({ displayName: newName });
+
+    sidebarName.textContent = newName;
+    sidebarAvatar.textContent = newName.trim().charAt(0).toUpperCase();
+
+    updateNameBox.classList.add("hidden");
+    alert("Cập nhật thành công!");
+
+  } catch (err) {
+    alert("Lỗi cập nhật tên: " + err.message);
+  }
+});
+/* ============================================================
+                 PAGE NAVIGATION (MENU)
+   ============================================================ */
+
+function showLookupPage() {
+  lookupPage.classList.remove("hidden");
+  historyPage.classList.add("hidden");
+  adminPage.classList.add("hidden");
+}
+
+function showHistoryPage() {
+  lookupPage.classList.add("hidden");
+  historyPage.classList.remove("hidden");
+  adminPage.classList.add("hidden");
+}
+
+function showAdminPage() {
+  lookupPage.classList.add("hidden");
+  historyPage.classList.add("hidden");
+  adminPage.classList.remove("hidden");
+}
+
+navLookup.addEventListener("click", showLookupPage);
+navHistory.addEventListener("click", showHistoryPage);
+navAdmin.addEventListener("click", showAdminPage);
+
+/* ============================================================
+                 EMPLOYEE — GỬI YÊU CẦU TRA CỨU B11
+   ============================================================ */
+
+lookupForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Bạn chưa đăng nhập!");
+    return;
+  }
+
+  const customerName = document.getElementById("fullname").value.trim();
+  const cccdValue    = document.getElementById("cccd").value.trim();
+
+  if (!customerName || cccdValue.length !== 12) {
+    alert("Vui lòng nhập đúng họ tên và CCCD 12 số");
+    return;
+  }
+
+  lookupResult.innerHTML = "⏳ Đang gửi yêu cầu...";
+
+  try {
+    await db.collection("tra_cuu_b11").add({
+      uid: user.uid,
+
+      employeeName: user.displayName || "(Chưa cập nhật)",
+      employeeEmail: user.email,
+
+      customerName: customerName,
+      cccd: cccdValue,
+
+      ketQua: {}, 
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    document.getElementById("showSignupBtn").addEventListener("click", (e) => {
-      e.preventDefault();
-      loginArea.classList.add("hidden");
-      signupArea.classList.remove("hidden");
-    });
+    lookupResult.innerHTML =
+      `<span class="text-green-600 font-semibold">Đã gửi thành công!</span>`;
 
+    lookupForm.reset();
 
-    /* =============================
-                SIGNUP
-    ============================== */
+  } catch (err) {
+    lookupResult.innerHTML =
+      `<span class="text-red-600">Lỗi gửi dữ liệu: ${err.message}</span>`;
+  }
+});
 
-    const signupForm = document.getElementById("signupForm");
+/* ============================================================
+                 EMPLOYEE — REALTIME LỊCH SỬ TRA CỨU
+   ============================================================ */
 
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+let unsubHistory = null;
+let seenResultIDs = new Set();
+let newNotifCount = 0;
 
-      const name   = document.getElementById("signupName").value.trim();
-      const email  = document.getElementById("signupEmail").value.trim();
-      const pass   = document.getElementById("signupPass").value;
-      const repass = document.getElementById("signupRepass").value;
+function startHistoryListener() {
+  const user = auth.currentUser;
+  if (!user) return;
 
-      if (!name || !email || !pass) {
-        alert("Vui lòng nhập đầy đủ thông tin!");
+  if (unsubHistory) unsubHistory();
+
+  unsubHistory = db.collection("tra_cuu_b11")
+    .orderBy("createdAt", "desc")
+    .limit(100)
+    .onSnapshot((snapshot) => {
+
+      const items = [];
+
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (data.uid === user.uid) {
+          items.push({ id: docSnap.id, ...data });
+        }
+      });
+
+      if (!items.length) {
+        historyList.innerHTML = "<div>Chưa có lịch sử tra cứu.</div>";
         return;
       }
 
-      if (pass !== repass) {
-        alert("Mật khẩu nhập lại không khớp!");
-        return;
-      }
+      historyList.innerHTML = "";
 
-      try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+      items.forEach(item => {
+        const timeStr = item.createdAt?.toDate?.().toLocaleString() || "";
 
-        await updateProfile(userCred.user, { displayName: name });
+        const hasResult =
+          item.ketQua &&
+          Object.keys(item.ketQua).length > 0;
 
-        alert("Đăng ký thành công! Vui lòng đăng nhập.");
-        signupForm.reset();
-
-        signupArea.classList.add("hidden");
-        loginArea.classList.remove("hidden");
-
-      } catch (err) {
-        alert("Lỗi đăng ký: " + err.message);
-      }
-    });
-    /* =============================
-                LOGIN
-    ============================== */
-
-    const loginForm = document.getElementById("loginForm");
-
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById("loginEmail").value.trim();
-      const pass  = document.getElementById("loginPass").value;
-
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        loginForm.reset();
-
-      } catch (err) {
-        alert("Lỗi đăng nhập: " + err.message);
-      }
-    });
-
-
-    /* =============================
-                LOGOUT
-    ============================== */
-
-    document.getElementById("btnLogout").addEventListener("click", async () => {
-      await signOut(auth);
-      alert("Đã đăng xuất!");
-      location.reload();
-    });
-
-
-    /* =============================
-             UPDATE DISPLAY NAME
-    ============================== */
-
-    document.getElementById("btnEditName").addEventListener("click", () => {
-      updateNameInput.value =
-        sidebarName.textContent === "---" ? "" : sidebarName.textContent;
-
-      updateNameBox.classList.remove("hidden");
-    });
-
-    cancelNameBtn.addEventListener("click", () => {
-      updateNameBox.classList.add("hidden");
-    });
-
-    saveNameBtn.addEventListener("click", async () => {
-      const newName = updateNameInput.value.trim();
-
-      if (!newName) return alert("Vui lòng nhập họ tên mới!");
-
-      try {
-        await updateProfile(auth.currentUser, { displayName: newName });
-
-        sidebarName.textContent = newName;
-        sidebarAvatar.textContent = newName.trim().charAt(0).toUpperCase();
-
-        updateNameBox.classList.add("hidden");
-        alert("Cập nhật thành công!");
-
-      } catch (err) {
-        alert("Lỗi cập nhật tên: " + err.message);
-      }
-    });
-
-
-    /* =============================
-           PAGE NAVIGATION (MENU)
-    ============================== */
-
-    function showLookupPage() {
-      lookupPage.classList.remove("hidden");
-      historyPage.classList.add("hidden");
-      adminPage.classList.add("hidden");
-    }
-
-    function showHistoryPage() {
-      lookupPage.classList.add("hidden");
-      historyPage.classList.remove("hidden");
-      adminPage.classList.add("hidden");
-    }
-
-    function showAdminPage() {
-      lookupPage.classList.add("hidden");
-      historyPage.classList.add("hidden");
-      adminPage.classList.remove("hidden");
-    }
-
-    navLookup.addEventListener("click", showLookupPage);
-    navHistory.addEventListener("click", showHistoryPage);
-    navAdmin.addEventListener("click", showAdminPage);
-    /* ==========================================================
-                EMPLOYEE — GỬI YÊU CẦU TRA CỨU
-    ========================================================== */
-
-    lookupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const user = auth.currentUser;
-      if (!user) {
-        alert("Bạn chưa đăng nhập!");
-        return;
-      }
-
-      const customerName = document.getElementById("fullname").value.trim();
-      const cccdValue    = document.getElementById("cccd").value.trim();
-
-      if (!customerName || cccdValue.length !== 12) {
-        alert("Vui lòng nhập đúng họ tên và CCCD 12 số");
-        return;
-      }
-
-      lookupResult.innerHTML = "⏳ Đang gửi yêu cầu...";
-
-      try {
-        await addDoc(collection(db, "tra_cuu_b11"), {
-          uid: user.uid,
-
-          employeeName: user.displayName || "(Chưa cập nhật)",
-          employeeEmail: user.email,
-
-          customerName,
-          cccd: cccdValue,
-
-          ketQua: {},   // admin update sau
-          createdAt: serverTimestamp()
-        });
-
-        lookupResult.innerHTML =
-          `<span class="text-green-600 font-semibold">Đã gửi thành công!</span>`;
-
-        lookupForm.reset();
-
-      } catch (err) {
-        lookupResult.innerHTML =
-          `<span class="text-red-600">Lỗi gửi dữ liệu: ${err.message}</span>`;
-      }
-    });
-
-
-    /* ==========================================================
-                EMPLOYEE — REALTIME LỊCH SỬ TRA CỨU
-    ========================================================== */
-
-    let unsubHistory = null;
-    let seenResultIDs = new Set();
-    let newNotifCount = 0;
-
-    function startHistoryListener() {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      if (unsubHistory) unsubHistory();
-
-      const q = query(
-        collection(db, "tra_cuu_b11"),
-        orderBy("createdAt", "desc"),
-        limit(100)
-      );
-
-      unsubHistory = onSnapshot(q, (snapshot) => {
-
-        const items = [];
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          if (data.uid === user.uid) items.push({ id: docSnap.id, ...data });
-        });
-
-        if (!items.length) {
-          historyList.innerHTML = "<div>Chưa có lịch sử tra cứu.</div>";
-          return;
+        if (hasResult && !seenResultIDs.has(item.id)) {
+          seenResultIDs.add(item.id);
+          newNotifCount++;
+          notifCount.textContent = newNotifCount;
         }
 
-        historyList.innerHTML = "";
+        const div = document.createElement("div");
+        div.className = "p-3 border rounded-md";
 
-        items.forEach(item => {
-          const timeStr = item.createdAt?.toDate?.().toLocaleString() || "";
+        div.innerHTML = `
+          <div class="font-medium">${item.customerName}</div>
 
-          const hasResult = item.ketQua && Object.keys(item.ketQua).length > 0;
+          <div class="text-xs text-gray-500">
+            CCCD: ${item.cccd} — ${timeStr}
+          </div>
 
-          // 🔔 Notification khi admin trả kết quả
-          if (hasResult && !seenResultIDs.has(item.id)) {
-            seenResultIDs.add(item.id);
-            newNotifCount++;
-            notifCount.textContent = newNotifCount;
-          }
+          <div class="text-sm mt-1">
+            ${hasResult
+              ? `
+                <div class="text-green-700 font-semibold">KẾT QUẢ:</div>
+                <div>• Quan hệ TCTD: ${item.ketQua.tctd || ""}</div>
+                <div>• Nợ xấu: ${item.ketQua.noXau || ""}</div>
+                <div>• Nợ chú ý: ${item.ketQua.noChuY || ""}</div>
+                <div>• Tổng dư nợ: ${item.ketQua.tongDuNo || ""}</div>
+                <div>• Ghi chú: ${item.ketQua.ghiChu || ""}</div>
+              `
+              : `<span class="text-blue-600 font-semibold">Chưa có kết quả</span>`
+            }
+          </div>
 
-          const div = document.createElement("div");
-          div.className = "p-3 border rounded-md";
+          <div class="text-xs text-gray-400 mt-1">
+            Nhân viên: ${item.employeeName} • ${item.employeeEmail}
+          </div>
+        `;
 
-          div.innerHTML = `
-            <div class="font-medium">${item.customerName}</div>
-
-            <div class="text-xs text-gray-500">
-              CCCD: ${item.cccd} — ${timeStr}
-            </div>
-
-            <div class="text-sm mt-1">
-              ${hasResult
-                ? `
-                  <div class="text-green-700 font-semibold">KẾT QUẢ:</div>
-                  <div>• Quan hệ TCTD: ${item.ketQua.tctd || ""}</div>
-                  <div>• Nợ xấu: ${item.ketQua.noXau || ""}</div>
-                  <div>• Nợ chú ý: ${item.ketQua.noChuY || ""}</div>
-                  <div>• Tổng dư nợ: ${item.ketQua.tongDuNo || ""}</div>
-                  <div>• Ghi chú: ${item.ketQua.ghiChu || ""}</div>
-                `
-                : `<span class="text-blue-600 font-semibold">Chưa có kết quả</span>`
-              }
-            </div>
-
-            <div class="text-xs text-gray-400 mt-1">
-              Nhân viên: ${item.employeeName} • ${item.employeeEmail}
-            </div>
-          `;
-
-          historyList.appendChild(div);
-        });
+        historyList.appendChild(div);
       });
-    }
 
-
-    /* ==========================================================
-                     🔔 CLICK CHUÔNG → MỞ LỊCH SỬ
-    ========================================================== */
-
-    notifBell.addEventListener("click", () => {
-      newNotifCount = 0;
-      notifCount.textContent = "0";
-
-      showHistoryPage();
-      startHistoryListener();
     });
+}
 
+/* ============================================================
+                     CLICK CHUÔNG → MỞ LỊCH SỬ
+   ============================================================ */
 
-    /* ==========================================================
-                   ADMIN — LOAD REAlTIME TẤT CẢ YÊU CẦU
-    ========================================================== */
+notifBell.addEventListener("click", () => {
+  newNotifCount = 0;
+  notifCount.textContent = "0";
 
-    let unsubAdmin = null;
+  showHistoryPage();
+  startHistoryListener();
+});
 
-    function startAdminListener() {
-      const user = auth.currentUser;
-      if (!isAdmin(user)) return;
+/* ============================================================
+                 ADMIN — REALTIME LOAD TẤT CẢ YÊU CẦU
+   ============================================================ */
 
-      if (unsubAdmin) unsubAdmin();
+let unsubAdmin = null;
 
-      const q = query(
-        collection(db, "tra_cuu_b11"),
-        orderBy("createdAt", "desc"),
-        limit(200)
+function startAdminListener() {
+  const user = auth.currentUser;
+  if (!isAdmin(user)) return;
+
+  if (unsubAdmin) unsubAdmin();
+
+  unsubAdmin = db.collection("tra_cuu_b11")
+    .orderBy("createdAt", "desc")
+    .limit(200)
+    .onSnapshot((snapshot) => {
+
+      adminList.innerHTML = "";
+
+      snapshot.forEach((docSnap) => {
+        const item = docSnap.data();
+        const docId = docSnap.id;
+
+        const timeStr = item.createdAt?.toDate?.().toLocaleString() || "";
+        const k = item.ketQua || {};
+
+        const block = document.createElement("div");
+        block.className = "border rounded-lg p-4";
+
+        block.innerHTML = `
+          <div class="font-bold text-lg mb-2">${item.customerName}</div>
+
+          <div class="text-sm text-gray-600 mb-2">
+            CCCD: ${item.cccd} • Gửi lúc: ${timeStr}
+          </div>
+
+          <div class="text-sm text-gray-500 mb-2">
+            Nhân viên: ${item.employeeName} • ${item.employeeEmail}
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+
+            <div>
+              <label class="text-sm font-semibold">Quan hệ tại TCTD</label>
+              <input data-id="${docId}" data-field="tctd"
+                     class="admin-input w-full border rounded-md px-3 py-2"
+                     value="${k.tctd || ""}">
+            </div>
+
+            <div>
+              <label class="text-sm font-semibold">Nợ xấu</label>
+              <input data-id="${docId}" data-field="noXau"
+                     class="admin-input w-full border rounded-md px-3 py-2"
+                     value="${k.noXau || ""}">
+            </div>
+
+            <div>
+              <label class="text-sm font-semibold">Nợ chú ý</label>
+              <input data-id="${docId}" data-field="noChuY"
+                     class="admin-input w-full border rounded-md px-3 py-2"
+                     value="${k.noChuY || ""}">
+            </div>
+
+            <div>
+              <label class="text-sm font-semibold">Tổng dư nợ</label>
+              <input data-id="${docId}" data-field="tongDuNo"
+                     class="admin-input w-full border rounded-md px-3 py-2"
+                     value="${k.tongDuNo || ""}">
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="text-sm font-semibold">Ghi chú</label>
+              <textarea data-id="${docId}" data-field="ghiChu"
+                        class="admin-input w-full border rounded-md px-3 py-2"
+              >${k.ghiChu || ""}</textarea>
+            </div>
+
+          </div>
+
+          <button class="saveKetQua mt-4 bg-green-600 text-white px-4 py-2 rounded-md"
+                  data-save="${docId}">
+            💾 Lưu kết quả
+          </button>
+        `;
+
+        adminList.appendChild(block);
+      });
+
+      attachAdminSaveEvents();
+    });
+}
+
+/* ============================================================
+                 ADMIN — LƯU KẾT QUẢ TRẢ CIC
+   ============================================================ */
+
+function attachAdminSaveEvents() {
+  document.querySelectorAll(".saveKetQua").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+
+      const docId = btn.getAttribute("data-save");
+
+      const inputs = document.querySelectorAll(
+        `.admin-input[data-id="${docId}"]`
       );
 
-      unsubAdmin = onSnapshot(q, (snapshot) => {
-
-        adminList.innerHTML = "";
-
-        snapshot.forEach((docSnap) => {
-          const item = docSnap.data();
-          const docId = docSnap.id;
-
-          const timeStr = item.createdAt?.toDate?.().toLocaleString() || "";
-          const k = item.ketQua || {};
-
-          const block = document.createElement("div");
-          block.className = "border rounded-lg p-4";
-
-          block.innerHTML = `
-            <div class="font-bold text-lg mb-2">${item.customerName}</div>
-
-            <div class="text-sm text-gray-600 mb-2">
-              CCCD: ${item.cccd} • Gửi lúc: ${timeStr}
-            </div>
-
-            <div class="text-sm text-gray-500 mb-2">
-              Nhân viên: ${item.employeeName} • ${item.employeeEmail}
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-
-              <div>
-                <label class="text-sm font-semibold">Quan hệ tại TCTD</label>
-                <input data-id="${docId}" data-field="tctd"
-                       class="admin-input w-full border rounded-md px-3 py-2"
-                       value="${k.tctd || ""}">
-              </div>
-
-              <div>
-                <label class="text-sm font-semibold">Nợ xấu</label>
-                <input data-id="${docId}" data-field="noXau"
-                       class="admin-input w-full border rounded-md px-3 py-2"
-                       value="${k.noXau || ""}">
-              </div>
-
-              <div>
-                <label class="text-sm font-semibold">Nợ chú ý</label>
-                <input data-id="${docId}" data-field="noChuY"
-                       class="admin-input w-full border rounded-md px-3 py-2"
-                       value="${k.noChuY || ""}">
-              </div>
-
-              <div>
-                <label class="text-sm font-semibold">Tổng dư nợ</label>
-                <input data-id="${docId}" data-field="tongDuNo"
-                       class="admin-input w-full border rounded-md px-3 py-2"
-                       value="${k.tongDuNo || ""}">
-              </div>
-
-              <div class="md:col-span-2">
-                <label class="text-sm font-semibold">Ghi chú</label>
-                <textarea data-id="${docId}" data-field="ghiChu"
-                          class="admin-input w-full border rounded-md px-3 py-2"
-                >${k.ghiChu || ""}</textarea>
-              </div>
-
-            </div>
-
-            <button class="saveKetQua mt-4 bg-green-600 text-white px-4 py-2 rounded-md"
-                    data-save="${docId}">
-              💾 Lưu kết quả
-            </button>
-          `;
-
-          adminList.appendChild(block);
-        });
-
-        attachAdminSaveEvents();
+      const ketQua = {};
+      inputs.forEach((input) => {
+        ketQua[input.getAttribute("data-field")] = input.value.trim();
       });
-    }
 
+      try {
+        await db.collection("tra_cuu_b11").doc(docId).update({ ketQua });
+        alert("Đã lưu kết quả!");
 
-    /* ==========================================================
-              ADMIN — LƯU KẾT QUẢ TRẢ CIC VÀO FIRESTORE
-    ========================================================== */
-
-    function attachAdminSaveEvents() {
-      document.querySelectorAll(".saveKetQua").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-
-          const docId = btn.getAttribute("data-save");
-
-          const inputs = document.querySelectorAll(
-            `.admin-input[data-id="${docId}"]`
-          );
-
-          const ketQua = {};
-          inputs.forEach((input) => {
-            ketQua[input.getAttribute("data-field")] = input.value.trim();
-          });
-
-          try {
-            await updateDoc(doc(db, "tra_cuu_b11", docId), { ketQua });
-            alert("Đã lưu kết quả!");
-
-          } catch (err) {
-            alert("Lỗi lưu kết quả: " + err.message);
-          }
-
-        });
-      });
-    }
-    /* ==========================================================
-                AUTH STATE — CHẠY KHI ĐĂNG NHẬP / ĐĂNG XUẤT
-    ========================================================== */
-
-    onAuthStateChanged(auth, (user) => {
-
-      if (user) {
-        // Ẩn form login/signup
-        authBox.classList.add("hidden");
-
-        // Hiện giao diện chính
-        appArea.classList.remove("hidden");
-
-        // Fill sidebar info
-        const name = user.displayName || "(Chưa cập nhật)";
-        sidebarName.textContent = name;
-        sidebarEmail.textContent = user.email;
-        sidebarAvatar.textContent = name.trim().charAt(0).toUpperCase();
-
-        // Nếu là admin → mở nút Admin Page
-        if (isAdmin(user)) {
-          navAdmin.classList.remove("hidden");
-          startAdminListener();  // Bắt đầu realtime admin
-        } else {
-          navAdmin.classList.add("hidden");
-        }
-
-        // Reset notification state
-        seenResultIDs.clear();
-        newNotifCount = 0;
-        notifCount.textContent = "0";
-
-        // Load history listener
-        startHistoryListener();
-
-      } else {
-        // Đăng xuất → Reset UI
-        authBox.classList.remove("hidden");
-        appArea.classList.add("hidden");
-
-        sidebarName.textContent = "---";
-        sidebarEmail.textContent = "---";
-        sidebarAvatar.textContent = "?";
-
-        notifCount.textContent = "0";
-
-        if (unsubHistory) unsubHistory();
-        if (unsubAdmin) unsubAdmin();
+      } catch (err) {
+        alert("Lỗi lưu kết quả: " + err.message);
       }
-    });
 
-  </script>
+    });
+  });
+}
+
+/* ============================================================
+                 AUTH STATE LISTENER
+   ============================================================ */
+
+auth.onAuthStateChanged((user) => {
+
+  if (user) {
+    authBox.classList.add("hidden");
+    appArea.classList.remove("hidden");
+
+    const name = user.displayName || "(Chưa cập nhật)";
+    sidebarName.textContent = name;
+    sidebarEmail.textContent = user.email;
+    sidebarAvatar.textContent = name.trim().charAt(0).toUpperCase();
+
+    if (isAdmin(user)) {
+      navAdmin.classList.remove("hidden");
+      startAdminListener();
+    } else {
+      navAdmin.classList.add("hidden");
+    }
+
+    seenResultIDs.clear();
+    newNotifCount = 0;
+    notifCount.textContent = "0";
+
+    startHistoryListener();
+
+  } else {
+    authBox.classList.remove("hidden");
+    appArea.classList.add("hidden");
+
+    sidebarName.textContent = "---";
+    sidebarEmail.textContent = "---";
+    sidebarAvatar.textContent = "?";
+
+    notifCount.textContent = "0";
+
+    if (unsubHistory) unsubHistory();
+    if (unsubAdmin) unsubAdmin();
+  }
+});
+</script>
 
 </body>
 </html>
