@@ -36,6 +36,10 @@
       line-height: 18px;
     }
 
+    .admin-content {
+      transition: 0.25s ease;
+    }
+
     #loginNotifBox { display: none !important; }
   </style>
 </head>
@@ -65,7 +69,6 @@
 
     </div>
   </header>
-
   <!-- LAYOUT -->
   <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
 
@@ -113,188 +116,152 @@
         </button>
       </div>
     </aside>
+<!-- MAIN CONTENT -->
+<main class="flex-1">
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1">
+  <!-- AUTH BOX -->
+  <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
+    <div id="authForms">
 
-      <!-- AUTH BOX -->
-      <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
-        <div id="authForms">
+      <!-- SIGNUP FORM -->
+      <div id="signupArea">
+        <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
 
-          <!-- SIGNUP FORM -->
-          <div id="signupArea">
-            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng ký tài khoản</h3>
+        <form id="signupForm" class="space-y-2">
+          <input id="signupName" class="w-full border rounded-md px-3 py-2"
+                 placeholder="Họ tên nhân viên" required />
 
-            <form id="signupForm" class="space-y-2">
-              <input id="signupName" class="w-full border rounded-md px-3 py-2"
-                     placeholder="Họ tên nhân viên" required />
+          <input id="signupEmail" type="email"
+                 class="w-full border rounded-md px-3 py-2"
+                 placeholder="Email" required />
 
-              <input id="signupEmail" type="email"
-                     class="w-full border rounded-md px-3 py-2"
-                     placeholder="Email" required />
+          <input id="signupPass" type="password"
+                 class="w-full border rounded-md px-3 py-2"
+                 placeholder="Mật khẩu" required />
 
-              <input id="signupPass" type="password"
-                     class="w-full border rounded-md px-3 py-2"
-                     placeholder="Mật khẩu" required />
+          <input id="signupRepass" type="password"
+                 class="w-full border rounded-md px-3 py-2"
+                 placeholder="Nhập lại mật khẩu" required />
 
-              <input id="signupRepass" type="password"
-                     class="w-full border rounded-md px-3 py-2"
-                     placeholder="Nhập lại mật khẩu" required />
+          <div class="flex gap-2">
+            <button type="submit"
+                    class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md">
+              Đăng ký
+            </button>
 
-              <div class="flex gap-2">
-                <button type="submit"
-                        class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md">
-                  Đăng ký
-                </button>
-
-                <button id="showLoginBtn"
-                        class="flex-1 border rounded-md px-4 py-2">
-                  Đã có tài khoản
-                </button>
-              </div>
-            </form>
+            <button id="showLoginBtn"
+                    class="flex-1 border rounded-md px-4 py-2">
+              Đã có tài khoản
+            </button>
           </div>
+        </form>
+      </div>
 
-          <!-- LOGIN FORM -->
-          <div id="loginArea" class="hidden">
-            <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng nhập</h3>
+      <!-- LOGIN FORM -->
+      <div id="loginArea" class="hidden">
+        <h3 class="text-lg md:text-xl font-semibold mb-3">Đăng nhập</h3>
 
-            <form id="loginForm" class="space-y-2">
-              <input id="loginEmail" type="email"
-                     class="w-full border rounded-md px-3 py-2"
-                     placeholder="Email" required />
+        <form id="loginForm" class="space-y-2">
+          <input id="loginEmail" type="email"
+                 class="w-full border rounded-md px-3 py-2"
+                 placeholder="Email" required />
 
-              <input id="loginPass" type="password"
-                     class="w-full border rounded-md px-3 py-2"
-                     placeholder="Mật khẩu" required />
+          <input id="loginPass" type="password"
+                 class="w-full border rounded-md px-3 py-2"
+                 placeholder="Mật khẩu" required />
 
-              <div class="flex gap-2">
-                <button type="submit"
-                        class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md">
-                  Đăng nhập
-                </button>
+          <div class="flex gap-2">
+            <button type="submit"
+                    class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md">
+              Đăng nhập
+            </button>
 
-                <button id="showSignupBtn"
-                        class="flex-1 border rounded-md px-4 py-2">
-                  Đăng ký
-                </button>
-              </div>
-            </form>
+            <button id="showSignupBtn"
+                    class="flex-1 border rounded-md px-4 py-2">
+              Đăng ký
+            </button>
           </div>
-
-        </div>
-      </section>
-      <!-- APP AREA (SAU KHI ĐĂNG NHẬP) -->
-      <section id="appArea" class="hidden space-y-6">
-
-        <!-- LOOKUP PAGE – NHÂN VIÊN GỬI TRA CỨU -->
-        <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
-
-          <div class="mb-4 text-red-600 font-bold text-xs">
-            📢 Thông báo tra cứu B11<br>
-            • Xử lý trong giờ hành chính: 30 phút – 1 tiếng<br>
-            • Nhập đúng họ tên KH, CCCD đủ 12 số<br>
-            • Kết quả xem tại mục “Lịch sử tra cứu”
-          </div>
-
-          <h3 class="text-lg font-semibold mb-4">🔎 Gửi yêu cầu tra cứu B11</h3>
-
-          <form id="lookupForm" class="grid grid-cols-1 md:grid-cols-12 gap-4">
-
-            <div class="md:col-span-7">
-              <label class="text-sm text-gray-600">Họ và tên khách hàng</label>
-              <input id="fullname"
-                     class="w-full border rounded-md px-3 py-2"
-                     placeholder="Nguyễn Văn A" required />
-            </div>
-
-            <div class="md:col-span-5">
-              <label class="text-sm text-gray-600">Số CCCD (12 số)</label>
-              <input id="cccd" maxlength="12"
-                     class="w-full border rounded-md px-3 py-2"
-                     placeholder="123456789012" required />
-            </div>
-
-            <div class="md:col-span-12">
-              <button type="submit"
-                      class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">
-                Gửi tra cứu
-              </button>
-            </div>
-
-          </form>
-
-          <div id="lookupResult" class="mt-4 text-sm text-gray-700">
-            Chưa có kết quả.
-          </div>
-
-        </div> <!-- END LOOKUP PAGE -->
-
-
-
-        <!-- HISTORY PAGE — NHÂN VIÊN NHẬN KẾT QUẢ -->
-        <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
-
-          <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
-
-          <div id="historyList" class="space-y-2 text-sm text-gray-700">
-            Chưa có lịch sử.
-          </div>
-
-        </div> <!-- END HISTORY PAGE -->
-
-
-
-        <!-- ADMIN PAGE — ADMIN TRẢ KẾT QUẢ CIC -->
-        <div id="adminPage" class="card rounded-lg p-4 md:p-6 hidden">
-
-          <h3 class="text-xl font-semibold mb-4">🛡️ TRANG ADMIN – TRẢ KẾT QUẢ CIC</h3>
-
-          <div id="adminList" class="space-y-6 text-sm text-gray-700">
-            Đang tải dữ liệu...
-          </div>
-
-        </div> <!-- END ADMIN PAGE -->
-
-      </section> <!-- END APP AREA -->
-
-    </main>
-  </div> <!-- END MAIN LAYOUT -->
-
-
-  <!-- MODAL UPDATE NAME -->
-  <div id="updateNameBox"
-       class="fixed right-4 bottom-4 md:right-6 md:bottom-6 hidden z-50">
-    <div class="bg-white p-3 rounded-lg shadow w-64">
-
-      <div class="mb-2 text-sm font-medium">Cập nhật họ tên</div>
-
-      <input id="updateNameInput"
-             class="w-full border rounded-md px-3 py-2 mb-2"
-             placeholder="Họ và tên mới" />
-
-      <div class="flex gap-2">
-        <button id="saveNameBtn"
-                class="bg-green-600 text-white px-3 py-1 rounded-md">
-          Lưu
-        </button>
-
-        <button id="cancelNameBtn"
-                class="border px-3 py-1 rounded-md">
-          Hủy
-        </button>
+        </form>
       </div>
 
     </div>
-  </div>
+  </section>
 
 
-  <!-- FOOTER -->
-  <footer class="mt-6 md:mt-8">
-    <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
-      © Copyright 2025 VQT — Giải pháp vay tiêu dùng uy tín & linh hoạt
-    </div>
-  </footer>
+  <!-- APP AREA (SAU KHI ĐĂNG NHẬP) -->
+  <section id="appArea" class="hidden space-y-6">
+
+    <!-- LOOKUP PAGE -->
+    <div id="lookupPage" class="card rounded-lg p-4 md:p-6">
+
+      <div class="mb-4 text-red-600 font-bold text-xs">
+        📢 Thông báo tra cứu B11<br>
+        • Xử lý trong giờ hành chính: 30 phút – 1 tiếng<br>
+        • Nhập đúng họ tên KH, CCCD đủ 12 số<br>
+        • Kết quả xem tại mục “Lịch sử tra cứu”
+      </div>
+
+      <h3 class="text-lg font-semibold mb-4">🔎 Gửi yêu cầu tra cứu B11</h3>
+
+      <form id="lookupForm" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+
+        <div class="md:col-span-7">
+          <label class="text-sm text-gray-600">Họ và tên khách hàng</label>
+          <input id="fullname"
+                 class="w-full border rounded-md px-3 py-2"
+                 placeholder="Nguyễn Văn A" required />
+        </div>
+
+        <div class="md:col-span-5">
+          <label class="text-sm text-gray-600">Số CCCD (12 số)</label>
+          <input id="cccd" maxlength="12"
+                 class="w-full border rounded-md px-3 py-2"
+                 placeholder="123456789012" required />
+        </div>
+
+        <div class="md:col-span-12">
+          <button type="submit"
+                  class="bg-green-600 text-white px-5 py-2 rounded-md w-full md:w-auto">
+            Gửi tra cứu
+          </button>
+        </div>
+
+      </form>
+
+      <div id="lookupResult" class="mt-4 text-sm text-gray-700">
+        Chưa có kết quả.
+      </div>
+
+    </div> <!-- END LOOKUP PAGE -->
+
+
+    <!-- HISTORY PAGE -->
+    <div id="historyPage" class="card rounded-lg p-4 md:p-6 hidden">
+
+      <h3 class="text-lg font-semibold mb-4">📜 Lịch sử tra cứu của bạn</h3>
+
+      <div id="historyList" class="space-y-2 text-sm text-gray-700">
+        Chưa có lịch sử.
+      </div>
+
+    </div> <!-- END HISTORY PAGE -->
+
+
+    <!-- ADMIN PAGE – GIAO DIỆN MỚI GỌN -->
+    <div id="adminPage" class="card rounded-lg p-4 md:p-6 hidden">
+
+      <h3 class="text-xl font-semibold mb-4">🛡️ TRANG ADMIN – TRẢ KẾT QUẢ CIC</h3>
+
+      <div id="adminList" class="space-y-4 text-sm text-gray-700">
+        Đang tải dữ liệu...
+      </div>
+
+    </div> <!-- END ADMIN PAGE -->
+
+  </section> <!-- END APP AREA -->
+
+</main>
+</div>
 <!-- ============================
        FIREBASE SDK (COMPAT v9)
        CHẠY ĐƯỢC TRÊN GITHUB PAGES
@@ -347,6 +314,15 @@ const navHistory = document.getElementById("navHistory");
 const navAdmin   = document.getElementById("navAdmin");
 
 const appArea = document.getElementById("appArea");
+
+const lookupForm   = document.getElementById("lookupForm");
+const lookupResult = document.getElementById("lookupResult");
+
+const historyList = document.getElementById("historyList");
+const adminList   = document.getElementById("adminList");
+
+const notifBell  = document.getElementById("notifBell");
+const notifCount = document.getElementById("notifCount");
 
 /* ============================================================
     ADMIN EMAIL (CỐ ĐỊNH)
@@ -401,7 +377,6 @@ signupForm.addEventListener("submit", async (event) => {
   try {
     const userCred = await auth.createUserWithEmailAndPassword(email, pass);
 
-    // Gán tên hiển thị cho tài khoản
     await userCred.user.updateProfile({ displayName: name });
 
     alert("Đăng ký thành công! Vui lòng đăng nhập.");
@@ -450,7 +425,6 @@ document.getElementById("btnLogout").addEventListener("click", async () => {
     UPDATE DISPLAY NAME
 ============================================================ */
 
-// Mở popup
 document.getElementById("btnEditName").addEventListener("click", () => {
   const current = sidebarName.textContent === "---"
     ? ""
@@ -460,12 +434,10 @@ document.getElementById("btnEditName").addEventListener("click", () => {
   updateNameBox.classList.remove("hidden");
 });
 
-// Đóng popup
 cancelNameBtn.addEventListener("click", () => {
   updateNameBox.classList.add("hidden");
 });
 
-// Lưu tên mới
 saveNameBtn.addEventListener("click", async () => {
   const newName = updateNameInput.value.trim();
 
@@ -477,7 +449,6 @@ saveNameBtn.addEventListener("click", async () => {
   try {
     await auth.currentUser.updateProfile({ displayName: newName });
 
-    // Cập nhật UI
     sidebarName.textContent = newName;
     sidebarAvatar.textContent = newName.charAt(0).toUpperCase();
 
@@ -488,34 +459,7 @@ saveNameBtn.addEventListener("click", async () => {
     alert("Lỗi cập nhật tên: " + err.message);
   }
 });
-/* ============================================================
-    PAGE NAVIGATION (MENU)
-============================================================ */
-
-function showLookupPage() {
-  lookupPage.classList.remove("hidden");
-  historyPage.classList.add("hidden");
-  adminPage.classList.add("hidden");
-}
-
-function showHistoryPage() {
-  lookupPage.classList.add("hidden");
-  historyPage.classList.remove("hidden");
-  adminPage.classList.add("hidden");
-}
-
-function showAdminPage() {
-  lookupPage.classList.add("hidden");
-  historyPage.classList.add("hidden");
-  adminPage.classList.remove("hidden");
-}
-
-navLookup.addEventListener("click", showLookupPage);
-navHistory.addEventListener("click", showHistoryPage);
-navAdmin.addEventListener("click", showAdminPage);
-
-
-
+<script>
 /* ============================================================
     EMPLOYEE — GỬI YÊU CẦU TRA CỨU B11
 ============================================================ */
@@ -542,14 +486,13 @@ lookupForm.addEventListener("submit", async (event) => {
   try {
     await db.collection("tra_cuu_b11").add({
       uid: user.uid,
-
       employeeName: user.displayName || "(Chưa cập nhật)",
       employeeEmail: user.email,
 
       customerName: customerName,
       cccd: cccdValue,
 
-      ketQua: {}, // admin sẽ cập nhật sau
+      ketQua: {},
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
@@ -567,7 +510,7 @@ lookupForm.addEventListener("submit", async (event) => {
 
 
 /* ============================================================
-    EMPLOYEE — REALTIME LỊCH SỬ TRA CỨU
+    EMPLOYEE — REALTIME LỊCH SỬ + NÚT ❌ XÓA
 ============================================================ */
 
 let unsubHistory = null;
@@ -608,7 +551,6 @@ function startHistoryListener() {
           item.ketQua &&
           Object.keys(item.ketQua).length > 0;
 
-        // 🔔 thông báo mới
         if (hasResult && !seenResultIDs.has(item.id)) {
           seenResultIDs.add(item.id);
           newNotifCount++;
@@ -616,44 +558,72 @@ function startHistoryListener() {
         }
 
         const div = document.createElement("div");
-        div.className = "p-3 border rounded-md";
+        div.className = "p-3 border rounded-md flex justify-between items-start";
 
         div.innerHTML = `
-          <div class="font-medium">${item.customerName}</div>
+          <div class="flex-1">
+            <div class="font-medium">${item.customerName}</div>
+            <div class="text-xs text-gray-500">
+              CCCD: ${item.cccd} — ${timeStr}
+            </div>
 
-          <div class="text-xs text-gray-500">
-            CCCD: ${item.cccd} — ${timeStr}
+            <div class="text-sm mt-1">
+              ${hasResult
+                ? `
+                  <div class="text-green-700 font-semibold">KẾT QUẢ:</div>
+                  <div>• Quan hệ TCTD: ${item.ketQua.tctd || ""}</div>
+                  <div>• Nợ xấu: ${item.ketQua.noXau || ""}</div>
+                  <div>• Nợ chú ý: ${item.ketQua.noChuY || ""}</div>
+                  <div>• Tổng dư nợ: ${item.ketQua.tongDuNo || ""}</div>
+                  <div>• Ghi chú: ${item.ketQua.ghiChu || ""}</div>
+                `
+                : `<span class="text-blue-600 font-semibold">Chưa có kết quả</span>`
+              }
+            </div>
+
+            <div class="text-xs text-gray-400 mt-1">
+              Nhân viên: ${item.employeeName} • ${item.employeeEmail}
+            </div>
           </div>
 
-          <div class="text-sm mt-1">
-            ${hasResult
-              ? `
-                <div class="text-green-700 font-semibold">KẾT QUẢ:</div>
-                <div>• Quan hệ TCTD: ${item.ketQua.tctd || ""}</div>
-                <div>• Nợ xấu: ${item.ketQua.noXau || ""}</div>
-                <div>• Nợ chú ý: ${item.ketQua.noChuY || ""}</div>
-                <div>• Tổng dư nợ: ${item.ketQua.tongDuNo || ""}</div>
-                <div>• Ghi chú: ${item.ketQua.ghiChu || ""}</div>
-              `
-              : `<span class="text-blue-600 font-semibold">Chưa có kết quả</span>`
-            }
-          </div>
-
-          <div class="text-xs text-gray-400 mt-1">
-            Nhân viên: ${item.employeeName} • ${item.employeeEmail}
-          </div>
+          <!-- NÚT XÓA -->
+          <button data-del="${item.id}"
+                  class="ml-3 px-2 py-1 text-red-600 border border-red-400 rounded hover:bg-red-50">
+            ❌
+          </button>
         `;
 
         historyList.appendChild(div);
       });
 
+      attachDeleteButtons();
     });
+}
+
+/* ============================================================
+    HÀM XÓA LỊCH SỬ (CHO NHÂN VIÊN)
+============================================================ */
+
+function attachDeleteButtons() {
+  document.querySelectorAll("[data-del]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (!confirm("Bạn chắc chắn muốn xóa mục này?")) return;
+
+      const id = btn.getAttribute("data-del");
+
+      try {
+        await db.collection("tra_cuu_b11").doc(id).delete();
+      } catch (err) {
+        alert("Lỗi xóa: " + err.message);
+      }
+    });
+  });
 }
 
 
 
 /* ============================================================
-    CLICK CHUÔNG — MỞ LỊCH SỬ + RESET NOTIFICATION
+    CLICK CHUÔNG → MỞ LỊCH SỬ
 ============================================================ */
 
 notifBell.addEventListener("click", () => {
@@ -667,7 +637,7 @@ notifBell.addEventListener("click", () => {
 
 
 /* ============================================================
-    ADMIN — REALTIME TẢI TẤT CẢ YÊU CẦU
+    ADMIN — REALTIME DANH SÁCH GỌN (ACCORDION)
 ============================================================ */
 
 let unsubAdmin = null;
@@ -688,74 +658,96 @@ function startAdminListener() {
       snapshot.forEach((docSnap) => {
         const item = docSnap.data();
         const docId = docSnap.id;
-
         const timeStr = item.createdAt?.toDate?.().toLocaleString() || "";
         const k = item.ketQua || {};
 
         const block = document.createElement("div");
-        block.className = "border rounded-lg p-4";
+        block.className = "border rounded-lg p-3";
 
         block.innerHTML = `
-          <div class="font-bold text-lg mb-2">${item.customerName}</div>
-
-          <div class="text-sm text-gray-600 mb-2">
-            CCCD: ${item.cccd} • Gửi lúc: ${timeStr}
-          </div>
-
-          <div class="text-sm text-gray-500 mb-2">
-            Nhân viên: ${item.employeeName} • ${item.employeeEmail}
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-
-            <div>
-              <label class="text-sm font-semibold">Quan hệ tại TCTD</label>
-              <input data-id="${docId}" data-field="tctd"
-                     class="admin-input w-full border rounded-md px-3 py-2"
-                     value="${k.tctd || ""}">
-            </div>
-
-            <div>
-              <label class="text-sm font-semibold">Nợ xấu</label>
-              <input data-id="${docId}" data-field="noXau"
-                     class="admin-input w-full border rounded-md px-3 py-2"
-                     value="${k.noXau || ""}">
-            </div>
-
-            <div>
-              <label class="text-sm font-semibold">Nợ chú ý</label>
-              <input data-id="${docId}" data-field="noChuY"
-                     class="admin-input w-full border rounded-md px-3 py-2"
-                     value="${k.noChuY || ""}">
-            </div>
-
-            <div>
-              <label class="text-sm font-semibold">Tổng dư nợ</label>
-              <input data-id="${docId}" data-field="tongDuNo"
-                     class="admin-input w-full border rounded-md px-3 py-2"
-                     value="${k.tongDuNo || ""}">
-            </div>
-
-            <div class="md:col-span-2">
-              <label class="text-sm font-semibold">Ghi chú</label>
-              <textarea data-id="${docId}" data-field="ghiChu"
-                        class="admin-input w-full border rounded-md px-3 py-2"
-              >${k.ghiChu || ""}</textarea>
-            </div>
-
-          </div>
-
-          <button class="saveKetQua mt-4 bg-green-600 text-white px-4 py-2 rounded-md"
-                  data-save="${docId}">
-            💾 Lưu kết quả
+          <!-- TIÊU ĐỀ GỌN -->
+          <button class="w-full text-left font-semibold flex justify-between items-center p-2 bg-gray-100 rounded-md admin-header"
+                  data-open="${docId}">
+            <span>${item.customerName} • ${item.cccd}</span>
+            <span>${Object.keys(k).length ? "📄 Đã có kết quả" : "⏳ Chờ xử lý"}</span>
           </button>
+
+          <!-- NỘI DUNG ẨN -->
+          <div id="content-${docId}" class="admin-content hidden mt-3 border-t pt-3">
+
+            <div class="text-sm text-gray-600 mb-2">
+              Gửi lúc: ${timeStr}<br>
+              Nhân viên: ${item.employeeName} • ${item.employeeEmail}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+              <div>
+                <label class="text-sm font-semibold">Quan hệ tại TCTD</label>
+                <input data-id="${docId}" data-field="tctd"
+                       class="admin-input w-full border rounded-md px-3 py-2"
+                       value="${k.tctd || ""}">
+              </div>
+
+              <div>
+                <label class="text-sm font-semibold">Nợ xấu</label>
+                <input data-id="${docId}" data-field="noXau"
+                       class="admin-input w-full border rounded-md px-3 py-2"
+                       value="${k.noXau || ""}">
+              </div>
+
+              <div>
+                <label class="text-sm font-semibold">Nợ chú ý</label>
+                <input data-id="${docId}" data-field="noChuY"
+                       class="admin-input w-full border rounded-md px-3 py-2"
+                       value="${k.noChuY || ""}">
+              </div>
+
+              <div>
+                <label class="text-sm font-semibold">Tổng dư nợ</label>
+                <input data-id="${docId}" data-field="tongDuNo"
+                       class="admin-input w-full border rounded-md px-3 py-2"
+                       value="${k.tongDuNo || ""}">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="text-sm font-semibold">Ghi chú</label>
+                <textarea data-id="${docId}" data-field="ghiChu"
+                          class="admin-input w-full border rounded-md px-3 py-2"
+                >${k.ghiChu || ""}</textarea>
+              </div>
+
+            </div>
+
+            <button class="saveKetQua mt-4 bg-green-600 text-white px-4 py-2 rounded-md"
+                    data-save="${docId}">
+              💾 Lưu kết quả
+            </button>
+          </div>
         `;
 
         adminList.appendChild(block);
       });
 
+      attachAdminAccordion();
       attachAdminSaveEvents();
     });
+}
+
+
+
+/* ============================================================
+    ADMIN — ACCORDION ĐÓNG/MỞ
+============================================================ */
+
+function attachAdminAccordion() {
+  document.querySelectorAll(".admin-header").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-open");
+      const box = document.getElementById("content-" + id);
+      box.classList.toggle("hidden");
+    });
+  });
 }
 
 
@@ -800,19 +792,14 @@ function attachAdminSaveEvents() {
 auth.onAuthStateChanged((user) => {
 
   if (user) {
-    // Ẩn form đăng nhập
     authBox.classList.add("hidden");
-
-    // Hiện giao diện
     appArea.classList.remove("hidden");
 
-    // Sidebar info
     const name = user.displayName || "(Chưa cập nhật)";
     sidebarName.textContent = name;
     sidebarEmail.textContent = user.email;
     sidebarAvatar.textContent = name.charAt(0).toUpperCase();
 
-    // Admin permission
     if (isAdmin(user)) {
       navAdmin.classList.remove("hidden");
       startAdminListener();
@@ -820,21 +807,18 @@ auth.onAuthStateChanged((user) => {
       navAdmin.classList.add("hidden");
     }
 
-    // Reset notification
     seenResultIDs.clear();
     newNotifCount = 0;
     notifCount.textContent = "0";
 
-    // Bắt đầu load lịch sử realtime
     startHistoryListener();
 
   } else {
-    // Người dùng đăng xuất
     authBox.classList.remove("hidden");
     appArea.classList.add("hidden");
 
     sidebarName.textContent = "---";
-   _sidebarEmail.textContent = "---";
+    sidebarEmail.textContent = "---";
     sidebarAvatar.textContent = "?";
 
     notifCount.textContent = "0";
@@ -844,6 +828,12 @@ auth.onAuthStateChanged((user) => {
   }
 });
 </script>
+<!-- FOOTER -->
+<footer class="mt-6 md:mt-8">
+  <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 text-center text-sm text-gray-500 border-t bg-white">
+    © Copyright 2025 VQT — Giải pháp vay tiêu dùng uy tín & linh hoạt
+  </div>
+</footer>
 
 </body>
 </html>
