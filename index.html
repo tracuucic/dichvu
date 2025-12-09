@@ -34,11 +34,19 @@
       line-height: 18px;
     }
 
-    /* Ẩn popup welcome */
     #loginNotifBox { display: none !important; }
+
+    /* Giao diện thu gọn admin */
+    .admin-block-collapsed {
+      background: #f9f9f9;
+      border-left: 4px solid #16a34a;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+    }
+
   </style>
 </head>
-
 <body class="bg-gray-50 text-gray-800">
 
   <!-- HEADER -->
@@ -65,7 +73,7 @@
     </div>
   </header>
 
-  <!-- LAYOUT -->
+  <!-- MAIN LAYOUT -->
   <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
 
     <!-- SIDEBAR -->
@@ -94,7 +102,6 @@
           📜 Lịch sử tra cứu
         </button>
 
-        <!-- ADMIN BUTTON ẩn cho nhân viên -->
         <button id="navAdmin"
           class="hidden w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">
           🛡️ Trang Admin
@@ -113,10 +120,11 @@
         </button>
       </div>
     </aside>
+
     <!-- MAIN CONTENT -->
     <main class="flex-1">
 
-      <!-- AUTH BOX (LOGIN + SIGNUP) -->
+      <!-- LOGIN / SIGNUP BOX -->
       <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
         <div id="authForms">
 
@@ -323,7 +331,6 @@
       updateDoc
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-
     /* =============================
             FIREBASE CONFIG
     ============================== */
@@ -390,8 +397,6 @@
     function isAdmin(user) {
       return user && user.email === ADMIN_EMAIL;
     }
-
-
     /* =============================
         SWITCH SIGNUP <-> LOGIN
     ============================== */
@@ -435,7 +440,6 @@
 
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-
         await updateProfile(userCred.user, { displayName: name });
 
         alert("Đăng ký thành công! Vui lòng đăng nhập.");
@@ -448,6 +452,8 @@
         alert("Lỗi đăng ký: " + err.message);
       }
     });
+
+
     /* =============================
                 LOGIN
     ============================== */
@@ -463,7 +469,6 @@
       try {
         await signInWithEmailAndPassword(auth, email, pass);
         loginForm.reset();
-
       } catch (err) {
         alert("Lỗi đăng nhập: " + err.message);
       }
@@ -574,7 +579,7 @@
           customerName,
           cccd: cccdValue,
 
-          ketQua: {},   // admin update sau
+          ketQua: {},               // admin cập nhật sau
           createdAt: serverTimestamp()
         });
 
@@ -588,6 +593,8 @@
           `<span class="text-red-600">Lỗi gửi dữ liệu: ${err.message}</span>`;
       }
     });
+
+
 
 
     /* ==========================================================
@@ -672,8 +679,10 @@
     }
 
 
+
+
     /* ==========================================================
-                     🔔 CLICK CHUÔNG → MỞ LỊCH SỬ
+                   🔔 CLICK CHUÔNG → MỞ LỊCH SỬ
     ========================================================== */
 
     notifBell.addEventListener("click", () => {
@@ -685,8 +694,10 @@
     });
 
 
+
+
     /* ==========================================================
-                   ADMIN — LOAD REAlTIME TẤT CẢ YÊU CẦU
+                   ADMIN — LOAD REALTIME TẤT CẢ YÊU CẦU
     ========================================================== */
 
     let unsubAdmin = null;
@@ -779,8 +790,6 @@
         attachAdminSaveEvents();
       });
     }
-
-
     /* ==========================================================
               ADMIN — LƯU KẾT QUẢ TRẢ CIC VÀO FIRESTORE
     ========================================================== */
@@ -811,6 +820,10 @@
         });
       });
     }
+
+
+
+
     /* ==========================================================
                 AUTH STATE — CHẠY KHI ĐĂNG NHẬP / ĐĂNG XUẤT
     ========================================================== */
@@ -847,7 +860,8 @@
         startHistoryListener();
 
       } else {
-        // Đăng xuất → Reset UI
+
+        // Reset UI khi logout
         authBox.classList.remove("hidden");
         appArea.classList.add("hidden");
 
