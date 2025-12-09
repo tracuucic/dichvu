@@ -34,19 +34,11 @@
       line-height: 18px;
     }
 
+    /* Ẩn popup welcome */
     #loginNotifBox { display: none !important; }
-
-    /* Giao diện thu gọn admin */
-    .admin-block-collapsed {
-      background: #f9f9f9;
-      border-left: 4px solid #16a34a;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-    }
-
   </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800">
 
   <!-- HEADER -->
@@ -73,7 +65,7 @@
     </div>
   </header>
 
-  <!-- MAIN LAYOUT -->
+  <!-- LAYOUT -->
   <div class="min-h-[calc(100vh-72px)] max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
 
     <!-- SIDEBAR -->
@@ -102,6 +94,7 @@
           📜 Lịch sử tra cứu
         </button>
 
+        <!-- ADMIN BUTTON ẩn cho nhân viên -->
         <button id="navAdmin"
           class="hidden w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-3">
           🛡️ Trang Admin
@@ -120,11 +113,10 @@
         </button>
       </div>
     </aside>
-
     <!-- MAIN CONTENT -->
     <main class="flex-1">
 
-      <!-- LOGIN / SIGNUP BOX -->
+      <!-- AUTH BOX (LOGIN + SIGNUP) -->
       <section id="authBox" class="mx-auto card rounded-lg shadow p-4 md:p-6 max-w-lg">
         <div id="authForms">
 
@@ -331,6 +323,7 @@
       updateDoc
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+
     /* =============================
             FIREBASE CONFIG
     ============================== */
@@ -397,6 +390,8 @@
     function isAdmin(user) {
       return user && user.email === ADMIN_EMAIL;
     }
+
+
     /* =============================
         SWITCH SIGNUP <-> LOGIN
     ============================== */
@@ -440,6 +435,7 @@
 
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+
         await updateProfile(userCred.user, { displayName: name });
 
         alert("Đăng ký thành công! Vui lòng đăng nhập.");
@@ -452,8 +448,6 @@
         alert("Lỗi đăng ký: " + err.message);
       }
     });
-
-
     /* =============================
                 LOGIN
     ============================== */
@@ -469,6 +463,7 @@
       try {
         await signInWithEmailAndPassword(auth, email, pass);
         loginForm.reset();
+
       } catch (err) {
         alert("Lỗi đăng nhập: " + err.message);
       }
@@ -579,22 +574,20 @@
           customerName,
           cccd: cccdValue,
 
-          ketQua: {},               // admin cập nhật sau
+          ketQua: {},   // admin update sau
           createdAt: serverTimestamp()
         });
 
         lookupResult.innerHTML =
-          `<span class="text-green-600 font-semibold">Đã gửi thành công!</span>`;
+          <span class="text-green-600 font-semibold">Đã gửi thành công!</span>;
 
         lookupForm.reset();
 
       } catch (err) {
         lookupResult.innerHTML =
-          `<span class="text-red-600">Lỗi gửi dữ liệu: ${err.message}</span>`;
+          <span class="text-red-600">Lỗi gửi dữ liệu: ${err.message}</span>;
       }
     });
-
-
 
 
     /* ==========================================================
@@ -647,7 +640,7 @@
           const div = document.createElement("div");
           div.className = "p-3 border rounded-md";
 
-          div.innerHTML = `
+          div.innerHTML = 
             <div class="font-medium">${item.customerName}</div>
 
             <div class="text-xs text-gray-500">
@@ -656,22 +649,22 @@
 
             <div class="text-sm mt-1">
               ${hasResult
-                ? `
+                ? 
                   <div class="text-green-700 font-semibold">KẾT QUẢ:</div>
                   <div>• Quan hệ TCTD: ${item.ketQua.tctd || ""}</div>
                   <div>• Nợ xấu: ${item.ketQua.noXau || ""}</div>
                   <div>• Nợ chú ý: ${item.ketQua.noChuY || ""}</div>
                   <div>• Tổng dư nợ: ${item.ketQua.tongDuNo || ""}</div>
                   <div>• Ghi chú: ${item.ketQua.ghiChu || ""}</div>
-                `
-                : `<span class="text-blue-600 font-semibold">Chưa có kết quả</span>`
+                
+                : <span class="text-blue-600 font-semibold">Chưa có kết quả</span>
               }
             </div>
 
             <div class="text-xs text-gray-400 mt-1">
               Nhân viên: ${item.employeeName} • ${item.employeeEmail}
             </div>
-          `;
+          ;
 
           historyList.appendChild(div);
         });
@@ -679,10 +672,8 @@
     }
 
 
-
-
     /* ==========================================================
-                   🔔 CLICK CHUÔNG → MỞ LỊCH SỬ
+                     🔔 CLICK CHUÔNG → MỞ LỊCH SỬ
     ========================================================== */
 
     notifBell.addEventListener("click", () => {
@@ -694,10 +685,8 @@
     });
 
 
-
-
     /* ==========================================================
-                   ADMIN — LOAD REALTIME TẤT CẢ YÊU CẦU
+                   ADMIN — LOAD REAlTIME TẤT CẢ YÊU CẦU
     ========================================================== */
 
     let unsubAdmin = null;
@@ -728,7 +717,7 @@
           const block = document.createElement("div");
           block.className = "border rounded-lg p-4";
 
-          block.innerHTML = `
+          block.innerHTML = 
             <div class="font-bold text-lg mb-2">${item.customerName}</div>
 
             <div class="text-sm text-gray-600 mb-2">
@@ -782,7 +771,7 @@
                     data-save="${docId}">
               💾 Lưu kết quả
             </button>
-          `;
+          ;
 
           adminList.appendChild(block);
         });
@@ -790,6 +779,8 @@
         attachAdminSaveEvents();
       });
     }
+
+
     /* ==========================================================
               ADMIN — LƯU KẾT QUẢ TRẢ CIC VÀO FIRESTORE
     ========================================================== */
@@ -801,7 +792,7 @@
           const docId = btn.getAttribute("data-save");
 
           const inputs = document.querySelectorAll(
-            `.admin-input[data-id="${docId}"]`
+            .admin-input[data-id="${docId}"]
           );
 
           const ketQua = {};
@@ -820,10 +811,6 @@
         });
       });
     }
-
-
-
-
     /* ==========================================================
                 AUTH STATE — CHẠY KHI ĐĂNG NHẬP / ĐĂNG XUẤT
     ========================================================== */
@@ -860,8 +847,7 @@
         startHistoryListener();
 
       } else {
-
-        // Reset UI khi logout
+        // Đăng xuất → Reset UI
         authBox.classList.remove("hidden");
         appArea.classList.add("hidden");
 
